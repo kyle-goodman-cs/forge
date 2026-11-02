@@ -1,6 +1,6 @@
 # Forge
 
-A gamified Python and SQL practice app that runs entirely in the browser. Learners move through a quest map, write real code, and get graded by automated checks. Nothing to install, no account, and no server running their code.
+A gamified Python and SQL practice app that runs entirely in the browser. Learners move through a quest map, write real code, and get graded by automated checks. The live demo needs no install or account, and learner code never runs on a server.
 
 **[Try the live demo](https://kyle-goodman-cs.github.io/forge/)**
 
@@ -25,6 +25,10 @@ A gamified Python and SQL practice app that runs entirely in the browser. Learne
 - 825 automated checks
 - 48 "predict the output" trace quests
 - 24 weekly handbooks and 24 downloadable lab kits
+
+## My role
+
+I defined the goals and learning approach, and chose and prioritized the features: quest-map progression, the earned-hint ladder, questlines, and the SQL track with dual-dataset grading. I directed the visual design, reviewed the output, and set the quality bar through automated checks and browser testing. The code was written with AI coding tools.
 
 ## How it was built
 
@@ -63,3 +67,7 @@ node checks/verify-course.cjs
 ```
 
 Progress is saved in your browser's local storage, so it stays on your device. Use the export in Settings to back it up.
+
+## License
+
+Forge is released under the [MIT License](LICENSE). The bundled runtime in `dist/python/` (Pyodide, CPython, SQLite) keeps its own licenses.
