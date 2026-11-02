@@ -1,0 +1,2328 @@
+{
+  "edition": "2026-10-21",
+  "scope": "Python-first foundations, automation, backend basics, and entry-level engineering practice",
+  "units": [
+    {
+      "goals": [
+        "Explain a variable, a value, and a type.",
+        "Call a function and distinguish return from print.",
+        "Write and trace arithmetic and boundary conditions."
+      ],
+      "sections": [
+        {
+          "title": "What a program actually does",
+          "text": "A program is a sequence of instructions applied to data. Python executes a file from top to bottom. A function definition stores a reusable set of instructions; its body runs when the function is called. The browser checks call your function with different inputs. They do not read your intentions, so the function name, arguments, and returned value must match the task."
+        },
+        {
+          "title": "Values, names, and expressions",
+          "text": "An integer such as 8 is a whole-number value; a float such as 8.5 represents a fractional number; a string such as \"8\" is text. True and False are booleans. None represents an explicitly absent result. An expression produces a value: 8 + 2 produces 10. Assignment such as coins = 8 binds a name to a value. Later coins = coins + 2 reads the old value, computes the sum, and updates the binding. Assignment uses =; equality comparison uses ==."
+        },
+        {
+          "title": "Syntax you need before the first challenge",
+          "text": "def starts a function definition. Parameters in parentheses name the inputs. A colon starts the indented body, conventionally four spaces. return gives a result back to the caller and exits the function. print displays text for a person; a function that only prints returns None. A # starts a comment and pass is a placeholder that does nothing. Python is case-sensitive, so Total and total are different names."
+        },
+        {
+          "title": "Arithmetic and decisions",
+          "text": "Use +, -, *, and / for arithmetic; / produces a float. // is floor division and % is the remainder. Parentheses control grouping. Compare with <, <=, >, >=, ==, and !=. and requires both conditions, or requires at least one, and not reverses a boolean. An if/elif/else chain chooses a branch. Test exactly at each cutoff as well as on either side. Strings and numeric values do not combine automatically; convert deliberately with int(), float(), or str()."
+        }
+      ],
+      "worked": {
+        "code": "def remaining(coins, price):\n    if coins < price:\n        return None\n    return coins - price\n\nprint(remaining(12, 5))\nprint(remaining(5, 5))\nprint(remaining(4, 5))",
+        "output": "7\n0\nNone",
+        "trace": [
+          "The first call binds coins to 12 and price to 5. The comparison is False, so the final return gives 7.",
+          "At equal amounts the purchase is allowed, returning 0. An insufficient amount takes the early return.",
+          "print displays each returned value. Removing print would still compute values but a script would not display them."
+        ]
+      },
+      "mistakes": [
+        "Using = instead of == in a condition.",
+        "Printing the answer instead of returning it.",
+        "Indenting return under the wrong branch or misspelling a parameter."
+      ],
+      "questions": [
+        "Why is \"12\" + \"5\" different from 12 + 5?",
+        "What does a function return when it reaches its end with no return?",
+        "Which three inputs test the cutoff at price 5?"
+      ],
+      "lab": {
+        "title": "Build a small reward calculator",
+        "steps": [
+          "Before coding, write two input/output examples for a game reward rule.",
+          "Create core.py with one function that calculates XP from a score and win flag.",
+          "In main.py, call it with three examples and print the returned values.",
+          "Add a second function that labels the XP using clear cutoff rules.",
+          "Write one ordinary case, one exact-cutoff case, and one zero case in test_core.py.",
+          "Run the files locally using the Start Here guide. Explain each line aloud."
+        ],
+        "acceptance": [
+          "An ordinary input produces your documented result.",
+          "Zero and exact-cutoff cases work.",
+          "Core functions return values; presentation prints them.",
+          "You can rewrite the smallest function without copying it."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "w3vars",
+        "w3func",
+        "values",
+        "flow"
+      ],
+      "week": 1,
+      "title": "Start small",
+      "phase": "Foundations",
+      "prerequisites": "Start Here and basic computer file operations",
+      "plain": [
+        {
+          "title": "What you are actually doing",
+          "text": "A program is a list of instructions that the computer follows from top to bottom, exactly as written. It never guesses what you meant. That sounds harsh, but it's also what makes programming learnable: when something goes wrong, there is always a concrete reason, and you can find it by reading carefully.\n\nIn Forge, almost every challenge asks you to write a function: a named, reusable recipe. You give it inputs, it does some work, and it hands back one result.",
+          "code": "def add_xp(current, earned):   # a recipe named add_xp with two inputs\n    total = current + earned    # do the work\n    return total                # hand the result back\n\nadd_xp(20, 15)   # calling the recipe gives back 35"
+        },
+        {
+          "title": "Variables are labels, not boxes",
+          "text": "total = current + earned does two things. First Python works out the right-hand side (20 + 15 = 35). Then it sticks the label total onto that value. If you later write total = total + 1, Python computes 36 and moves the label to the new value.\n\nRead = as 'now refers to', never as 'equals'. That one habit prevents a lot of confusion. To compare two values, use == instead.",
+          "code": "hp = 30\nhp = hp - 12     # right side first: 30 - 12 = 18, then hp refers to 18\nprint(hp == 18)  # True: == compares, = assigns"
+        },
+        {
+          "title": "return vs print",
+          "text": "This trips up nearly every beginner. print shows text on the screen for a human to read. return sends a value back to whoever called the function, so other code can use it. Forge's checks call your function and look at what it returns. If you print the answer instead, the function returns None and the check fails, even though you can see the right number on screen.",
+          "code": "def wrong(a, b):\n    print(a + b)    # shows 35, but gives back None\n\ndef right(a, b):\n    return a + b    # gives back 35\n\nprint(right(20, 15) + 1)   # 36: the returned value can be used\n# wrong(20, 15) + 1  -> TypeError: None + 1"
+        },
+        {
+          "title": "Making decisions",
+          "text": "if lets a program choose. The condition after if is checked; if it's True, the indented block runs. elif means 'otherwise, if', and else catches everything left over. Python uses indentation (four spaces) to know which lines belong to which block, so indentation is not decoration: it changes the meaning.\n\nWhen a function returns inside an if, it stops right there. That's why you can check the most extreme case first and let later checks handle what remains.",
+          "code": "def health_label(hp):\n    if hp <= 0:\n        return \"down\"     # function stops here for 0 or less\n    if hp <= 25:\n        return \"low\"      # only reached when hp is above 0\n    return \"ready\"        # everything else"
+        },
+        {
+          "title": "How to attack any challenge",
+          "text": "1. Read the task twice and write down the inputs and the output.\n2. Work two examples by hand, including an edge case such as 0, an empty list, or the exact boundary value.\n3. Write the function. Keep it boring and obvious.\n4. Run the checks. If one fails, read its input, expected value, and received value, then trace your code line by line with that exact input.\n\nThe tracing in step 4 is the skill you're building. It's what lets you check AI-written code later instead of trusting it blindly."
+        }
+      ],
+      "watch": {
+        "label": "CS50P Lecture 0 (Functions, Variables) and Lecture 1 (Conditionals)",
+        "url": "https://cs50.harvard.edu/python/weeks/"
+      }
+    },
+    {
+      "goals": [
+        "Trace each iteration of a loop.",
+        "Build a new list without mutating the input.",
+        "Normalize strings and explain indexing and slicing."
+      ],
+      "sections": [
+        {
+          "title": "Lists and positions",
+          "text": "A list is an ordered collection: [3, 7, 2]. Its first index is 0, so values[0] is 3. A negative index counts from the end; values[-1] is 2. values[1:3] slices from index 1 up to, but excluding, index 3. len(values) gives its length. Indexing an empty list raises IndexError. Lists can change: append adds an element and pop removes one. Strings support indexing and slicing too, but cannot be changed in place."
+        },
+        {
+          "title": "Loops and accumulators",
+          "text": "for item in values binds item to each value in sequence. range(3) produces 0, 1, 2; range(1, 4) produces 1, 2, 3. Use enumerate(values) when you need both index and item. An accumulator starts before the loop, updates inside it, and is returned after it. A misplaced return inside the loop stops after the first item. A while loop repeats while a condition holds; update the state so it can eventually stop."
+        },
+        {
+          "title": "Filter and transform",
+          "text": "Filtering keeps selected items; mapping changes each item. Start with explicit loops so you can trace their behavior. Later, [x * 2 for x in values if x > 0] combines filtering and mapping in a comprehension. It builds a new list. A generator expression uses parentheses instead: (x * 2 for x in values) produces results one at a time when consumed. sum totals numbers, any returns whether at least one value is truthy, and all returns whether every value is truthy. For empty input, sum returns 0 by default, any returns False, and all returns True. Trace the equivalent loop before using the compact form. Do not remove items from the collection you are iterating unless you fully understand the consequences. A fresh result list makes the contract easier to reason about."
+        },
+        {
+          "title": "Strings and boundaries",
+          "text": "strip removes whitespace from both ends, lower changes case, replace substitutes occurrences, split divides text, and join combines strings using a separator. These methods return new values. An f-string such as f\"Score: {score}\" formats a value into text. Decide whether repeated internal spaces should remain or collapse. A normalization function must reflect the spec, not your guess about what a clean name should look like."
+        }
+      ],
+      "worked": {
+        "code": "def positive_total(values):\n    total = 0\n    for value in values:\n        if value > 0:\n            total += value\n    return total\n\nprint(positive_total([4, -2, 3]))\nprint(positive_total([]))",
+        "output": "7\n0",
+        "trace": [
+          "Start total at 0. Read 4 and add it, so total becomes 4.",
+          "Read -2; the condition fails and the accumulator stays 4. Read 3 and add it to get 7.",
+          "The return happens after the loop. An empty list never enters the loop, so its result is the initial 0."
+        ]
+      },
+      "mistakes": [
+        "Resetting the accumulator inside the loop.",
+        "Returning after the first iteration.",
+        "Using a list index before checking that the list contains an item."
+      ],
+      "questions": [
+        "What does range(2, 5) produce?",
+        "Where must return go to process every element?",
+        "Which version changes its input: values.append(3) or values + [3]?"
+      ],
+      "lab": {
+        "title": "Create a score-filter report",
+        "steps": [
+          "Write a function that keeps scores meeting a threshold.",
+          "Write another function that counts them using a loop.",
+          "Add a formatter that creates a human-readable report using an f-string.",
+          "Test an empty list, equal-to-threshold scores, and a list with no matches.",
+          "Trace one failing case in a table with item, condition, and accumulator columns.",
+          "Refactor one loop to a comprehension only after both versions pass the same tests."
+        ],
+        "acceptance": [
+          "Input order is preserved where the contract requires it.",
+          "The original scores list remains unchanged.",
+          "Count and list agree on the number of matches.",
+          "You can explain an entire loop trace."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "values",
+        "flow",
+        "collections"
+      ],
+      "week": 2,
+      "title": "Make it repeatable",
+      "phase": "Foundations",
+      "prerequisites": "Weeks 1–1, especially start small",
+      "plain": [
+        {
+          "title": "Lists hold things in order",
+          "text": "A list is an ordered collection: [3, 8, 1]. Positions (indexes) start at 0, so the first item is scores[0] and the last is scores[-1]. len(scores) tells you how many items there are. Lists can grow with .append(value).",
+          "code": "scores = [3, 8, 1]\nprint(scores[0])    # 3\nprint(scores[-1])   # 1\nscores.append(10)\nprint(len(scores))  # 4"
+        },
+        {
+          "title": "A loop does the same thing for each item",
+          "text": "for item in collection: runs the indented block once per item, with item referring to a different element each time. The most important loop pattern is the accumulator: make a variable before the loop, update it inside, and use it after.",
+          "code": "def total_damage(hits):\n    total = 0              # 1. start before the loop\n    for hit in hits:\n        total += hit       # 2. update for each item\n    return total           # 3. use it after the loop\n\n# Trace with [4, 6]:\n#   total = 0\n#   hit = 4 -> total = 4\n#   hit = 6 -> total = 10\n#   return 10"
+        },
+        {
+          "title": "Tracing: your most important skill",
+          "text": "When a loop gives the wrong answer, don't change things at random. Take the smallest input that fails, and write down every variable after every line, like the trace above. The moment your written trace disagrees with what you expected, you've found the bug. It feels slow at first. It becomes fast, and it's the core of debugging.\n\nA common bug: putting return inside the loop. That returns after the first item, because return always ends the function immediately."
+        },
+        {
+          "title": "Building a new list",
+          "text": "To filter or transform, start with an empty list and append what you want to keep. Python also has a shorthand called a list comprehension. Learn the long form first; the short form is the same thing written compactly.",
+          "code": "def affordable(prices, budget):\n    result = []\n    for price in prices:\n        if price <= budget:\n            result.append(price)\n    return result\n\n# Same thing as a comprehension:\n# return [p for p in prices if p <= budget]"
+        },
+        {
+          "title": "Strings are sequences too",
+          "text": "A string is a sequence of characters, so you can loop over it, index it, and slice it. Strings never change in place: methods like .strip(), .lower(), and .replace() return a new string, so you must keep the result.",
+          "code": "name = \"  Dark Souls \"\nname.strip()               # returns \"Dark Souls\" but name is unchanged!\nname = name.strip()        # keep the result\nprint(name.lower().replace(\" \", \"_\"))   # dark_souls"
+        }
+      ],
+      "watch": {
+        "label": "CS50P Lecture 2 (Loops)",
+        "url": "https://cs50.harvard.edu/python/weeks/"
+      }
+    },
+    {
+      "goals": [
+        "Choose a list, tuple, dictionary, or set for a reason.",
+        "Count and group using dictionaries.",
+        "Explain aliasing, copying, sorting, and tie rules."
+      ],
+      "sections": [
+        {
+          "title": "Choose by operation",
+          "text": "A list preserves order and duplicates. A tuple is an immutable sequence, useful for a fixed pair such as (x, y). A dictionary maps unique keys to values and preserves insertion order. A set stores unique hashable values for membership tests; do not depend on its iteration order for a report. Strings, numbers, and tuples of hashable values can be keys; mutable lists cannot. Choose based on what you need to do, not which syntax looks shortest. For sets, a | b is union, a & b is intersection, and a - b is difference. These operations also work with dictionary key views. A membership test uses in; use not in for its opposite."
+        },
+        {
+          "title": "Count and look up",
+          "text": "counts[item] raises KeyError if the key is missing. counts.get(item, 0) supplies a starting value without inserting it. Updating counts[item] = counts.get(item, 0) + 1 accumulates a frequency. Use key in mapping to distinguish a missing key from a stored value of None or 0. mapping.items() yields key/value pairs that can be unpacked in a loop."
+        },
+        {
+          "title": "Objects and copies",
+          "text": "Assignment does not copy a collection: b = a makes both names refer to the same list. Modifying b can therefore change what a sees. a.copy() makes a shallow top-level copy; nested collections are still shared. A pure transformation returns a new result and leaves the caller’s input alone. You will need this distinction whenever a task says do not mutate."
+        },
+        {
+          "title": "Sorting is a policy",
+          "text": "sorted(values) returns a new ordered list; list.sort() changes the list and returns None. key chooses a comparison value. lambda record: record[\"score\"] is a tiny function returning a score. A tuple key such as (-score, name) means score descending, then name ascending. Stable sorting retains original order when keys compare equally. Define ties explicitly rather than relying on accidental order."
+        }
+      ],
+      "worked": {
+        "code": "def count_items(items):\n    counts = {}\n    for item in items:\n        counts[item] = counts.get(item, 0) + 1\n    return counts\n\nprint(count_items([\"coin\", \"gem\", \"coin\"]))",
+        "output": "{'coin': 2, 'gem': 1}",
+        "trace": [
+          "The first coin is absent, so get supplies 0 and the new count is 1.",
+          "gem starts at 1. The second coin reads the existing count 1 and updates it to 2.",
+          "The function returns a dictionary; the loop did not need to scan prior items to count the current item."
+        ]
+      },
+      "mistakes": [
+        "Assuming a set preserves the report order you need.",
+        "Assigning the result of list.sort() and getting None.",
+        "Using a shallow copy and assuming nested lists are independent."
+      ],
+      "questions": [
+        "When would a set lose information you need?",
+        "What happens after b = a and b.append(1)?",
+        "How does (-score, name) resolve a tie?"
+      ],
+      "lab": {
+        "title": "Inventory and leaderboard",
+        "steps": [
+          "Represent an inventory with item → count.",
+          "Implement add, remove, and a deterministic display order.",
+          "Keep a history of sample loot drops and aggregate their frequencies.",
+          "Build a leaderboard with an explicit tie rule.",
+          "Test a missing item, repeated items, ties, and empty input.",
+          "Use a copy when the spec promises not to mutate caller data."
+        ],
+        "acceptance": [
+          "Missing-item behavior is documented.",
+          "Sorting ties match the stated policy.",
+          "Input data remains unchanged for pure functions.",
+          "You can justify each chosen collection."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "collections",
+        "containers",
+        "w3"
+      ],
+      "week": 3,
+      "title": "Think in collections",
+      "phase": "Foundations",
+      "prerequisites": "Weeks 1–2, especially make it repeatable",
+      "plain": [
+        {
+          "title": "Dictionaries: look things up by name",
+          "text": "A list finds things by position. A dictionary finds things by key. Think of a dictionary as a two-column table: keys on the left, values on the right. Keys are unique; assigning to an existing key replaces its value.",
+          "code": "inventory = {\"potion\": 2, \"key\": 1}\nprint(inventory[\"potion\"])      # 2\ninventory[\"potion\"] = 3         # replace\ninventory[\"sword\"] = 1          # add a new key\nprint(\"bow\" in inventory)       # False: checks keys"
+        },
+        {
+          "title": "The counting pattern",
+          "text": "Counting how often things appear is one of the most common tasks in real code. Use .get(key, 0): it returns the current count, or 0 if the key isn't there yet.",
+          "code": "def loot_counts(items):\n    counts = {}\n    for item in items:\n        counts[item] = counts.get(item, 0) + 1\n    return counts\n\n# [\"gem\", \"coin\", \"gem\"] -> {\"gem\": 2, \"coin\": 1}"
+        },
+        {
+          "title": "Sets: unique values, fast membership",
+          "text": "A set holds each value once and answers 'have I seen this?' very quickly. Use it to remove duplicates or to track what you've already handled. Sets have no order, so sort the result if order matters.",
+          "code": "seen = set()\nfor name in [\"ana\", \"bo\", \"ana\"]:\n    if name in seen:\n        print(\"duplicate:\", name)\n    seen.add(name)"
+        },
+        {
+          "title": "Copies vs. the same object",
+          "text": "b = a does not copy a list or dictionary. Both names now point at the same object, so changing one changes 'both'. When a task says 'do not mutate', make a copy first. This bug is subtle and very common in real codebases.",
+          "code": "a = {\"hp\": 10}\nb = a           # same dictionary, two names\nb[\"hp\"] = 0\nprint(a)        # {'hp': 0}  surprise!\n\nc = dict(a)     # a real (shallow) copy\nc[\"hp\"] = 99\nprint(a)        # {'hp': 0}  unchanged"
+        },
+        {
+          "title": "Sorting with a key",
+          "text": "sorted(items, key=...) sorts by whatever the key function returns. A tuple key sorts by the first part, then the second to break ties. Negating a number flips it to descending without reversing the tie-breaker.",
+          "code": "players = [{\"name\": \"bo\", \"score\": 5}, {\"name\": \"ana\", \"score\": 5}, {\"name\": \"cy\", \"score\": 9}]\nordered = sorted(players, key=lambda p: (-p[\"score\"], p[\"name\"]))\nprint([p[\"name\"] for p in ordered])   # ['cy', 'ana', 'bo']"
+        }
+      ],
+      "watch": {
+        "label": "CS50P Lecture 2 (Loops): the parts on lists and dictionaries",
+        "url": "https://cs50.harvard.edu/python/weeks/"
+      }
+    },
+    {
+      "goals": [
+        "Treat a game as state and transitions.",
+        "Decompose behavior into independently testable functions.",
+        "Prove that a repeated simulation terminates."
+      ],
+      "sections": [
+        {
+          "title": "State and transitions",
+          "text": "State is the information needed to describe the current game: position, health, inventory, and turn. A transition takes state plus a command and produces the next state. Keeping this calculation separate from rendering and keyboard input makes it possible to test a game without graphics. Begin with the smallest playable rule rather than an entire game engine."
+        },
+        {
+          "title": "Unpacking and movement",
+          "text": "A position can be a tuple or list of two numbers. dx, dy = (1, 0) unpacks two values into two names. A command mapping turns a direction into a movement vector. Unknown commands need an explicit policy: ignore them, reject them, or return an error. In a bounded map, define whether invalid movement stays put or clamps to an edge."
+        },
+        {
+          "title": "Termination and invariants",
+          "text": "A while loop needs progress. If each attack subtracts positive damage, health eventually reaches the stopping condition. Zero damage requires a separate rule because no progress occurs. An invariant is a condition that remains true after each transition, such as health >= 0. Use max(0, value) to enforce a lower bound when it matches the game rules."
+        },
+        {
+          "title": "Modules and simple tests",
+          "text": "A module is a .py file containing reusable definitions. from core import move loads a function from core.py. Keep the executable application under if __name__ == \"__main__\": so importing the module does not start the game. A basic assertion such as assert move(0, 0, \"N\") == [0, 1] is an executable expectation. Separate core.py, main.py, and test_core.py once a single file becomes hard to navigate."
+        }
+      ],
+      "worked": {
+        "code": "def next_health(hp, damage):\n    return max(0, hp - max(0, damage))\n\nhp = 5\nfor damage in [2, 9]:\n    hp = next_health(hp, damage)\n    print(hp)",
+        "output": "3\n0",
+        "trace": [
+          "The first transition reduces health from 5 to 3.",
+          "The second would produce a negative value, so max clamps the result to 0.",
+          "Printing is outside next_health; the function can be tested without any display."
+        ]
+      },
+      "mistakes": [
+        "Putting rendering, input, and state changes in one hard-to-test function.",
+        "Running a combat loop when damage can be zero.",
+        "Changing the rules while debugging instead of checking the written spec."
+      ],
+      "questions": [
+        "What information must state contain for your game?",
+        "Which quantity moves toward the stopping condition?",
+        "Can your movement function run without a keyboard or display?"
+      ],
+      "lab": {
+        "title": "Ship the tiny dungeon",
+        "steps": [
+          "Define a 5×5 map with start, treasure, and two wall cells.",
+          "Implement a pure step(state, command) function.",
+          "Keep invalid moves in place and report when treasure is reached.",
+          "Add a terminal loop using input() only in main.py, outside the browser.",
+          "Write tests for walls, edges, unknown commands, and a winning route.",
+          "Document launch and replay instructions; finish the terminal version before adding graphics."
+        ],
+        "acceptance": [
+          "A documented route reaches the treasure.",
+          "Walls and boundaries behave consistently.",
+          "Core tests require no user input.",
+          "A new player can run the game from the README."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "flow",
+        "modules",
+        "unittest"
+      ],
+      "week": 4,
+      "title": "Build a game engine",
+      "phase": "Games",
+      "prerequisites": "Weeks 1–3, especially think in collections",
+      "plain": [
+        {
+          "title": "State is just variables over time",
+          "text": "A game is a loop that repeatedly reads input, updates state (position, health, score), and shows the result. You already have every tool for this: variables for state, if for rules, and loops for repetition. This week is about combining them without getting lost.\n\nWrite the state down explicitly. Ask, for every rule: what is the state before, what input arrives, and what is the state after?",
+          "code": "def dungeon(commands):\n    x, y = 0, 0                      # state\n    for cmd in commands:             # inputs, one at a time\n        if cmd == \"N\":\n            y += 1\n        elif cmd == \"S\":\n            y -= 1\n        elif cmd == \"E\":\n            x += 1\n        elif cmd == \"W\":\n            x -= 1\n        # unknown commands: state unchanged\n    return [x, y]"
+        },
+        {
+          "title": "Clamping and invariants",
+          "text": "An invariant is a rule that must always stay true, such as 'health is never negative'. Enforce it every time state changes. max(0, value) keeps a value from going below 0; min(limit, value) keeps it from going above a limit.",
+          "code": "hp = max(0, hp - damage)        # never below 0\nhp = min(max_hp, hp + heal)     # never above max_hp"
+        },
+        {
+          "title": "while loops need an exit",
+          "text": "for loops over a collection always end. while loops keep going as long as a condition is True, so something inside must eventually make it False. If a run hits Forge's time limit, an infinite loop is the usual cause: check that every path changes the loop variable.",
+          "code": "turns = 0\nwhile hp > 0:\n    hp -= damage    # this line is what eventually ends the loop\n    turns += 1"
+        },
+        {
+          "title": "Splitting code into functions",
+          "text": "When one function gets long, pull a piece out into its own named function: move(x, y, cmd) inside dungeon(commands). Small functions are easier to test, name, and explain in an interview. A good rule: if you can't describe what a function does in one sentence, it's doing too much."
+        }
+      ],
+      "watch": {
+        "label": "CS50P Lecture 4 (Libraries) for modules; rewatch any part of Lecture 2 that felt shaky",
+        "url": "https://cs50.harvard.edu/python/weeks/"
+      }
+    },
+    {
+      "goals": [
+        "Read the final line and location of a traceback.",
+        "Handle expected input errors without hiding coding bugs.",
+        "Write boundary examples before making a fix."
+      ],
+      "sections": [
+        {
+          "title": "Three kinds of failure",
+          "text": "A syntax error prevents Python from parsing the program. A runtime exception happens during execution, such as accessing a missing key. A logic bug runs but produces the wrong answer. Use different evidence for each: a parser location, a traceback, or an expected/actual comparison. A red test is a starting point for investigation."
+        },
+        {
+          "title": "Tracebacks and debugging",
+          "text": "Read the exception type and message at the end, then find the last relevant line in your own code. Reproduce the smallest failing input. Check variable values with a temporary print or a debugger breakpoint. Form one hypothesis and test it. When you fix the bug, preserve the input as a regression test so it does not quietly return."
+        },
+        {
+          "title": "Exceptions and validation",
+          "text": "try protects code that might raise an expected exception; except ValueError handles that type. Do not put your entire program in except Exception and report success. int(\"4\") succeeds, int(\"four\") fails, and int(\"4.5\") also fails. None can represent an invalid parsed result, but callers must handle it before arithmetic. Check types before calling methods or comparing missing values."
+        },
+        {
+          "title": "Truth is not presence",
+          "text": "An empty list, empty string, zero, False, and None are falsy in conditions. They do not mean the same thing. if not scores is useful for rejecting an empty list, but if value may be 0, use an explicit check such as value is None. Short-circuit conditions help validate safely: check isinstance(name, str) before name.strip(). Avoid dividing by len(values) until you know the list is nonempty."
+        }
+      ],
+      "worked": {
+        "code": "def parse_count(text):\n    try:\n        count = int(text)\n    except ValueError:\n        return None\n    if count < 0:\n        return None\n    return count\n\nprint(parse_count(\"0\"))\nprint(parse_count(\"bad\"))",
+        "output": "0\nNone",
+        "trace": [
+          "The first conversion succeeds and zero passes the nonnegative rule.",
+          "The second conversion raises ValueError, handled by the specific except.",
+          "A caller must distinguish a legitimate count 0 from the invalid marker None."
+        ]
+      },
+      "mistakes": [
+        "Catching every exception and hiding unrelated bugs.",
+        "Treating zero as missing.",
+        "Changing several things at once without a reproducible example."
+      ],
+      "questions": [
+        "Is the failure syntax, runtime, or logic?",
+        "Why is if value is None different from if not value?",
+        "What regression test would prove the bug stays fixed?"
+      ],
+      "lab": {
+        "title": "Build a resilient settings reader",
+        "steps": [
+          "Parse a level, a yes/no flag, and a player name using separate functions.",
+          "Document valid, invalid, and default behavior for each setting.",
+          "Capture one failing case before correcting the parser.",
+          "Add a test for the exact lower and upper limits.",
+          "Use a debugger breakpoint to inspect a bad input locally.",
+          "Write a bug note: expected, actual, cause, fix, verification."
+        ],
+        "acceptance": [
+          "Invalid text does not crash the input boundary.",
+          "Valid zero/False values survive where allowed.",
+          "Unexpected implementation errors are not silently swallowed.",
+          "A regression test catches your original bug."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "errors",
+        "cs50",
+        "vscode"
+      ],
+      "week": 5,
+      "title": "Handle messy inputs",
+      "phase": "Automation",
+      "prerequisites": "Weeks 1–4, especially build a game engine",
+      "plain": [
+        {
+          "title": "Three kinds of errors",
+          "text": "A SyntaxError means Python can't even read your code (a missing colon or bracket). A runtime error (ValueError, KeyError, TypeError, ZeroDivisionError…) happens while the code runs. A logic error is the sneakiest: no crash, just a wrong answer. The checks catch logic errors; tracing finds them."
+        },
+        {
+          "title": "Reading a traceback",
+          "text": "When Python crashes it prints a traceback. Read it from the bottom up. The last line names the error and gives a message. The line above it shows where it happened in your file. That's usually enough to find the problem.",
+          "code": "Traceback (most recent call last):\n  File \"solution.py\", line 3, in average_score\n    return sum(scores) / len(scores)\nZeroDivisionError: division by zero\n\n# Bottom line: dividing by zero.\n# Line 3: len(scores) was 0, so the list was empty.\n# Fix: handle the empty list before dividing."
+        },
+        {
+          "title": "try / except: expecting failure",
+          "text": "Some failures are normal, such as a user typing 'abc' where a number belongs. try runs code that might fail; except catches a specific error and lets you respond. Always name the error you expect (except ValueError:). A bare except: hides real bugs too.",
+          "code": "def parse_level(text):\n    try:\n        level = int(text)\n    except ValueError:\n        return None          # not a number at all\n    if 1 <= level <= 100:\n        return level\n    return None              # a number, but out of range"
+        },
+        {
+          "title": "Validate early",
+          "text": "Check bad input at the top of the function and return early. Then the rest of the function can assume clean data. This guard-clause style is easier to read than deeply nested if/else blocks.\n\nWatch out for truthiness: 0, \"\", [], and None all count as False in an if. 'if not value' can reject a legitimate 0. When 0 is valid, check explicitly: 'if value is None'."
+        }
+      ],
+      "watch": {
+        "label": "CS50P Lecture 3 (Exceptions)",
+        "url": "https://cs50.harvard.edu/python/weeks/"
+      }
+    },
+    {
+      "goals": [
+        "Read and write text using a context manager.",
+        "Parse JSON and quoted CSV through their libraries.",
+        "Keep file access separate from calculations."
+      ],
+      "sections": [
+        {
+          "title": "Files and resources",
+          "text": "A file handle is a resource. with open(path, \"r\", encoding=\"utf-8\") as handle closes it when the block exits, including on an exception. Read mode does not create a missing file; write mode can overwrite existing content. Use a dedicated practice folder. The browser’s Python filesystem is temporary and separate from your computer, so real persistent file labs run locally."
+        },
+        {
+          "title": "JSON is a format, not a Python expression",
+          "text": "json.loads reads JSON text into Python objects; json.dumps produces text. File-based json.load and json.dump use handles. JSON null maps to None and true/false map to Python booleans. Parsing successfully does not prove the result has the shape your application needs. Check that expected lists, keys, and value types are present before processing."
+        },
+        {
+          "title": "CSV and text streams",
+          "text": "csv.DictReader reads headers into dictionary keys. Most CSV field values arrive as strings, so convert numeric fields deliberately. A quoted title may contain a comma; split(\",\") cannot reliably parse it. io.StringIO lets the same parser read an in-memory string for tests. Use newline=\"\" when opening real CSV files and let csv handle delimiters and quoting."
+        },
+        {
+          "title": "Paths and pure processing",
+          "text": "pathlib represents paths and their components. PurePosixPath computes components without touching a disk; Path can access the local filesystem. A suffix is not proof of valid file contents. Design a core that transforms records, then write a thin wrapper to read and write files. This prevents tests from needing a real filesystem for every calculation. A generator expression such as (row[\"minutes\"] for row in records) produces those values as they are requested; sum(...) consumes them. It resembles a list comprehension but uses parentheses and need not first construct a list. An ordinary loop is an equally valid way to express the calculation."
+        }
+      ],
+      "worked": {
+        "code": "import json\ntext = '[{\"game\": \"Halo\", \"minutes\": 12}]'\nrecords = json.loads(text)\nprint(sum(row[\"minutes\"] for row in records))",
+        "output": "12",
+        "trace": [
+          "Parse text into a list of dictionaries.",
+          "Each record has a minutes value; the generator provides it to sum.",
+          "The calculation knows nothing about the source filename, so it is easy to test with a tiny fixture."
+        ]
+      },
+      "mistakes": [
+        "Splitting CSV by commas.",
+        "Assuming parsed JSON always has the expected schema.",
+        "Accidentally overwriting the input file during an experiment."
+      ],
+      "questions": [
+        "How do loads and load differ?",
+        "Why can a quoted comma break manual CSV parsing?",
+        "What part of your program should own file I/O?"
+      ],
+      "lab": {
+        "title": "Ship the playtime report",
+        "steps": [
+          "Create a JSON fixture with at least five sessions and repeated games.",
+          "Read the fixture with a context manager.",
+          "Aggregate minutes by game in a pure function.",
+          "Write a sorted CSV report using DictWriter or writer.",
+          "Test an empty dataset, a comma in a game name, and invalid input shape.",
+          "Preserve the input and document an example output file."
+        ],
+        "acceptance": [
+          "Totals match manually calculated results.",
+          "Quoted fields round-trip through csv.",
+          "The core accepts in-memory records for tests.",
+          "Running on a new fixture produces a new report without editing source code."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "files",
+        "csv",
+        "paths"
+      ],
+      "week": 6,
+      "title": "Work with real data",
+      "phase": "Automation",
+      "prerequisites": "Weeks 1–5, especially handle messy inputs",
+      "plain": [
+        {
+          "title": "Files, briefly",
+          "text": "Programs read and write files with open(). Use it inside a with block, which closes the file for you even if something goes wrong. In Forge's browser exercises you'll usually get the file's text as a string, so you can focus on processing. The local labs use real files.",
+          "code": "with open(\"scores.json\") as f:\n    text = f.read()\n# the file is closed here automatically"
+        },
+        {
+          "title": "JSON: data as text",
+          "text": "JSON is the most common format for sending data between programs and APIs. It looks like Python dictionaries and lists, but it is text. json.loads(text) turns it into Python objects; json.dumps(obj) turns objects back into text.",
+          "code": "import json\ndata = json.loads('{\"hp\": 5, \"tags\": [\"rpg\"]}')\nprint(data[\"hp\"] + 1)              # 6\nprint(json.dumps({\"ok\": True}))     # {\"ok\": true}"
+        },
+        {
+          "title": "CSV: spreadsheets as text",
+          "text": "CSV is how spreadsheets travel. It looks easy to parse with split(','), but values can contain commas inside quotes. The csv module handles that correctly. DictReader gives each row as a dictionary keyed by the header.",
+          "code": "import csv, io\ntext = \"item,price\\n\\\"Potion, large\\\",3\\n\"\nfor row in csv.DictReader(io.StringIO(text)):\n    print(row[\"item\"], float(row[\"price\"]))   # Potion, large 3.0"
+        },
+        {
+          "title": "Paths are structured",
+          "text": "pathlib.Path understands file paths, so you don't have to slice strings yourself. It knows the file name (.name), the extension (.suffix), and the name without it (.stem).",
+          "code": "from pathlib import Path\np = Path(\"saves/slot1.json\")\nprint(p.name, p.suffix, p.stem)   # slot1.json .json slot1"
+        }
+      ],
+      "watch": {
+        "label": "CS50P Lecture 6 (File I/O)",
+        "url": "https://cs50.harvard.edu/python/weeks/"
+      }
+    },
+    {
+      "goals": [
+        "Plan changes without applying them.",
+        "Detect naming collisions before a batch operation.",
+        "Demonstrate an idempotent normalization step."
+      ],
+      "sections": [
+        {
+          "title": "Separate plan from action",
+          "text": "A file automation tool should first calculate a list of proposed operations. A preview shows source and destination so the user can inspect the plan. The execution layer receives an approved plan; it should not invent additional changes. In this course, start with a folder of disposable sample files and preserve the originals."
+        },
+        {
+          "title": "Collisions are more than duplicate input",
+          "text": "Two differently spelled files can normalize to the same target. A target might also already exist without appearing in the plan. Case sensitivity differs between filesystems, so a rename that looks safe on one machine may collide on another. Your lab should state its target-platform assumptions and reject a conflicting plan before applying any part of it."
+        },
+        {
+          "title": "Idempotence and reruns",
+          "text": "An idempotent transformation has the same result after applying it twice. Stripping and lowercasing a tag is often idempotent. A tool that appends a timestamp every run is not. Test reruns explicitly: a second normalization pass should produce no extra changes. Idempotence is a useful property, not a substitute for testing all side effects."
+        },
+        {
+          "title": "A helpful audit",
+          "text": "An audit counts intended changes and conflict groups, not just raw rows. Keep counts and reasons so someone can understand why execution is blocked. A command-line dry run should make the planned actions clear without writing. When you later add writes, log the operation outcome and make failure behavior explicit rather than assuming every rename succeeds."
+        }
+      ],
+      "worked": {
+        "code": "def normalize(text):\n    return text.strip().lower()\n\nname = \"  HALO  \"\nprint(normalize(name))\nprint(normalize(normalize(name)) == normalize(name))",
+        "output": "halo\nTrue",
+        "trace": [
+          "The first call removes outer spaces and changes case.",
+          "Calling normalize on halo makes no further change.",
+          "The equality demonstrates the idempotence property for this example; it is still worth testing more inputs."
+        ]
+      },
+      "mistakes": [
+        "Applying changes while still discovering conflicts.",
+        "Overwriting an existing destination.",
+        "Assuming a successful first run means a rerun is harmless."
+      ],
+      "questions": [
+        "Which distinct inputs could produce the same target?",
+        "How does the plan change on a second run?",
+        "What happens if the third operation fails after two succeed?"
+      ],
+      "lab": {
+        "title": "Create a read-only rename preview",
+        "steps": [
+          "Make a disposable sample folder with names containing spaces and case differences.",
+          "Generate a rename plan without calling rename or writing files.",
+          "Detect repeated target names and targets already occupied by unchanged files.",
+          "Print old → new mappings and an audit count.",
+          "Test a clean plan, a collision, and an already-normalized folder.",
+          "Keep execution out of this lab; add it only after your preview is reliable."
+        ],
+        "acceptance": [
+          "Preview performs no writes.",
+          "A collision blocks the proposed batch.",
+          "A second normalization of clean names produces no changes.",
+          "Platform and case-sensitivity assumptions are documented."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "paths",
+        "collections",
+        "args"
+      ],
+      "week": 7,
+      "title": "Automate with care",
+      "phase": "Automation",
+      "prerequisites": "Weeks 1–6, especially work with real data",
+      "plain": [
+        {
+          "title": "Automation that doesn't hurt you",
+          "text": "Automation scripts touch real files and data, so mistakes are expensive. Professionals split every automated change into two steps: plan (work out exactly what would change, and show it) and apply (do it). A plan can be reviewed, tested, and run safely as many times as you like.",
+          "code": "def rename_plan(names):\n    plan = []\n    for old in names:\n        new = old.lower().replace(\" \", \"_\")\n        if new != old:                 # skip no-op changes\n            plan.append([old, new])\n    return plan                       # nothing has been renamed yet"
+        },
+        {
+          "title": "Collisions and reruns",
+          "text": "Two different inputs can produce the same output ('My Save' and 'my_save' both become 'my_save'). A good plan detects that before it overwrites something. And a good script is idempotent: running it twice gives the same result as running it once, so a crash halfway through is easy to recover from."
+        },
+        {
+          "title": "Dry runs",
+          "text": "Most professional command-line tools have a --dry-run flag that prints the plan without applying it. You'll build one in week 13. Get in the habit now: never write code that changes things without a way to preview what it will do."
+        }
+      ],
+      "watch": {
+        "label": "CS50P Lecture 4 (Libraries) and the CSV part of Lecture 6",
+        "url": "https://cs50.harvard.edu/python/weeks/"
+      }
+    },
+    {
+      "goals": [
+        "Explain linear time versus nested repeated work.",
+        "Use a set or dictionary to avoid repeated scans.",
+        "Give an approach, correctness argument, and cost explanation."
+      ],
+      "sections": [
+        {
+          "title": "What complexity measures",
+          "text": "Big-O describes how work or extra storage grows as input size n grows. It is not a precise stopwatch prediction. A single scan is O(n); a pair of nested scans over n items is often O(n²). Sorting is generally O(n log n). Dictionary and set membership are average O(1) in ordinary use, so a scan with membership checks is average O(n). State assumptions rather than promising constant speed for every implementation."
+        },
+        {
+          "title": "Search and early returns",
+          "text": "Linear search checks items in order and can stop on the first match. Best case may inspect one item; worst case may inspect all n. Returning -1 is a specific contract, not a universal missing-value rule. An empty input is a useful case because the loop never executes and must still return the correct absent result."
+        },
+        {
+          "title": "Remember previous work",
+          "text": "A set answers have I seen this value? A dictionary can also retain where it appeared. In two-sum, target - current is the needed complement. Check earlier values before storing the current index so you cannot pair an item with itself. With duplicate values, decide which earlier index the spec requires."
+        },
+        {
+          "title": "Communicate before optimizing",
+          "text": "Start by restating inputs, outputs, and edge cases. Describe a simple correct approach, then identify repeated work. Explain why the chosen collection removes that work. Walk through a short example and discuss time and space. Memorizing a particular solution is weaker preparation than explaining why its invariant holds."
+        }
+      ],
+      "worked": {
+        "code": "def contains_repeat(values):\n    seen = set()\n    for value in values:\n        if value in seen:\n            return True\n        seen.add(value)\n    return False\n\nprint(contains_repeat([2, 5, 2]))",
+        "output": "True",
+        "trace": [
+          "2 is new and enters seen. 5 is new and enters seen.",
+          "The final 2 is already present, so the function returns True immediately.",
+          "Each item is visited at most once; the set may store up to n unique values."
+        ]
+      },
+      "mistakes": [
+        "Claiming O(1) extra space while storing a set of all items.",
+        "Using the same index twice in a pair.",
+        "Giving a complexity label without explaining what n means."
+      ],
+      "questions": [
+        "What repeated work does the set avoid?",
+        "Why must two-sum check before storing?",
+        "What are best and worst cases for linear search?"
+      ],
+      "lab": {
+        "title": "Interview practice, without a timer first",
+        "steps": [
+          "Solve search, duplicate detection, and counting using your own examples.",
+          "For each, write a brute-force approach before an improved one.",
+          "Record normal, empty, repeated, and boundary cases.",
+          "Explain one solution aloud without reading its code.",
+          "Rebuild a selected problem after a few days.",
+          "Only add a time limit once you can reason through the pattern accurately."
+        ],
+        "acceptance": [
+          "You can describe why your data structure fits.",
+          "Time and extra space are stated with a defined n.",
+          "You can adapt the input or tie rule without copying a solution.",
+          "You distinguish practice recall from solving an unfamiliar problem."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "collections",
+        "containers",
+        "flow"
+      ],
+      "week": 8,
+      "title": "Your first interview toolkit",
+      "phase": "Interviews",
+      "prerequisites": "Weeks 1–7, especially automate with care",
+      "plain": [
+        {
+          "title": "What interviewers are actually checking",
+          "text": "Entry-level technical interviews mostly test whether you can: understand a problem and ask about edge cases, get to a correct solution, explain your thinking while you work, and reason about efficiency. Fancy tricks matter much less than clear thinking out loud.\n\nA reliable script: restate the problem, try a small example by hand, describe a simple approach, code it, test it on your example and an edge case, then discuss how fast it is and whether it can be improved."
+        },
+        {
+          "title": "Big O in plain English",
+          "text": "Big O describes how the work grows as the input grows. Looking at every item once is O(n): double the input, double the work. Comparing every item with every other item is O(n²): double the input, four times the work. Looking something up in a dictionary or set is about O(1): it stays fast no matter how big it gets.",
+          "code": "# O(n²): checks every pair\nfor i in range(len(nums)):\n    for j in range(i + 1, len(nums)):\n        ...\n\n# O(n): one pass with a set\nseen = set()\nfor n in nums:\n    if n in seen:      # O(1) lookup\n        ..."
+        },
+        {
+          "title": "The hash-map trick",
+          "text": "Many interview problems ask 'is there an earlier item that pairs with this one?' Instead of searching backward every time (slow), remember what you've seen in a dictionary (fast). That turns an O(n²) solution into O(n), and it's the single most useful interview idea.",
+          "code": "def two_sum(nums, target):\n    seen = {}                        # value -> index\n    for i, n in enumerate(nums):\n        need = target - n\n        if need in seen:\n            return [seen[need], i]\n        seen[n] = i\n    return []"
+        }
+      ],
+      "watch": {
+        "label": "CS50x Week 3 (Algorithms): searching, sorting, and Big O",
+        "url": "https://cs50.harvard.edu/x/"
+      }
+    },
+    {
+      "goals": [
+        "Maintain an invariant while moving pointers.",
+        "Use a stack for unfinished nested structure.",
+        "Trace a binary-search interval without skipping values."
+      ],
+      "sections": [
+        {
+          "title": "Two pointers",
+          "text": "Two indices can inspect a sequence from opposite ends or maintain a window. For a palindrome, outer pairs already checked must match, and each step moves inward. The loop ends when pointers meet or cross. A simple drawing of left and right often reveals an off-by-one bug more quickly than repeated code edits."
+        },
+        {
+          "title": "Stacks and nesting",
+          "text": "A stack removes the most recently added item first. A list with append and pop implements this behavior. Parenthesis validation pushes an opener and pops on a matching closer. A closer with an empty stack fails immediately; unmatched openers fail at the end. Extending to several bracket types requires checking the opener type, not just the count."
+        },
+        {
+          "title": "Sliding windows",
+          "text": "A fixed-size window sum can move by subtracting the outgoing value and adding the incoming one. Initialize the best result from a real window, not 0, or all-negative data may be wrong. If the window size is invalid, return the contract’s chosen result before taking a slice. Later you will extend this to a variable-size window."
+        },
+        {
+          "title": "Binary search",
+          "text": "Binary search requires an ordered domain. For an inclusive interval [left, right], search while left <= right. After inspecting mid, discard it and the impossible side using mid + 1 or mid - 1. Every unsuccessful step must shrink the interval. Returning an index after sorting an originally unsorted list would refer to a different order; do not quietly change the meaning of an index."
+        }
+      ],
+      "worked": {
+        "code": "def palindrome(text):\n    left, right = 0, len(text) - 1\n    while left < right:\n        if text[left] != text[right]:\n            return False\n        left += 1\n        right -= 1\n    return True\n\nprint(palindrome(\"level\"))\nprint(palindrome(\"ab\"))",
+        "output": "True\nFalse",
+        "trace": [
+          "For level, compare l/l, then e/e. The pointers meet at v.",
+          "For ab, the first comparison fails immediately.",
+          "The already-checked outer region remains valid throughout the scan."
+        ]
+      },
+      "mistakes": [
+        "Not moving a pointer and creating an infinite loop.",
+        "Initializing a maximum to 0 for all-negative input.",
+        "Using binary search without a sorted-input contract."
+      ],
+      "questions": [
+        "What fact is true before and after every pointer step?",
+        "Which input exposes an unmatched closing bracket?",
+        "Why is right = mid capable of getting stuck in some interval designs?"
+      ],
+      "lab": {
+        "title": "Trace and test the patterns",
+        "steps": [
+          "Draw a palindrome scan and binary search on paper before coding.",
+          "Add a bracket checker and test nesting, reversed symbols, and an empty string.",
+          "Add a window-sum function and include all-negative values.",
+          "Describe the invariant for each function in one sentence.",
+          "Write tests for size-one and missing-target searches.",
+          "After the guided attempts, change one contract and solve the variation independently."
+        ],
+        "acceptance": [
+          "Every loop demonstrably makes progress.",
+          "Boundary and empty cases are covered.",
+          "You can explain the sorted-input requirement.",
+          "An unfamiliar variation is attempted without the reference open."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "flow",
+        "collections",
+        "containers"
+      ],
+      "week": 9,
+      "title": "Spot useful patterns",
+      "phase": "Interviews",
+      "prerequisites": "Weeks 1–8, especially your first interview toolkit",
+      "plain": [
+        {
+          "title": "Patterns, not memorized answers",
+          "text": "Most easy and medium interview problems are variations on a handful of patterns. Learn to recognize the pattern from the problem's shape, then adapt it. This week covers four of the most common."
+        },
+        {
+          "title": "Two pointers",
+          "text": "Put one index at each end (or both at the start) and move them toward each other based on a rule. This checks palindromes, merges sorted lists, and finds pairs in sorted data in one pass.",
+          "code": "def is_palindrome(text):\n    left, right = 0, len(text) - 1\n    while left < right:\n        if text[left] != text[right]:\n            return False\n        left += 1\n        right -= 1\n    return True"
+        },
+        {
+          "title": "Stacks",
+          "text": "A stack is last-in, first-out, like a pile of plates. In Python, use a list with .append() and .pop(). Stacks are perfect for anything nested: brackets, undo history, or walking back through a path."
+        },
+        {
+          "title": "Sliding window and binary search",
+          "text": "A sliding window keeps a running result for a range of consecutive items and slides it one step at a time instead of recomputing from scratch. Binary search repeatedly halves a sorted range, finding an item in O(log n). For binary search, draw the low and high indexes on paper for every step: almost every bug is an off-by-one in those two lines.",
+          "code": "def binary_search(nums, target):\n    low, high = 0, len(nums) - 1\n    while low <= high:              # <= so a 1-item range is still checked\n        mid = (low + high) // 2\n        if nums[mid] == target:\n            return mid\n        if nums[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1\n    return -1"
+        }
+      ],
+      "watch": {
+        "label": "CS50x Week 5 (Data Structures): stacks and queues",
+        "url": "https://cs50.harvard.edu/x/"
+      }
+    },
+    {
+      "goals": [
+        "Distinguish class state from instance state.",
+        "Use helpers with clear responsibilities.",
+        "Preserve a rule across operations."
+      ],
+      "sections": [
+        {
+          "title": "Objects and methods",
+          "text": "A class defines a type; an instance is a particular object of that type. __init__ initializes each instance. self refers to the instance whose method is being called. Put per-player values on self so two players do not accidentally share state. A class-level mutable collection is shared and can create subtle bugs if you intended separate inventories."
+        },
+        {
+          "title": "Functions or classes?",
+          "text": "Use a function for a straightforward transformation. A class helps when data and operations belong together over time, such as a wallet or game state. Do not create a class merely to hold unrelated utility functions. Composition lets one object use another for storage or formatting while keeping responsibilities distinct."
+        },
+        {
+          "title": "Interfaces and invariants",
+          "text": "An interface is the behavior callers can rely on: arguments, results, errors, and side effects. A wallet may promise balance never becomes negative. Test that invariant after every transaction, especially rejected ones. Return values and exceptions should follow documented policies so callers do not have to inspect implementation details."
+        },
+        {
+          "title": "Readable pipelines",
+          "text": "A small pipeline might normalize input, filter records, rank candidates, then format output. Give each step a name that describes its result. A list comprehension is appropriate when it remains readable; a short loop is often clearer when there are several conditions or validation steps. Prioritize code a teammate can inspect and change safely."
+        }
+      ],
+      "worked": {
+        "code": "class Wallet:\n    def __init__(self, balance):\n        self.balance = balance\n    def spend(self, cost):\n        if cost > self.balance:\n            return False\n        self.balance -= cost\n        return True\n\nw = Wallet(5)\nprint(w.spend(8), w.balance)\nprint(w.spend(3), w.balance)",
+        "output": "False 5\nTrue 2",
+        "trace": [
+          "The object starts with its own balance of 5.",
+          "An unaffordable spend returns False without changing state.",
+          "The accepted spend subtracts 3, preserving the nonnegative-balance rule. Inputs here assume nonnegative costs."
+        ]
+      },
+      "mistakes": [
+        "Using shared class state for instance-specific data.",
+        "Refactoring structure while accidentally changing a public contract.",
+        "Hiding side effects in a function named like a simple query."
+      ],
+      "questions": [
+        "What belongs on self rather than the class?",
+        "Which condition must remain true after a rejected transaction?",
+        "Could this class be a simpler pure function?"
+      ],
+      "lab": {
+        "title": "Score service with a clear interface",
+        "steps": [
+          "Model scores as data with a documented update policy.",
+          "Implement best-score updates and deterministic ranking.",
+          "Keep storage outside the scoring calculation.",
+          "Test two independent player instances if you use a class.",
+          "Document tie rules, invalid inputs, and whether updates mutate state.",
+          "Refactor one long function into small named steps while preserving tests."
+        ],
+        "acceptance": [
+          "State is not unintentionally shared.",
+          "Ranking ties match the contract.",
+          "Refactoring preserves behavior.",
+          "A caller can use the service without reading its internals."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "classes",
+        "modules",
+        "annotations"
+      ],
+      "week": 10,
+      "title": "Make code maintainable",
+      "phase": "Projects",
+      "prerequisites": "Weeks 1–9, especially spot useful patterns",
+      "plain": [
+        {
+          "title": "Classes bundle data with behavior",
+          "text": "A class is a blueprint for objects that hold their own data (attributes) and know how to act on it (methods). __init__ runs when you create an object and sets its starting state on self. Every method receives the object itself as self, and that's how it reads and changes the object's data.",
+          "code": "class Wallet:\n    def __init__(self, balance):\n        self.balance = balance          # state lives on self\n\n    def spend(self, amount):\n        if amount > self.balance:       # protect the invariant\n            return False\n        self.balance -= amount\n        return True\n\nw = Wallet(10)\nw.spend(4)\nprint(w.balance)    # 6"
+        },
+        {
+          "title": "When to use a class",
+          "text": "Use a plain function when you just transform input into output. Use a class when something has state that changes over time and rules that protect it, like a wallet that can never go negative. Don't make classes just because it feels more professional; simpler is better."
+        }
+      ],
+      "watch": {
+        "label": "CS50P Lecture 8 (Object-Oriented Programming)",
+        "url": "https://cs50.harvard.edu/python/weeks/"
+      }
+    },
+    {
+      "goals": [
+        "Turn a small written spec into a complete workflow.",
+        "Normalize, merge, and export consistent records.",
+        "Document and test a tool another person can run."
+      ],
+      "sections": [
+        {
+          "title": "Start with acceptance examples",
+          "text": "A specification should describe an actual input and expected output, not only a feature name. Define duplicate-title behavior, tag normalization, invalid minutes, and export ordering. Write the empty-input example first. These decisions prevent implementation shortcuts from becoming accidental product behavior."
+        },
+        {
+          "title": "A record boundary",
+          "text": "Normalize each record once before storing or combining it. Use a stable key such as a stripped lowercase title if that is your chosen identity policy. Preserve a display title separately if the user needs original capitalization. A missing value, explicit null, and empty string can represent different situations; make the policy visible. A set comprehension such as {tag.strip().lower() for tag in tags if tag.strip()} builds unique normalized values; sorted(...) then gives deterministic output. Dictionary comprehensions use {key: value for ...} to produce mappings."
+        },
+        {
+          "title": "Composition into a tool",
+          "text": "A CLI can have import, list, search, and export commands. The core accepts ordinary Python data and returns ordinary results. The outer layer parses arguments and opens files. main() owns presentation and exit codes. A module imported in tests should not prompt for input or overwrite files."
+        },
+        {
+          "title": "Definition of done",
+          "text": "A tool is ready to hand off when someone can install it, run a sample, verify output, and run its tests from the README. Include limitations and example failures, not only the happy path. Keep sample data synthetic. A completed narrow tool demonstrates more independent work than a long feature wish list."
+        }
+      ],
+      "worked": {
+        "code": "def merge_minutes(records):\n    totals = {}\n    for row in records:\n        key = row[\"title\"].strip().lower()\n        totals[key] = totals.get(key, 0) + row[\"minutes\"]\n    return totals\n\nprint(merge_minutes([{ \"title\": \" A \", \"minutes\": 5}, {\"title\": \"a\", \"minutes\": 2}]))",
+        "output": "{'a': 7}",
+        "trace": [
+          "Both titles normalize to the same key a.",
+          "The first record starts its total at 5; the second adds 2.",
+          "The sum represents the chosen merge policy, which should be documented for duplicate records."
+        ]
+      },
+      "mistakes": [
+        "Letting invalid data reach every core function.",
+        "Making the README depend on your personal absolute paths.",
+        "Writing export text manually and losing proper CSV quoting."
+      ],
+      "questions": [
+        "What counts as the same game?",
+        "Which malformed records should be rejected?",
+        "Can someone run the sample without asking you for missing steps?"
+      ],
+      "lab": {
+        "title": "Ship the game-library organizer",
+        "steps": [
+          "Write a short spec and three acceptance examples before changing code.",
+          "Implement import, list, search, and CSV export in a CLI.",
+          "Keep normalization and aggregation functions in core.py.",
+          "Save a small synthetic dataset alongside the project.",
+          "Add tests for duplicates, tags, an empty library, and quoted titles.",
+          "Verify the README in a clean folder and record a short demo."
+        ],
+        "acceptance": [
+          "All four commands work from documented inputs.",
+          "Malformed data has a documented outcome.",
+          "Tests run without manual input.",
+          "The sample report can be reproduced from the README."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "modules",
+        "files",
+        "csv",
+        "unittest"
+      ],
+      "week": 11,
+      "title": "Ship a useful tool",
+      "phase": "Projects",
+      "prerequisites": "Weeks 1–10, especially make code maintainable",
+      "plain": [
+        {
+          "title": "From exercises to a tool",
+          "text": "Real tools are small functions connected together: read input, clean it, process it, and write output. Keep the pieces separate. The functions that do the work should take plain values and return plain values (easy to test), and a thin outer layer handles files and printing.\n\nWrite down what 'done' means before you start: a couple of example inputs with their exact expected outputs. Those examples become your tests."
+        },
+        {
+          "title": "Tests you write yourself",
+          "text": "A test calls your function with a known input and checks the result. Python's built-in unittest module runs a folder of these automatically. In the local labs you'll write them. Every bug you fix should leave behind a test that would have caught it.",
+          "code": "import unittest\nfrom core import merge_library\n\nclass TestMerge(unittest.TestCase):\n    def test_same_title_different_case(self):\n        records = [{\"title\": \"Hades\", \"minutes\": 30}, {\"title\": \"hades\", \"minutes\": 15}]\n        self.assertEqual(merge_library(records), {\"hades\": 45})"
+        }
+      ],
+      "watch": {
+        "label": "CS50P Lecture 5 (Unit Tests)",
+        "url": "https://cs50.harvard.edu/python/weeks/"
+      }
+    },
+    {
+      "goals": [
+        "Build from a spec without a walkthrough.",
+        "Explain a design and test edge cases.",
+        "Use independent attempts to identify the next gap."
+      ],
+      "sections": [
+        {
+          "title": "Plan before implementation",
+          "text": "Write inputs, outputs, assumptions, and examples. Break a specification into validation, transformation, aggregation, ordering, and presentation. Solve a tiny instance by hand. This makes it easier to choose a collection and a sequence of steps before syntax becomes a distraction."
+        },
+        {
+          "title": "A deliberate help policy",
+          "text": "Try independently first. Documentation can clarify syntax without supplying the whole algorithm. If you use a hint or generated implementation, record that help honestly. Later rebuild from a blank file and attempt a changed requirement. A remembered answer is useful recall practice but not complete evidence of transfer."
+        },
+        {
+          "title": "Self-assess using evidence",
+          "text": "An independent completion should mean you can explain what each step contributes and test an edge case. Count finished projects and debugging successes as evidence too. A checkmark cannot certify job readiness; local labs, unseen tasks, and maintainable handoffs reveal skills that a short function check cannot."
+        },
+        {
+          "title": "The next stage",
+          "text": "Weeks 13–24 add the development tools and practical boundaries used around Python code: Git, environments, tests, SQL, HTTP, services, logs, and collaboration. Keep the same four-session rhythm. Move slower when a foundation is uncertain; calendar progress is less useful than a reliable mental model."
+        }
+      ],
+      "worked": {
+        "code": "def top_names(points, limit):\n    ordered = sorted(points, key=lambda name: (-points[name], name))\n    return ordered[:max(0, limit)]\n\nprint(top_names({\"B\": 5, \"A\": 5, \"C\": 1}, 2))",
+        "output": "['A', 'B']",
+        "trace": [
+          "Dictionary keys are names, so sorting iterates over the names.",
+          "The negative score puts larger scores first; the name resolves ties.",
+          "The slice enforces a nonnegative limit without changing the input dictionary."
+        ]
+      },
+      "mistakes": [
+        "Treating reference-solution recall as proof of independent problem solving.",
+        "Skipping edge cases because a normal example passes.",
+        "Adding features before the original specification works."
+      ],
+      "questions": [
+        "Can you state your assumptions before opening the editor?",
+        "What changed when you asked for help?",
+        "Which unfamiliar variation would test the same idea?"
+      ],
+      "lab": {
+        "title": "Independent mini-build",
+        "steps": [
+          "Choose a tournament table, playtime analyzer, or game recommender.",
+          "Write a spec without referring to a solution.",
+          "Create a clean module and implement the smallest useful version.",
+          "Write normal, empty, invalid, and tie/boundary tests.",
+          "Explain one tradeoff and one limitation in the README.",
+          "After a few days, change a requirement and implement the variation without a walkthrough."
+        ],
+        "acceptance": [
+          "The original spec and sample outputs agree.",
+          "Tests demonstrate the documented boundaries.",
+          "You can explain every function.",
+          "You record help used and a next practice target."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "cs50",
+        "python",
+        "unittest"
+      ],
+      "week": 12,
+      "title": "Prove your foundations",
+      "phase": "Projects",
+      "prerequisites": "Weeks 1–11, especially ship a useful tool",
+      "plain": [
+        {
+          "title": "Proving it to yourself",
+          "text": "This week's challenges come with less guidance on purpose. That's the point: confidence comes from finishing something you weren't walked through. If you get stuck, go back to the method from week 1: write the inputs and outputs, work an example by hand, write the simplest correct code, and trace the failing case.\n\nUse the help ladder honestly. A redo bounty later is a better outcome than a fake clear now."
+        }
+      ],
+      "watch": {
+        "label": "CS50P Lecture 9 (Et Cetera)",
+        "url": "https://cs50.harvard.edu/python/weeks/"
+      }
+    },
+    {
+      "goals": [
+        "Run a script from a terminal and select the right interpreter.",
+        "Create an isolated environment and inspect a Git diff.",
+        "Separate command-line parsing from core logic."
+      ],
+      "sections": [
+        {
+          "title": "Interpreter, environment, and dependencies",
+          "text": "A terminal runs commands in a current directory. The Python executable launches your script; the interpreter selected in VS Code should be the same environment your terminal commands use. Create .venv with python -m venv .venv. On Windows you can invoke .venv\\Scripts\\python directly without activating; on macOS/Linux use .venv/bin/python. Install project dependencies through that interpreter using -m pip. Record dependencies for a clean setup rather than relying on packages installed elsewhere."
+        },
+        {
+          "title": "Git’s three locations",
+          "text": "Your working tree contains editable files. git add places a snapshot into the staging area. git commit records the staged snapshot, not every subsequent edit. Use git status, git diff, and git diff --staged to inspect each location. Start a branch for a focused change, commit useful checkpoints, and review the diff before sharing. A remote is another repository; pushing a commit is distinct from creating it locally."
+        },
+        {
+          "title": "Entry points and arguments",
+          "text": "Write main() to parse arguments, call a core function, present results, and return an exit code. if __name__ == \"__main__\": raises SystemExit(main()) only when launched as a script. argparse can provide --help, value conversion, defaults, and flags. Parse values once at the boundary and pass them as ordinary arguments. Environment variables also arrive as strings and need explicit validation."
+        },
+        {
+          "title": "A small collaboration loop",
+          "text": "Create a short branch, make one change, run tests, inspect the diff, commit, and open a practice PR in your own repository. Explain the problem, resulting behavior, and test evidence. Exclude .venv, generated outputs, and secrets in .gitignore. If you encounter a conflict, inspect both intended changes rather than deleting markers blindly."
+        }
+      ],
+      "worked": {
+        "code": "import argparse\nparser = argparse.ArgumentParser()\nparser.add_argument(\"--count\", type=int, default=2)\nargs = parser.parse_args([\"--count\", \"4\"])\nprint(args.count * 3)",
+        "output": "12",
+        "trace": [
+          "The argument parser converts the text 4 to an integer.",
+          "The core expression receives an integer and multiplies it.",
+          "The provided list makes the example deterministic; a CLI uses actual command-line arguments."
+        ]
+      },
+      "mistakes": [
+        "Installing with a different interpreter than the one running tests.",
+        "Thinking a commit automatically uploads code.",
+        "Staging an entire folder without checking generated files or secrets."
+      ],
+      "questions": [
+        "What differs between git diff and git diff --staged?",
+        "How do you know which Python executable runs a command?",
+        "What belongs in main() rather than core.py?"
+      ],
+      "lab": {
+        "title": "Put a real CLI under version control",
+        "steps": [
+          "Create a fresh .venv and select its interpreter in VS Code.",
+          "Run python --version and record the supported runtime in README.",
+          "Create a CLI with --help, --limit, and --dry-run.",
+          "Initialize Git; create a .gitignore for .venv/, __pycache__/, local data, and secrets.",
+          "Stage one file, edit it again, and inspect both diff views.",
+          "Create a feature branch, commit a tested change, and open a practice PR.",
+          "Record the commit hash and the commands another person needs to run the sample."
+        ],
+        "acceptance": [
+          "A clean environment runs the sample.",
+          "--help works and invalid numeric input is reported.",
+          "The staged diff matches the intended change.",
+          "Your repository has a readable README and no committed secrets."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "venv",
+        "vscode",
+        "git",
+        "github",
+        "args",
+        "mit"
+      ],
+      "week": 13,
+      "title": "Work like a developer",
+      "phase": "Developer tools",
+      "prerequisites": "Weeks 1–12, especially prove your foundations"
+    },
+    {
+      "goals": [
+        "Author tests that fail for plausible bugs.",
+        "Raise specific errors and use fake dependencies.",
+        "Explain types as a communication tool."
+      ],
+      "sections": [
+        {
+          "title": "Arrange, act, assert",
+          "text": "A useful test sets up a small input, performs one operation, and checks the promised result. Name the behavior, not the line number. Include normal, empty, invalid, and boundary examples where applicable. A test that copies the implementation’s calculation can reproduce the same bug; choose expected outputs from the specification or a hand-worked example."
+        },
+        {
+          "title": "Local testing tools",
+          "text": "unittest is built into Python; the lab kits use it without extra dependencies. pytest discovers test_*.py files and ordinary test functions with assertions. Locally install pytest into .venv and run python -m pytest. Use pytest.raises for errors and parametrize for several examples of the same behavior. Keep generated files and network calls out of unit tests unless they are the behavior under test."
+        },
+        {
+          "title": "Fakes and interfaces",
+          "text": "Pass a fetcher, clock, or storage object to code that depends on it. Tests can substitute a fake with known output and inspect whether it was called. Prefer a small fake matching the interface over mocking deep internal implementation details. Type hints document expected shapes but do not validate runtime input; validate untrusted values separately."
+        },
+        {
+          "title": "A debugging workflow",
+          "text": "Capture the failure, reproduce it with the smallest input, inspect variables, state a hypothesis, and test one change. After correcting it, keep a regression test. A debugger lets you pause at a breakpoint, step into a function, and inspect local values. Logs help explain longer-lived behavior; they should complement a reproducible case rather than replace it."
+        }
+      ],
+      "worked": {
+        "code": "def cached(cache, key, fetch):\n    if key in cache:\n        return cache[key]\n    return fetch(key)\n\ncalls = []\ndef fake(key):\n    calls.append(key)\n    return 99\nprint(cached({\"x\": 0}, \"x\", fake))\nprint(calls)",
+        "output": "0\n[]",
+        "trace": [
+          "Membership finds x even though its cached value is falsy.",
+          "The early return prevents the fake fetcher from being called.",
+          "The empty calls list is evidence about interaction as well as the returned result."
+        ]
+      },
+      "mistakes": [
+        "Testing only the happy path.",
+        "Hiding errors behind a broad exception handler.",
+        "Mocking so much implementation detail that harmless refactors break tests."
+      ],
+      "questions": [
+        "Which plausible wrong solution would your tests reject?",
+        "Does this test need the network?",
+        "What does the type hint promise, and what does it not enforce?"
+      ],
+      "lab": {
+        "title": "Fix a bug with a regression test",
+        "steps": [
+          "Create a small cache or parser module with a deliberate falsy-value bug.",
+          "Write a failing unit test before fixing it.",
+          "Use a debugger breakpoint to inspect the bad decision.",
+          "Make the smallest coherent correction and run the entire suite.",
+          "Add one fake dependency and verify both hit and miss behavior.",
+          "Add type hints and docstrings to the public function.",
+          "Write a short change description including reproduction and test commands."
+        ],
+        "acceptance": [
+          "The original buggy version fails your regression test.",
+          "The corrected version passes all relevant tests.",
+          "Unit tests do not depend on a live network.",
+          "Public inputs, results, errors, and side effects are documented."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "pytest",
+        "unittest",
+        "errors",
+        "annotations",
+        "vscode"
+      ],
+      "week": 14,
+      "title": "Test and debug deliberately",
+      "phase": "Engineering",
+      "prerequisites": "Weeks 1–13, especially work like a developer"
+    },
+    {
+      "goals": [
+        "Use a bounded regex rather than a vague pattern.",
+        "Handle dates and currency with explicit representations.",
+        "Produce a rejection report for malformed records."
+      ],
+      "sections": [
+        {
+          "title": "Validation is a contract",
+          "text": "A record can parse as JSON and still be invalid for your application. Validate required keys, types, allowed ranges, and normalization rules. In Python bool is a subclass of int, so type(value) is int can be useful when booleans must not count as quantities. Missing fields and explicit null need deliberate policies."
+        },
+        {
+          "title": "Patterns and parsing",
+          "text": "re.fullmatch checks an entire value against a pattern. Prefer ASCII ranges when your format requires ASCII digits or letters. A raw string such as r\"[0-9]{4}\" keeps backslashes for the regex engine. Regex is good for a defined text grammar; calendar validity and general HTML need appropriate parsers instead."
+        },
+        {
+          "title": "Dates and money",
+          "text": "Use date.fromisoformat for an agreed calendar format, and subtract dates to obtain timedeltas. A timestamp needs a timezone policy; use aware UTC values internally when measuring instants. Use integer cents or Decimal constructed from text for currency. Decide how to reject or round extra precision rather than inheriting binary-float artifacts."
+        },
+        {
+          "title": "Rejected data is still information",
+          "text": "Keep a row index and a clear reason when validation fails. Count every input in accepted, rejected, or duplicate categories so the report reconciles. Preserve the original source for repair. Error output should help someone fix a bad row without exposing unrelated private data."
+        }
+      ],
+      "worked": {
+        "code": "from datetime import date\nfrom decimal import Decimal\nprint((date(2024, 3, 1) - date(2024, 2, 28)).days)\nprint(int((Decimal(\"0.10\") + Decimal(\"0.20\")) * 100))",
+        "output": "2\n30",
+        "trace": [
+          "The date calculation handles the leap day rather than guessing month lengths.",
+          "The currency calculation parses decimal strings exactly before converting to cents.",
+          "Neither task needs manual string arithmetic."
+        ]
+      },
+      "mistakes": [
+        "Using a permissive pattern that accepts extra text.",
+        "Constructing Decimal from a binary float.",
+        "Discarding rejected records without a count or reason."
+      ],
+      "questions": [
+        "What is your invalid-record policy?",
+        "Is the value a date or an instant?",
+        "Why should True not count as one minute in this schema?"
+      ],
+      "lab": {
+        "title": "Import a deliberately messy dataset",
+        "steps": [
+          "Create valid records, missing fields, invalid types, a leap-day date, and a malformed identifier.",
+          "Write independent parsers for ticket id, date, and price.",
+          "Normalize only after validating types.",
+          "Write accepted and rejected outputs with row positions and reasons.",
+          "Keep money as cents and document timezone/date assumptions.",
+          "Test every rejection rule and reconcile input/output counts."
+        ],
+        "acceptance": [
+          "Accepted plus rejected rows equal the input count.",
+          "Invalid dates and types are reported predictably.",
+          "Currency output has no float rounding surprise.",
+          "The rejected report identifies how to repair a row."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "regex",
+        "dates",
+        "errors",
+        "csv"
+      ],
+      "week": 15,
+      "title": "Handle real-world data",
+      "phase": "Data",
+      "prerequisites": "Weeks 1–14, especially test and debug deliberately"
+    },
+    {
+      "goals": [
+        "Run SELECT, filtering, sorting, and grouping.",
+        "Join related tables and preserve missing matches when appropriate.",
+        "Bind values and use transactions for coherent updates."
+      ],
+      "sections": [
+        {
+          "title": "Rows, keys, and queries",
+          "text": "A relational table has named columns and rows. A primary key identifies a row; a foreign key relates it to another table. SELECT chooses columns and WHERE restricts input rows. ORDER BY is required when the caller expects a particular order. SQLite supports local file databases and in-memory databases; a connection is a resource that should be closed."
+        },
+        {
+          "title": "Group and join",
+          "text": "GROUP BY collects rows for aggregates such as SUM and COUNT. HAVING restricts resulting groups. An INNER JOIN returns matching relationships; a LEFT JOIN preserves each left row, including those without a match. Missing right values are NULL. COALESCE can provide an explicit replacement. Join multiplicity matters: joining several child records produces several rows before aggregation."
+        },
+        {
+          "title": "Parameters and transaction boundaries",
+          "text": "Use ? placeholders and a separate tuple of values rather than string interpolation. The one-value tuple is (value,), including the comma. Parameters represent values, not arbitrary table names. A transaction groups updates that must either all persist or all roll back. Enforce important consistency rules through constraints as well as application validation."
+        },
+        {
+          "title": "Persistence and performance",
+          "text": "An in-memory exercise checks query logic, while a file database survives a new process. Commit intended changes and test persistence. An index can improve lookups at the cost of storage and write work; inspect query behavior rather than indexing every column. A schema migration changes stored structure and needs a plan for existing records."
+        }
+      ],
+      "worked": {
+        "code": "import sqlite3\ncon = sqlite3.connect(\":memory:\")\ncon.execute(\"CREATE TABLE scores(name TEXT, points INTEGER)\")\ncon.executemany(\"INSERT INTO scores VALUES (?, ?)\", [(\"A\", 3), (\"B\", 8)])\nrows = con.execute(\"SELECT name FROM scores WHERE points >= ? ORDER BY name\", (5,)).fetchall()\nprint(rows)\ncon.close()",
+        "output": "[('B',)]",
+        "trace": [
+          "The schema gives names and points separate columns.",
+          "Values are inserted and filtered using bound parameters.",
+          "fetchall returns a list of row tuples, even when one selected column is present."
+        ]
+      },
+      "mistakes": [
+        "Concatenating untrusted values into SQL.",
+        "Assuming row order without ORDER BY.",
+        "Using INNER JOIN when zero-session games must remain in the report."
+      ],
+      "questions": [
+        "What changes when a join matches several child rows?",
+        "Why is (value,) different from (value)?",
+        "Which updates must commit together?"
+      ],
+      "lab": {
+        "title": "Persist the game library in SQLite",
+        "steps": [
+          "Create games and sessions tables with primary/foreign keys and a documented schema.",
+          "Add parameterized insert and search functions.",
+          "Implement a joined total report including games with zero sessions.",
+          "Test quotes and SQL-looking input as literal values.",
+          "Use a transaction for an operation that inserts related data.",
+          "Force a failure and verify rollback.",
+          "Close and reopen the file database to prove persistence."
+        ],
+        "acceptance": [
+          "Literal quote-containing titles work.",
+          "Reports include zero-session games and deterministic ordering.",
+          "A failed multi-step update leaves no partial result.",
+          "Tests use a temporary database and leave real data untouched."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "w3sql",
+        "sql"
+      ],
+      "week": 16,
+      "title": "Store and query data",
+      "phase": "Databases",
+      "prerequisites": "Weeks 1–15, especially handle real-world data"
+    },
+    {
+      "goals": [
+        "Explain requests, responses, and status codes.",
+        "Validate response shape, paginate, and bound retries.",
+        "Test client behavior with fixtures."
+      ],
+      "sections": [
+        {
+          "title": "The request/response boundary",
+          "text": "An HTTP request specifies a method, URL, headers, and sometimes a body. The response has a status, headers, and body. GET commonly retrieves a resource; POST commonly creates or processes one. A successful transport response does not prove the data has the schema you expect. Check the service’s contract before processing its JSON."
+        },
+        {
+          "title": "A reliable local client",
+          "text": "Use a maintained client such as Requests locally. Set timeouts and handle connection and HTTP errors. Requests timeout behavior is not a whole-operation stopwatch; it bounds waiting for relevant network activity. Decode JSON only when appropriate and validate the result. Build query parameters through the library rather than concatenating a user string containing &, spaces, or ?."
+        },
+        {
+          "title": "Pagination and retries",
+          "text": "An API may return a page and a next token. Bound the page count and detect a repeated token. Deduplicate through stable ids when the service can return overlaps. Retry only when the operation and error justify it, with a limit and backoff. A retryable read differs from a potentially duplicate write. Respect the service’s published rate-limit policy."
+        },
+        {
+          "title": "Offline tests before live calls",
+          "text": "A fake response lets tests cover 200, missing resource, malformed data, timeout, and a failing middle page without depending on live internet. The browser challenges operate on such fixtures. The local lab adds the real HTTP adapter. This keeps correctness checks reproducible and avoids mistaking a service outage for your algorithm’s bug."
+        }
+      ],
+      "worked": {
+        "code": "from urllib.parse import urlencode\nparams = {\"q\": \"Halo & Mario\", \"page\": 2}\nprint(\"https://example.com/search?\" + urlencode(params))",
+        "output": "https://example.com/search?q=Halo+%26+Mario&page=2",
+        "trace": [
+          "The query string contains two structured parameters.",
+          "The ampersand inside the search title becomes %26 so it is not treated as another parameter separator.",
+          "The base URL and parameter values remain distinct concerns."
+        ]
+      },
+      "mistakes": [
+        "Calling response.json() before considering an error response.",
+        "Leaving a retry loop unbounded.",
+        "Retrying a write without understanding duplicate-operation behavior."
+      ],
+      "questions": [
+        "What happens when page two fails?",
+        "Can your test exercise a timeout without waiting for the real network?",
+        "Which fields must you validate after JSON parsing?"
+      ],
+      "lab": {
+        "title": "Build an offline-first API client",
+        "steps": [
+          "Define a fixture response with items and a next token.",
+          "Implement transformation independently of the HTTP library.",
+          "Test success, error status, invalid JSON/schema, overlapping pages, and a repeated token.",
+          "Add a Requests adapter locally with explicit timeout handling.",
+          "Keep base URL and any secret token outside core logic and committed source.",
+          "Document rate limits and the retry policy.",
+          "Use the fixture mode as the default reproducible demo; optionally show one live request."
+        ],
+        "acceptance": [
+          "Fixture tests pass without a network.",
+          "Pagination and retries have hard limits.",
+          "A failed page produces a visible, documented outcome.",
+          "No credentials appear in source or logs."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "http",
+        "requests",
+        "files"
+      ],
+      "week": 17,
+      "title": "Talk to services",
+      "phase": "APIs",
+      "prerequisites": "Weeks 1–16, especially store and query data"
+    },
+    {
+      "goals": [
+        "Avoid shared mutable defaults.",
+        "Use instances, helpers, and modules with clear boundaries.",
+        "Distinguish a generator from a stored list."
+      ],
+      "sections": [
+        {
+          "title": "Functions and scope",
+          "text": "Parameters and local names belong to a function call. Defaults are created when a function is defined, so a default list may persist across calls. Use a None sentinel and construct fresh mutable state when needed. Keyword arguments improve clarity at call sites, and a docstring should describe meaning, errors, and side effects rather than merely repeat the function name."
+        },
+        {
+          "title": "Organize responsibilities",
+          "text": "Keep parsing, domain rules, storage, and presentation distinct. Small modules can expose a few documented functions or classes. Importing a module should not automatically run the application. Composition lets a service use a repository object; avoid deep inheritance trees when a small explicit dependency is enough. A dataclass can express a simple record, but does not replace input validation."
+        },
+        {
+          "title": "Iterables and generators",
+          "text": "A for loop can consume a list, range, file iterator, or generator. A generator uses yield to provide one value and pause until the next request. It can avoid retaining an entire intermediate collection. Once exhausted it does not restart itself; create a new iterator if needed. Streaming a file line by line can reduce memory while still requiring state for any aggregate you maintain."
+        },
+        {
+          "title": "Configuration and contracts",
+          "text": "Merge defaults, file settings, and explicit options according to a documented precedence. Preserve supplied zero and False values rather than using truthy fallbacks. Validate once after the merge. Keep a typed settings object separate from the loader so tests can provide configuration directly."
+        }
+      ],
+      "worked": {
+        "code": "def add_one(value, items=None):\n    if items is None:\n        items = []\n    return items + [value]\n\nprint(add_one(1))\nprint(add_one(2))",
+        "output": "[1]\n[2]",
+        "trace": [
+          "Each omitted items argument becomes a fresh list inside the call.",
+          "Concatenation returns a new list rather than changing a supplied list.",
+          "The second call has no hidden dependency on the first call’s history."
+        ]
+      },
+      "mistakes": [
+        "Putting [] or {} in a default argument unintentionally.",
+        "Using a generator twice and expecting the second pass to replay it.",
+        "Making a class merely to group unrelated functions."
+      ],
+      "questions": [
+        "Which state must be fresh per call or per instance?",
+        "Which module owns storage?",
+        "What does your public function promise about mutation?"
+      ],
+      "lab": {
+        "title": "Refactor without changing behavior",
+        "steps": [
+          "Choose an earlier CLI with a long main file.",
+          "Write regression tests for its public behavior.",
+          "Split parsing, core rules, storage, and presentation into modules.",
+          "Add an injectable repository or fetcher where I/O was hard-coded.",
+          "Use a validated settings record and document precedence.",
+          "Demonstrate a generator for streaming input only where it simplifies the design.",
+          "Run the same tests and compare the CLI output before and after."
+        ],
+        "acceptance": [
+          "Public behavior is preserved by regression tests.",
+          "Importing core modules performs no writes or prompts.",
+          "State is isolated across calls and instances.",
+          "A README explains the new module map."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "flow",
+        "modules",
+        "classes",
+        "dataclass",
+        "annotations"
+      ],
+      "week": 18,
+      "title": "Design maintainable Python",
+      "phase": "Engineering",
+      "prerequisites": "Weeks 1–17, especially talk to services"
+    },
+    {
+      "goals": [
+        "Recognize a recursive base case.",
+        "Use BFS for an unweighted shortest path.",
+        "Explain linked traversal and a priority queue."
+      ],
+      "sections": [
+        {
+          "title": "Data structure vocabulary",
+          "text": "An array-like sequence supports position-based access; a linked structure follows references. A graph consists of vertices and edges, represented here by a dictionary of neighbor lists. A tree is a special connected acyclic structure; recursive traversal can be natural but still requires a stopping case. Know the operations and costs rather than memorizing a diagram."
+        },
+        {
+          "title": "Recursion and traversal",
+          "text": "A recursive solution has a base case and a smaller subproblem. Trace one call chain and its returns. Python has a finite recursion depth, so deep input may require a stack-based version. A linked-list traversal follows next until None; reversing a chain requires preserving the next reference before overwriting it."
+        },
+        {
+          "title": "Queues and graph search",
+          "text": "BFS uses a first-in, first-out queue and visits an unweighted graph by increasing path length. collections.deque supports efficient popleft. Mark a node seen when enqueuing it so cycles do not cause repeated work. With adjacency lists the usual traversal work is O(V + E), where V is visited vertices and E is examined edges. Weighted shortest routes need a different algorithm."
+        },
+        {
+          "title": "Priority and pattern selection",
+          "text": "A heap makes the smallest priority available without fully sorting on every insertion. Include a sequence number to preserve a tie order. Sorting once may be simpler for a static batch; a heap becomes useful when work arrives dynamically. For interviews, learn to explain why a stack, queue, map, or heap fits the behavior, and practice unfamiliar variations."
+        }
+      ],
+      "worked": {
+        "code": "from collections import deque\nqueue = deque([(\"start\", 0)])\nseen = {\"start\"}\ngraph = {\"start\": [\"goal\"]}\nwhile queue:\n    node, distance = queue.popleft()\n    print(node, distance)\n    for neighbor in graph.get(node, []):\n        if neighbor not in seen:\n            seen.add(neighbor)\n            queue.append((neighbor, distance + 1))",
+        "output": "start 0\ngoal 1",
+        "trace": [
+          "The start node enters the queue with distance 0.",
+          "Its neighbor is marked seen and queued at distance 1.",
+          "The queue processes the neighbor after all earlier entries; the empty neighbor list ends the traversal."
+        ]
+      },
+      "mistakes": [
+        "Using BFS distances for weighted edges.",
+        "Recursing without progress toward a base case.",
+        "Reversing a link before saving the old next reference."
+      ],
+      "questions": [
+        "What are V and E in your graph?",
+        "When is sorting simpler than a heap?",
+        "How does a queue differ from a stack?"
+      ],
+      "lab": {
+        "title": "Find a path through your dungeon",
+        "steps": [
+          "Represent walkable map cells as an unweighted graph.",
+          "Implement BFS returning both distance and a reconstructed route.",
+          "Test a cycle, an unreachable treasure, and start equal to goal.",
+          "Implement one nested-data traversal recursively and with an explicit stack.",
+          "Build and reverse a small linked chain with a Node class.",
+          "Explain operation costs and choose one unfamiliar variation to solve."
+        ],
+        "acceptance": [
+          "The route contains valid adjacent moves.",
+          "The shortest unweighted distance matches a hand-worked example.",
+          "Cycles terminate without repeated exploration.",
+          "You can draw linked references and explain the heap tie policy."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "containers",
+        "heap",
+        "flow",
+        "collections"
+      ],
+      "week": 19,
+      "title": "Broaden your problem-solving toolkit",
+      "phase": "Interviews",
+      "prerequisites": "Weeks 1–18, especially design maintainable python"
+    },
+    {
+      "goals": [
+        "Wrap tested domain behavior in a small HTTP service.",
+        "Validate inputs and distinguish missing from supplied fields.",
+        "Enforce authorization before changing resources."
+      ],
+      "sections": [
+        {
+          "title": "A thin HTTP layer",
+          "text": "A backend endpoint should translate request inputs into domain inputs, call tested logic, and translate the result into an HTTP response. Keep storage and business rules usable without the web framework. FastAPI is one option for a small local service; learn the HTTP contract so you can later work with other frameworks too."
+        },
+        {
+          "title": "Create, list, and update",
+          "text": "Document routes, body schema, error format, and result ordering. Creation commonly returns 201; a missing resource may return 404; invalid input needs a consistent validation response. Pagination should define limits and ordering. A partial update distinguishes a missing field from a supplied False or null. Apply an allowlist of editable fields and validate the merged state."
+        },
+        {
+          "title": "Identity and access",
+          "text": "Authentication asks who the caller is; authorization asks whether that caller may perform this operation on this resource. Check access server-side rather than trusting a user id sent in a request body. Resource ids should not grant access by themselves. The rule exercises are not a complete authentication system; use maintained identity tooling when building a real deployment."
+        },
+        {
+          "title": "Local service tests",
+          "text": "Test both the domain core and the route boundary. Use a temporary repository and fake authenticated user in endpoint tests. Verify validation failures, missing ids, unauthorized updates, pagination, and normal operations. Keep public response fields explicit so internal notes or tokens do not leak through automatic serialization."
+        }
+      ],
+      "worked": {
+        "code": "def apply_edit(record, changes):\n    result = record.copy()\n    for key in (\"title\", \"completed\"):\n        if key in changes:\n            result[key] = changes[key]\n    return result\n\nprint(apply_edit({\"id\": 1, \"completed\": True}, {\"id\": 9, \"completed\": False}))",
+        "output": "{'id': 1, 'completed': False}",
+        "trace": [
+          "The allowlist excludes id, so it stays 1.",
+          "Presence testing retains an explicitly supplied False.",
+          "The new dictionary can be validated before storage; the original was not mutated."
+        ]
+      },
+      "mistakes": [
+        "Mixing business rules into an untestable route.",
+        "Treating a request’s user_id as proof of identity.",
+        "Applying every supplied field directly to stored data."
+      ],
+      "questions": [
+        "Which layer validates a request?",
+        "What distinguishes an omitted field from False?",
+        "Where is ownership checked before an update?"
+      ],
+      "lab": {
+        "title": "Build a local game-library API",
+        "steps": [
+          "Install FastAPI locally and create GET /games and POST /games.",
+          "Reuse tested core functions and a SQLite repository.",
+          "Add typed request/response models and explicit public fields.",
+          "Implement a bounded list page and an update route.",
+          "Test invalid, missing, unauthorized, and successful requests using a fake identity boundary.",
+          "Run the service locally and document example requests and responses.",
+          "Document that authentication is a practice boundary unless integrated with a real provider."
+        ],
+        "acceptance": [
+          "Routes return the documented schema and status.",
+          "Invalid or unauthorized updates do not change storage.",
+          "Endpoint tests use temporary data.",
+          "The README includes install, run, test, and sample request commands."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "api",
+        "http",
+        "sql",
+        "pytest"
+      ],
+      "week": 20,
+      "title": "Build a small backend",
+      "phase": "Backend",
+      "prerequisites": "Weeks 1–19, especially broaden your problem-solving toolkit"
+    },
+    {
+      "goals": [
+        "Make imports repeatable and observable.",
+        "Keep filename and schema validation at boundaries.",
+        "Reconcile accepted, rejected, and duplicate data."
+      ],
+      "sections": [
+        {
+          "title": "Observability with a purpose",
+          "text": "A useful log explains an event, relevant counters, and context such as a run id. Use severity to distinguish ordinary progress from partial rejection or failure. Avoid logging entire payloads or credentials. A structured event dictionary can be tested before deciding how to format or send logs."
+        },
+        {
+          "title": "Idempotent imports",
+          "text": "Stable ids and a documented upsert policy prevent reruns from duplicating data. A unique database constraint reinforces the rule. Decide whether a repeated id replaces, merges, or rejects the record. Test both repeats within one batch and re-importing the entire file. A partial failure must not leave a misleading success summary."
+        },
+        {
+          "title": "File and write boundaries",
+          "text": "Accept only the filename forms your tool needs. A lexical allowlist helps reject traversal components, but a real write must still stay in a controlled directory and consider resolved paths and symlinks. Use temporary test directories. For important output files, consider writing a temporary file and replacing the destination after the full result is ready."
+        },
+        {
+          "title": "Reconciliation and recovery",
+          "text": "A batch report should account for every input record. Separate invalid rows from extra valid duplicate ids. Keep original input and a rejection report for repair. Transactions can ensure related database changes are coherent, while a retry policy must avoid duplicating already-applied work. Demonstrate reruns and a forced failure rather than assuming recovery works."
+        }
+      ],
+      "worked": {
+        "code": "def latest_by_id(records):\n    by_id = {}\n    for row in records:\n        by_id[row[\"id\"]] = row.copy()\n    return [by_id[key] for key in sorted(by_id)]\n\nprint(latest_by_id([{ \"id\": 1, \"value\": 2}, {\"id\": 1, \"value\": 5}]))",
+        "output": "[{'id': 1, 'value': 5}]",
+        "trace": [
+          "Each id selects one dictionary slot.",
+          "The second record replaces the earlier record under the documented latest-wins rule.",
+          "Sorting keys makes output deterministic regardless of incidental dictionary history."
+        ]
+      },
+      "mistakes": [
+        "Appending everything again on each rerun.",
+        "Reporting success while silently losing rejected rows.",
+        "Assuming extension checks alone make an arbitrary path safe."
+      ],
+      "questions": [
+        "Does accepted + rejected + duplicates equal input rows?",
+        "What happens after a mid-import failure?",
+        "Which information belongs in logs, and which should be excluded?"
+      ],
+      "lab": {
+        "title": "Dependable batch importer",
+        "steps": [
+          "Create a synthetic file with valid, invalid, and duplicate records.",
+          "Add --dry-run and produce a proposed import summary.",
+          "Validate schema and filenames before any write.",
+          "Persist through a transaction and a unique-id/upsert policy.",
+          "Write structured log events and a rejection report.",
+          "Import the same file twice and compare counts and results.",
+          "Force a failure halfway through and verify the documented recovery behavior."
+        ],
+        "acceptance": [
+          "Every row is accounted for.",
+          "Reruns do not create unintended duplicates.",
+          "Dry runs perform no writes.",
+          "A failure does not report a false complete success."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "logging",
+        "paths",
+        "sql",
+        "args"
+      ],
+      "week": 21,
+      "title": "Make automation dependable",
+      "phase": "Automation",
+      "prerequisites": "Weeks 1–20, especially build a small backend"
+    },
+    {
+      "goals": [
+        "Map an unfamiliar feature path before editing it.",
+        "Preserve compatibility while adapting a schema.",
+        "Review and report changes with concrete evidence."
+      ],
+      "sections": [
+        {
+          "title": "Read before changing",
+          "text": "Run the project and tests, identify its entry point, and follow one representative operation. Use search to find a symbol and its callers. Read the relevant tests and input fixture. Write a short map of boundary, core, storage, and output. If something looks odd, confirm the contract before calling it a bug."
+        },
+        {
+          "title": "A focused maintenance change",
+          "text": "Start with a failing example or a clear new acceptance case. Make a small coherent change, then run related and broader tests. Keep refactoring and behavior changes understandable in the diff. A schema adapter can translate older records; prefer an explicit version and preserve the distinction between a missing field and a current value of zero."
+        },
+        {
+          "title": "Review and collaboration",
+          "text": "A practice PR should state the user-visible problem, new behavior, test commands, and known limitations. Review your own diff first. Respond to comments by checking the underlying behavior rather than defending a particular line. For a conflict, understand both intended changes, combine them deliberately, and rerun tests after resolution."
+        },
+        {
+          "title": "Failure triage",
+          "text": "Compare previously failing tests with current failures to distinguish new regressions, resolved issues, and unchanged failures. A status report should separate evidence from a hypothesis. Include a minimal reproduction and the affected scope, not just a screenshot saying it broke."
+        }
+      ],
+      "worked": {
+        "code": "old = {\"test_a\", \"test_b\"}\nnew = {\"test_b\", \"test_c\"}\nprint(sorted(new - old))\nprint(sorted(old - new))\nprint(sorted(old & new))",
+        "output": "['test_c']\n['test_a']\n['test_b']",
+        "trace": [
+          "Set difference identifies a new failure.",
+          "The reverse difference identifies a resolved failure.",
+          "Intersection identifies a failure present in both runs, requiring a separate investigation from the new regression."
+        ]
+      },
+      "mistakes": [
+        "Rewriting a module before understanding its public behavior.",
+        "Dropping legacy zero values through a truthy fallback.",
+        "Resolving merge conflicts without rerunning tests."
+      ],
+      "questions": [
+        "Which tests describe the current contract?",
+        "What is the smallest evidence for the bug?",
+        "What changes are structural versus behavioral?"
+      ],
+      "lab": {
+        "title": "Complete a maintenance ticket",
+        "steps": [
+          "Use an earlier project or a small openly available repository you can run.",
+          "Write a code map and reproduce a specific bug.",
+          "Create a branch and a regression test.",
+          "Implement an adapter or focused fix without unrelated cleanup.",
+          "Review the diff and run the complete relevant test suite.",
+          "Write a PR description and a short handoff with reproduction steps.",
+          "Create and resolve a practice conflict in your own repo, then verify behavior again."
+        ],
+        "acceptance": [
+          "The bug is reproducible before the change.",
+          "Tests prove the corrected behavior and retained compatibility.",
+          "The diff is focused and understandable.",
+          "The handoff distinguishes known evidence and remaining uncertainty."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "git",
+        "github",
+        "modules",
+        "pytest"
+      ],
+      "week": 22,
+      "title": "Maintain and collaborate",
+      "phase": "Team practice",
+      "prerequisites": "Weeks 1–21, especially make automation dependable"
+    },
+    {
+      "goals": [
+        "Install, run, and test from a clean environment.",
+        "Provide a working CLI and small API with documentation.",
+        "Automate meaningful tests through CI."
+      ],
+      "sections": [
+        {
+          "title": "A useful portfolio scope",
+          "text": "Choose a real but small workflow: import a game library, search it, summarize playtime, and export a report. State acceptance criteria and finish them before adding more features. Synthetic sample data lets another person reproduce the demo. Explain the problem the tool solves and the decisions you made, not merely which libraries you imported."
+        },
+        {
+          "title": "A clean handoff",
+          "text": "A README should include the supported runtime, environment setup, dependency installation, commands, sample input/output, tests, and limitations. Verify those instructions from a new environment. Keep persistent database files and generated reports separate from source and committed fixtures. Use a clear repository structure a reviewer can navigate."
+        },
+        {
+          "title": "Continuous integration",
+          "text": "CI runs checks in a fresh environment on changes. Install declared dependencies and run the same test command used locally. Include only checks with a purpose; a green badge cannot compensate for tests that never check a real boundary. Prove the workflow by introducing a deliberate failing test on a branch and observing failure before restoring it."
+        },
+        {
+          "title": "Demonstrate and explain",
+          "text": "Record a short demo of the core workflow, then explain one design tradeoff and one bug you fixed. A ready-to-show project has a working sample, reproducible tests, and an honest list of limitations. If you cannot explain a generated component, return to it before presenting it as evidence of your own understanding."
+        }
+      ],
+      "worked": {
+        "code": "def is_ready(evidence):\n    required = (\"tests\", \"docs\", \"clean_install\", \"demo\")\n    return all(evidence.get(key) is True for key in required)\n\nprint(is_ready({\"tests\": True, \"docs\": True, \"clean_install\": True, \"demo\": True}))",
+        "output": "True",
+        "trace": [
+          "Every required evidence key must contain the actual bool True.",
+          "Missing keys fail through get returning None.",
+          "The real portfolio rubric requires your evidence notes; this function only models the decision."
+        ]
+      },
+      "mistakes": [
+        "Adding a CI badge before running a meaningful suite.",
+        "Claiming clean setup without testing the README.",
+        "Shipping a broad feature list with no complete end-to-end workflow."
+      ],
+      "questions": [
+        "Could someone run the sample from a new folder?",
+        "Which tests catch actual boundary failures?",
+        "What tradeoff can you explain without reading a script?"
+      ],
+      "lab": {
+        "title": "Ship two demonstrable workflows",
+        "steps": [
+          "Finish the CLI import/search/report/export workflow.",
+          "Finish a small API or automation workflow using the same tested core.",
+          "Add real example input/output and a clear module map.",
+          "Create a fresh .venv and follow the README from scratch.",
+          "Run tests in a GitHub Actions workflow.",
+          "Introduce and repair a controlled failing test to verify CI.",
+          "Record a short demo and one design/bug-fix explanation."
+        ],
+        "acceptance": [
+          "Clean installation is verified with commands.",
+          "CLI and API/automation samples reproduce documented output.",
+          "Tests run locally and in CI.",
+          "Known limitations and help used are described honestly."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "ci",
+        "github",
+        "venv",
+        "api",
+        "pytest"
+      ],
+      "week": 23,
+      "title": "Ship and verify your work",
+      "phase": "Portfolio",
+      "prerequisites": "Weeks 1–22, especially maintain and collaborate"
+    },
+    {
+      "goals": [
+        "Attempt an unseen problem and explain its cost.",
+        "Complete an existing-code change with tests.",
+        "Choose the next practice target from evidence."
+      ],
+      "sections": [
+        {
+          "title": "Technical interview practice",
+          "text": "Clarify inputs, constraints, missing values, ordering, and ties. Work through a tiny example, describe a straightforward correct approach, and then improve repeated work if necessary. Explain why the algorithm works and what n means in its complexity. Do not treat completing a memorized list as a substitute for reasoning about new constraints."
+        },
+        {
+          "title": "A practical take-home",
+          "text": "Timebox a small task in a clean repo. Write acceptance examples, implement the smallest complete workflow, add tests, and document setup. Demonstrate normal, empty, invalid, and boundary behavior. Include a short handoff that explains what is complete and what remains. Avoid spending the whole time on appearance or infrastructure before core behavior works."
+        },
+        {
+          "title": "Communicate your reasoning",
+          "text": "Practice a two-minute project explanation: problem, approach, one tradeoff, one failure you debugged, and verification. If you do not know a library detail, explain how you would look it up and test the result. Useful entry-level evidence includes asking focused questions and making a reliable small change, not pretending to know every system."
+        },
+        {
+          "title": "An ongoing readiness rubric",
+          "text": "Use the readiness page to record actual evidence for Python, testing, Git, SQL, HTTP, maintenance, and shipped projects. These are self-reported milestones, not a certification or a hiring prediction. Repeat a new assessment after practice. Add role-specific skills when a job description calls for them; frontend, data engineering, and game engines each need further specialization."
+        }
+      ],
+      "worked": {
+        "code": "def ranked_names(records, k):\n    if k <= 0:\n        return []\n    ordered = sorted(records, key=lambda row: (-row[\"score\"], row[\"name\"]))\n    return [row[\"name\"] for row in ordered[:k]]\n\nprint(ranked_names([{ \"name\": \"B\", \"score\": 4}, {\"name\": \"A\", \"score\": 4}], 2))",
+        "output": "['A', 'B']",
+        "trace": [
+          "Clarify the tie rule before choosing the key.",
+          "The key sorts by descending score, then ascending name.",
+          "For n records this approach sorts in O(n log n) time and stores an ordered result; a dynamic top-k task might justify a different structure."
+        ]
+      },
+      "mistakes": [
+        "Coding before clarifying ambiguous requirements.",
+        "Calling a curriculum score a guarantee of employment.",
+        "Using a complete generated answer without being able to debug or adapt it."
+      ],
+      "questions": [
+        "Can you solve a changed requirement from a blank file?",
+        "What evidence shows you can fix an unfamiliar bug?",
+        "Which role-specific skill should you learn next?"
+      ],
+      "lab": {
+        "title": "Complete an honest entry-level rehearsal",
+        "steps": [
+          "Choose an unfamiliar small task and record the spec and assumptions.",
+          "Spend 60–90 minutes implementing, testing, and documenting a coherent version.",
+          "Complete an existing-code bug fix using a failing regression test.",
+          "Write three SQL queries including a join and an aggregate.",
+          "Create a focused Git branch and practice PR.",
+          "Explain one project and one complexity tradeoff aloud.",
+          "Use evidence in the readiness rubric to select next week’s weakest skill."
+        ],
+        "acceptance": [
+          "Unseen implementation matches the stated acceptance cases.",
+          "The bug fix is demonstrated by a failing-then-passing test.",
+          "SQL, Git, and project handoff work independently.",
+          "Your evidence notes identify remaining gaps and outside help."
+        ],
+        "deliverables": [
+          "core.py with your implementation",
+          "test_core.py with normal, empty, boundary, and invalid cases where applicable",
+          "README.md with run commands, sample input/output, decisions, and limitations",
+          "Evidence note: what you ran, what failed, what you changed, and help used"
+        ]
+      },
+      "sources": [
+        "cs50",
+        "mit",
+        "pytest",
+        "git",
+        "sql"
+      ],
+      "week": 24,
+      "title": "Practice the entry-level transition",
+      "phase": "Readiness",
+      "prerequisites": "Weeks 1–23, especially ship and verify your work"
+    }
+  ],
+  "sources": {
+    "w3": {
+      "title": "W3Schools Python syllabus",
+      "url": "https://www.w3schools.com/python/python_syllabus.asp",
+      "purpose": "Beginner-friendly topic map and optional extra exercises."
+    },
+    "w3vars": {
+      "title": "W3Schools: variables",
+      "url": "https://www.w3schools.com/python/python_variables.asp",
+      "purpose": "A second explanation of naming and assigning values."
+    },
+    "w3func": {
+      "title": "W3Schools: functions",
+      "url": "https://www.w3schools.com/python/python_functions.asp",
+      "purpose": "Additional examples of parameters and returned results."
+    },
+    "python": {
+      "title": "Official Python tutorial",
+      "url": "https://docs.python.org/3/tutorial/",
+      "purpose": "Language reference path; use the beginner explanations in Forge first."
+    },
+    "values": {
+      "title": "Python: numbers, strings, and lists",
+      "url": "https://docs.python.org/3/tutorial/introduction.html",
+      "purpose": "Check the behavior of basic values and sequence operations."
+    },
+    "flow": {
+      "title": "Python: control flow and functions",
+      "url": "https://docs.python.org/3/tutorial/controlflow.html",
+      "purpose": "Reference for branches, loops, parameters, and functions."
+    },
+    "collections": {
+      "title": "Python: data structures",
+      "url": "https://docs.python.org/3/tutorial/datastructures.html",
+      "purpose": "Lists, tuples, sets, dictionaries, sorting, and comprehensions."
+    },
+    "modules": {
+      "title": "Python: modules",
+      "url": "https://docs.python.org/3/tutorial/modules.html",
+      "purpose": "How imports and a program entry point work."
+    },
+    "files": {
+      "title": "Python: input and output",
+      "url": "https://docs.python.org/3/tutorial/inputoutput.html",
+      "purpose": "Formatting, file context managers, and JSON."
+    },
+    "errors": {
+      "title": "Python: errors and exceptions",
+      "url": "https://docs.python.org/3/tutorial/errors.html",
+      "purpose": "How to read, raise, and handle expected failures."
+    },
+    "classes": {
+      "title": "Python: classes",
+      "url": "https://docs.python.org/3/tutorial/classes.html",
+      "purpose": "Objects, attributes, methods, scope, and inheritance."
+    },
+    "venv": {
+      "title": "Python: virtual environments",
+      "url": "https://docs.python.org/3/tutorial/venv.html",
+      "purpose": "Project-specific environments and package installation."
+    },
+    "cs50": {
+      "title": "Harvard CS50P syllabus",
+      "url": "https://cs50.harvard.edu/python/syllabus/",
+      "purpose": "Optional lecture path spanning foundations, tests, files, regex, and objects."
+    },
+    "mit": {
+      "title": "MIT Missing Semester",
+      "url": "https://missing.csail.mit.edu/2026/",
+      "purpose": "Optional deeper lessons on shell tools, Git, and debugging."
+    },
+    "vscode": {
+      "title": "VS Code: Python setup",
+      "url": "https://code.visualstudio.com/docs/python/python-tutorial",
+      "purpose": "Choose the interpreter and run/debug a local project."
+    },
+    "pytest": {
+      "title": "pytest: getting started",
+      "url": "https://docs.pytest.org/en/stable/getting-started.html",
+      "purpose": "Write tests and understand failure reports."
+    },
+    "unittest": {
+      "title": "Python: unittest",
+      "url": "https://docs.python.org/3/library/unittest.html",
+      "purpose": "Standard-library tests used in the downloadable lab kits."
+    },
+    "git": {
+      "title": "Pro Git: recording changes",
+      "url": "https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository",
+      "purpose": "Working files, staging, diffs, and commits."
+    },
+    "github": {
+      "title": "GitHub flow",
+      "url": "https://docs.github.com/en/get-started/using-github/github-flow",
+      "purpose": "Branches, pull requests, review, and merging."
+    },
+    "sql": {
+      "title": "Python: sqlite3",
+      "url": "https://docs.python.org/3/library/sqlite3.html",
+      "purpose": "Connections, queries, transactions, and bound parameters."
+    },
+    "w3sql": {
+      "title": "W3Schools: SQL introduction",
+      "url": "https://www.w3schools.com/sql/sql_intro.asp",
+      "purpose": "A beginner introduction to relational query vocabulary."
+    },
+    "http": {
+      "title": "MDN: HTTP overview",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview",
+      "purpose": "Requests, responses, methods, and headers."
+    },
+    "requests": {
+      "title": "Requests quickstart",
+      "url": "https://requests.readthedocs.io/en/latest/user/quickstart/",
+      "purpose": "Local HTTP clients, response handling, and timeout behavior."
+    },
+    "api": {
+      "title": "FastAPI: first steps",
+      "url": "https://fastapi.tiangolo.com/tutorial/first-steps/",
+      "purpose": "A small local HTTP service built around Python functions."
+    },
+    "args": {
+      "title": "Python: argparse",
+      "url": "https://docs.python.org/3/library/argparse.html",
+      "purpose": "Define options, types, and help for a CLI."
+    },
+    "logging": {
+      "title": "Python: logging",
+      "url": "https://docs.python.org/3/library/logging.html",
+      "purpose": "Structured application diagnostics with severity levels."
+    },
+    "regex": {
+      "title": "Python: regular expressions",
+      "url": "https://docs.python.org/3/library/re.html",
+      "purpose": "Pattern syntax and full-match validation."
+    },
+    "dates": {
+      "title": "Python: datetime",
+      "url": "https://docs.python.org/3/library/datetime.html",
+      "purpose": "Calendar dates, timedeltas, and aware timestamps."
+    },
+    "paths": {
+      "title": "Python: pathlib",
+      "url": "https://docs.python.org/3/library/pathlib.html",
+      "purpose": "Pure path calculations versus actual filesystem operations."
+    },
+    "csv": {
+      "title": "Python: csv",
+      "url": "https://docs.python.org/3/library/csv.html",
+      "purpose": "Read and write quoted CSV data correctly."
+    },
+    "containers": {
+      "title": "Python: collections",
+      "url": "https://docs.python.org/3/library/collections.html",
+      "purpose": "Counter, deque, and other useful container types."
+    },
+    "heap": {
+      "title": "Python: heapq",
+      "url": "https://docs.python.org/3/library/heapq.html",
+      "purpose": "Min-heap operations for priority queues."
+    },
+    "ci": {
+      "title": "GitHub Actions: Python builds and tests",
+      "url": "https://docs.github.com/en/actions/tutorials/build-and-test-code/python",
+      "purpose": "Run project checks in a clean automated environment."
+    },
+    "dataclass": {
+      "title": "Python: dataclasses",
+      "url": "https://docs.python.org/3/library/dataclasses.html",
+      "purpose": "Define small data objects with generated initialization."
+    },
+    "annotations": {
+      "title": "Python: typing",
+      "url": "https://docs.python.org/3/library/typing.html",
+      "purpose": "Communicate interfaces through annotations."
+    }
+  },
+  "questlines": {
+    "grind": {
+      "title": "Practice grind",
+      "text": "Fundamentals stick through many repetitions, not one good attempt. Each drill here is small, aimed at a single idea from that week's chapter. Aim to solve each one with no hints in under 15 minutes.\n\nIf a drill takes much longer, that's useful information: go back to the chapter's plain-English section, then try again tomorrow. Speed comes later; accuracy comes first."
+    },
+    "bugs": {
+      "title": "Bug hunts",
+      "text": "Each quest gives you code that looks reasonable but is wrong. Your job is to find the bug and fix it with the smallest possible change. This is the skill that matters most now that AI writes so much code: someone has to check it.\n\nThe method:\n1. Run the checks first, without changing anything. Find the failing case.\n2. Trace the code by hand with that exact input, writing down each variable.\n3. Stop at the first line where reality differs from what the code should do. Name the bug in one sentence in your notes.\n4. Fix only that, then rerun everything.\n\nResist rewriting the whole function. In a real job, the smallest correct fix is the one that gets approved.",
+      "code": "Common bug families you'll meet:\n  off-by-one        > vs >=, range(n) vs range(n + 1)\n  wrong default     .get(key, 0) when 0 is a real value\n  aliasing          b = a does not copy a list or dict\n  early return      return inside a loop's else branch\n  order             checking after adding instead of before\n  min/max swap      'at least 0' means max(0, x)"
+    },
+    "sql": {
+      "title": "SQL",
+      "text": "SQL is how you ask a database questions. It's what data and BI roles test first, and you'll use it in almost any engineering job. These quests use a small game-library database with three tables: players, games, and sessions (who played what, for how long, and when).\n\nYou write a single SELECT statement. Forge runs it against two different datasets and compares your rows (including their order) with the expected answer, so a query has to be truly correct, not just right for one set of data.\n\nA query reads in this order, even though you write SELECT first: FROM (which tables) → JOIN (connect them) → WHERE (filter rows) → GROUP BY (make groups) → HAVING (filter groups) → SELECT (pick columns) → ORDER BY (sort). When a query confuses you, read it in that order.",
+      "code": "SELECT g.title, SUM(s.minutes) AS total      -- 6. pick columns\nFROM sessions AS s                            -- 1. start here\nJOIN games AS g ON g.id = s.game_id           -- 2. connect tables\nWHERE s.played_on >= '2026-10-01'             -- 3. filter rows\nGROUP BY g.id                                 -- 4. one row per game\nHAVING SUM(s.minutes) > 60                    -- 5. filter groups\nORDER BY total DESC, g.title;                 -- 7. sort"
+    },
+    "interview": {
+      "title": "Interview gauntlet",
+      "text": "These are classic entry-level interview problems. Treat each one like a real interview:\n1. Restate the problem and ask yourself about edge cases (empty input, duplicates, negatives).\n2. Describe a brute-force solution, even if it's slow.\n3. Improve it, and say why it's faster.\n4. Code it, then test it on a small example out loud.\n5. State the time and space complexity.\n\nAfter you clear one, come back in a few days and solve it from a blank file while talking out loud. Recall under light pressure is what interviews actually measure."
+    },
+    "hardware": {
+      "title": "Hardware lab",
+      "text": "These quests are the software side of embedded work: turning raw sensor readings into decisions. They use the same ideas as real sensor projects (barometric pressure and GPS) and run right here in the browser.\n\nTo try the real thing, get a Raspberry Pi Pico (or Pico W) starter kit with a breadboard, jumper wires, a push button, an LED, and a BMP280 barometric sensor (roughly $30–50 total). Install the MicroPython firmware, use the Thonny editor, and build in this order:\n1. Blink the LED. Then read the button and light the LED while it's pressed.\n2. Count button presses using your debounce logic from these quests.\n3. Read the BMP280 over I2C and print pressure every second.\n4. Convert pressure to altitude with your formula, smooth it with your moving average, and drive the LED as an alarm with hysteresis.\n\nWrite every line yourself. If you lose track of time doing this, embedded or test engineering may be your direction.",
+      "code": "# MicroPython on a Pico: blink the onboard LED\nfrom machine import Pin\nimport time\n\nled = Pin(\"LED\", Pin.OUT)\nwhile True:\n    led.toggle()\n    time.sleep(0.5)"
+    }
+  }
+}

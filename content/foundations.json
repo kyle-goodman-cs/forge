@@ -1,0 +1,2495 @@
+{
+  "weeks": [
+    {
+      "title": "Start small",
+      "subtitle": "Values, variables, and decisions",
+      "phase": "Foundations"
+    },
+    {
+      "title": "Make it repeatable",
+      "subtitle": "Loops, strings, and small functions",
+      "phase": "Foundations"
+    },
+    {
+      "title": "Think in collections",
+      "subtitle": "Lists, dictionaries, and sets",
+      "phase": "Foundations"
+    },
+    {
+      "title": "Build a game engine",
+      "subtitle": "State, decomposition, and testing",
+      "phase": "Games"
+    },
+    {
+      "title": "Handle messy inputs",
+      "subtitle": "Validation, exceptions, and debugging",
+      "phase": "Automation"
+    },
+    {
+      "title": "Work with real data",
+      "subtitle": "Paths, JSON, CSV, and clean records",
+      "phase": "Automation"
+    },
+    {
+      "title": "Automate with care",
+      "subtitle": "Pure planning before file changes",
+      "phase": "Automation"
+    },
+    {
+      "title": "Your first interview toolkit",
+      "subtitle": "Search, counting, and complexity",
+      "phase": "Interviews"
+    },
+    {
+      "title": "Spot useful patterns",
+      "subtitle": "Two pointers, stacks, and windows",
+      "phase": "Interviews"
+    },
+    {
+      "title": "Make code maintainable",
+      "subtitle": "Classes, interfaces, and invariants",
+      "phase": "Projects"
+    },
+    {
+      "title": "Ship a useful tool",
+      "subtitle": "A game-library organizer",
+      "phase": "Projects"
+    },
+    {
+      "title": "Prove it to yourself",
+      "subtitle": "Independent builds and a next step",
+      "phase": "Projects"
+    }
+  ],
+  "lessons": [
+    {
+      "id": 1,
+      "title": "Your first small win",
+      "concept": "A variable names a value. A function takes inputs and returns a result. return sends a value back; print only displays it. Python uses indentation to group the body of a function.",
+      "example": "def coins_after_pickup(coins):\n    return coins + 5",
+      "task": "Write add_xp(current, earned). Return the total XP after earning more. Do not print the result.",
+      "name": "add_xp",
+      "args": "current, earned",
+      "solution": "def add_xp(current, earned):\n    return current + earned\n",
+      "cases": [
+        {
+          "args": [
+            20,
+            15
+          ],
+          "expected": 35
+        },
+        {
+          "args": [
+            0,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            99,
+            1
+          ],
+          "expected": 100
+        }
+      ],
+      "hints": [
+        "Which arithmetic operation combines two amounts?",
+        "Use both inputs in an addition, then return the result."
+      ],
+      "extension": "Add a bonus input with a default of 0, and try calling the function with two and three arguments.",
+      "week": 1,
+      "session": 1,
+      "phase": "Foundations",
+      "checkpoint": false,
+      "starter": "def add_xp(current, earned):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 2,
+      "title": "Turn numbers into decisions",
+      "concept": "Comparisons produce True or False. An if branch runs only when its condition is true. Use >= when the boundary value should count.",
+      "example": "def is_full(health):\n    return health >= 100",
+      "task": "Write can_buy(coins, price). Return True if the player can afford the item, including when the amounts are equal.",
+      "name": "can_buy",
+      "args": "coins, price",
+      "solution": "def can_buy(coins, price):\n    return coins >= price\n",
+      "cases": [
+        {
+          "args": [
+            10,
+            10
+          ],
+          "expected": true
+        },
+        {
+          "args": [
+            9,
+            10
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            0,
+            0
+          ],
+          "expected": true
+        }
+      ],
+      "hints": [
+        "Consider the equal case before choosing a comparison.",
+        "coins needs to be greater than or equal to price."
+      ],
+      "extension": "Return the coins remaining after purchase in a separate function. Decide how to represent an unaffordable purchase.",
+      "week": 1,
+      "session": 2,
+      "phase": "Foundations",
+      "checkpoint": false,
+      "starter": "def can_buy(coins, price):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 3,
+      "title": "Rules with boundaries",
+      "concept": "Use if, elif, and else for mutually exclusive outcomes. Put more specific conditions before general ones. A return exits the function immediately.",
+      "example": "def temperature_label(t):\n    if t < 0:\n        return \"freezing\"\n    return \"above freezing\"",
+      "task": "Write health_label(hp): return \"down\" for hp <= 0, \"low\" for 1\u201325, and \"ready\" for anything above 25.",
+      "name": "health_label",
+      "args": "hp",
+      "solution": "def health_label(hp):\n    if hp <= 0:\n        return \"down\"\n    if hp <= 25:\n        return \"low\"\n    return \"ready\"\n",
+      "cases": [
+        {
+          "args": [
+            -1
+          ],
+          "expected": "down"
+        },
+        {
+          "args": [
+            0
+          ],
+          "expected": "down"
+        },
+        {
+          "args": [
+            25
+          ],
+          "expected": "low"
+        },
+        {
+          "args": [
+            26
+          ],
+          "expected": "ready"
+        }
+      ],
+      "hints": [
+        "Test 0, 25, and 26 on paper.",
+        "Handle hp <= 0 first, then hp <= 25, then return the final label."
+      ],
+      "extension": "Add a \"critical\" category for 1\u201310 and write your own boundary examples.",
+      "week": 1,
+      "session": 3,
+      "phase": "Foundations",
+      "checkpoint": false,
+      "starter": "def health_label(hp):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 4,
+      "title": "Checkpoint: reward calculator",
+      "concept": "A checkpoint combines skills without a worked example. First write the inputs, outputs, and two examples in your notes. Implement one rule at a time.",
+      "example": "Plan \u2192 write \u2192 run \u2192 inspect \u2192 explain",
+      "task": "Write reward(score, won). Start with score * 2 XP. Add 50 if won is True. Return the total.",
+      "name": "reward",
+      "args": "score, won",
+      "solution": "def reward(score, won):\n    total = score * 2\n    if won:\n        total += 50\n    return total\n",
+      "cases": [
+        {
+          "args": [
+            10,
+            true
+          ],
+          "expected": 70
+        },
+        {
+          "args": [
+            10,
+            false
+          ],
+          "expected": 20
+        },
+        {
+          "args": [
+            0,
+            true
+          ],
+          "expected": 50
+        }
+      ],
+      "hints": [
+        "Calculate base XP first.",
+        "Store score * 2 in total, add 50 conditionally, then return total."
+      ],
+      "extension": "Rebuild from a blank editor tomorrow without notes. Add a streak bonus only after the original works.",
+      "week": 1,
+      "session": 4,
+      "phase": "Foundations",
+      "checkpoint": true,
+      "starter": "def reward(score, won):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 5,
+      "title": "Repeat without repeating yourself",
+      "concept": "A for loop visits each item. An accumulator starts with an identity value, then changes on every iteration. For a sum, start at 0.",
+      "example": "total = 0\nfor price in [3, 7]:\n    total += price",
+      "task": "Write total_damage(hits), returning the sum of all numbers in hits. Use a loop for this exercise. Empty input should return 0.",
+      "name": "total_damage",
+      "args": "hits",
+      "solution": "def total_damage(hits):\n    total = 0\n    for hit in hits:\n        total += hit\n    return total\n",
+      "cases": [
+        {
+          "args": [
+            [
+              2,
+              3,
+              4
+            ]
+          ],
+          "expected": 9
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            [
+              0,
+              7
+            ]
+          ],
+          "expected": 7
+        }
+      ],
+      "hints": [
+        "You need one variable that survives each iteration.",
+        "Initialize total before the loop. Add each hit inside it. Return after the loop."
+      ],
+      "extension": "Implement the same behavior with sum(), then explain the loop version without looking.",
+      "week": 2,
+      "session": 1,
+      "phase": "Foundations",
+      "checkpoint": false,
+      "starter": "def total_damage(hits):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 6,
+      "title": "Find what matters",
+      "concept": "A filter keeps only items matching a condition. Build a new list with append instead of changing the list you are traversing.",
+      "example": "kept = []\nfor n in [1, 4, 7]:\n    if n > 3:\n        kept.append(n)",
+      "task": "Write affordable(prices, budget). Return a new list of prices <= budget, preserving the original order.",
+      "name": "affordable",
+      "args": "prices, budget",
+      "solution": "def affordable(prices, budget):\n    result = []\n    for price in prices:\n        if price <= budget:\n            result.append(price)\n    return result\n",
+      "cases": [
+        {
+          "args": [
+            [
+              5,
+              20,
+              10
+            ],
+            10
+          ],
+          "expected": [
+            5,
+            10
+          ]
+        },
+        {
+          "args": [
+            [],
+            5
+          ],
+          "expected": []
+        },
+        {
+          "args": [
+            [
+              8,
+              8
+            ],
+            8
+          ],
+          "expected": [
+            8,
+            8
+          ]
+        }
+      ],
+      "hints": [
+        "Use the can-buy comparison inside a loop.",
+        "Start result = [], append when price <= budget, return result."
+      ],
+      "extension": "Return item names instead when input contains pairs of name and price.",
+      "week": 2,
+      "session": 2,
+      "phase": "Foundations",
+      "checkpoint": false,
+      "starter": "def affordable(prices, budget):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 7,
+      "title": "Clean a player name",
+      "concept": "Strings are immutable: methods return new strings. strip() removes outer whitespace; lower() changes letter case. Chain transformations when the sequence is clear.",
+      "example": "clean = \"  HELLO  \".strip().lower()",
+      "task": "Write normalize_name(name). Strip outer whitespace, convert to lowercase, and replace each space with an underscore.",
+      "name": "normalize_name",
+      "args": "name",
+      "solution": "def normalize_name(name):\n    return name.strip().lower().replace(\" \", \"_\")\n",
+      "cases": [
+        {
+          "args": [
+            "  Sam Rivera "
+          ],
+          "expected": "sam_rivera"
+        },
+        {
+          "args": [
+            "MARIO"
+          ],
+          "expected": "mario"
+        },
+        {
+          "args": [
+            "a  b"
+          ],
+          "expected": "a__b"
+        }
+      ],
+      "hints": [
+        "Apply the transformations in the order requested.",
+        "Use strip(), lower(), and replace(\" \", \"_\")."
+      ],
+      "extension": "Try split() and \"_\".join(...) to collapse repeated spaces. Explain how this changes the contract.",
+      "week": 2,
+      "session": 3,
+      "phase": "Foundations",
+      "checkpoint": false,
+      "starter": "def normalize_name(name):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 8,
+      "title": "Checkpoint: score summary",
+      "concept": "Decompose a problem into a loop, a condition, and a returned result. A threshold usually includes a boundary: read the >= or > requirement carefully.",
+      "example": "Sketch three examples before coding.",
+      "task": "Write count_wins(scores, target). Count how many scores are >= target. Return an integer, not a list.",
+      "name": "count_wins",
+      "args": "scores, target",
+      "solution": "def count_wins(scores, target):\n    count = 0\n    for score in scores:\n        if score >= target:\n            count += 1\n    return count\n",
+      "cases": [
+        {
+          "args": [
+            [
+              3,
+              10,
+              7
+            ],
+            7
+          ],
+          "expected": 2
+        },
+        {
+          "args": [
+            [],
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            [
+              5,
+              5
+            ],
+            5
+          ],
+          "expected": 2
+        }
+      ],
+      "hints": [
+        "Count matches, rather than adding their values.",
+        "Use an accumulator initialized to 0 and increment only on a match."
+      ],
+      "extension": "Return both qualifying scores and their count in a dictionary.",
+      "week": 2,
+      "session": 4,
+      "phase": "Foundations",
+      "checkpoint": true,
+      "starter": "def count_wins(scores, target):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 9,
+      "title": "Keep an inventory",
+      "concept": "Dictionaries map unique keys to values. get(key, default) avoids a KeyError for missing items. copy() makes a separate top-level dictionary.",
+      "example": "stock = {\"potion\": 2}\nstock[\"potion\"] = stock.get(\"potion\", 0) + 1",
+      "task": "Write add_item(inventory, item). Return a copy of inventory with item count increased by 1. Missing items start at 0. Leave the original unchanged.",
+      "name": "add_item",
+      "args": "inventory, item",
+      "solution": "def add_item(inventory, item):\n    result = inventory.copy()\n    result[item] = result.get(item, 0) + 1\n    return result\n",
+      "cases": [
+        {
+          "args": [
+            {
+              "potion": 2
+            },
+            "potion"
+          ],
+          "expected": {
+            "potion": 3
+          }
+        },
+        {
+          "args": [
+            {},
+            "key"
+          ],
+          "expected": {
+            "key": 1
+          }
+        }
+      ],
+      "hints": [
+        "Copy the dictionary before changing a count.",
+        "Use result.get(item, 0) + 1 as the new value."
+      ],
+      "extension": "Write remove_item with a clear rule for missing or zero-count items.",
+      "week": 3,
+      "session": 1,
+      "phase": "Foundations",
+      "checkpoint": false,
+      "starter": "def add_item(inventory, item):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 10,
+      "title": "A leaderboard that makes sense",
+      "concept": "sorted() creates a new list. A key function chooses the comparison value. reverse=True puts larger values first; Python sorting preserves ties in input order.",
+      "example": "sorted([2, 8, 3], reverse=True)",
+      "task": "Write leaderboard(players). Input is a list of dictionaries with name and score. Return player names sorted by score descending. Preserve input order for ties.",
+      "name": "leaderboard",
+      "args": "players",
+      "solution": "def leaderboard(players):\n    ordered = sorted(players, key=lambda p: p[\"score\"], reverse=True)\n    return [p[\"name\"] for p in ordered]\n",
+      "cases": [
+        {
+          "args": [
+            [
+              {
+                "name": "A",
+                "score": 3
+              },
+              {
+                "name": "B",
+                "score": 8
+              }
+            ]
+          ],
+          "expected": [
+            "B",
+            "A"
+          ]
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": []
+        },
+        {
+          "args": [
+            [
+              {
+                "name": "X",
+                "score": 1
+              },
+              {
+                "name": "Y",
+                "score": 1
+              }
+            ]
+          ],
+          "expected": [
+            "X",
+            "Y"
+          ]
+        }
+      ],
+      "hints": [
+        "Sort the records, then extract names.",
+        "Use key=lambda p: p[\"score\"] and reverse=True."
+      ],
+      "extension": "Change the tie rule to alphabetical name ordering and test it.",
+      "week": 3,
+      "session": 2,
+      "phase": "Foundations",
+      "checkpoint": false,
+      "starter": "def leaderboard(players):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 11,
+      "title": "Remove duplicate collectibles",
+      "concept": "A set records membership. To preserve first-seen order, use a set for checking and a list for the result. A plain set does not promise your desired output order.",
+      "example": "seen = set()\nseen.add(\"star\")\nprint(\"star\" in seen)",
+      "task": "Write unique_items(items). Return each string once, in its first-seen order.",
+      "name": "unique_items",
+      "args": "items",
+      "solution": "def unique_items(items):\n    seen = set()\n    result = []\n    for item in items:\n        if item not in seen:\n            seen.add(item)\n            result.append(item)\n    return result\n",
+      "cases": [
+        {
+          "args": [
+            [
+              "coin",
+              "star",
+              "coin"
+            ]
+          ],
+          "expected": [
+            "coin",
+            "star"
+          ]
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": []
+        },
+        {
+          "args": [
+            [
+              "a",
+              "a",
+              "b",
+              "a"
+            ]
+          ],
+          "expected": [
+            "a",
+            "b"
+          ]
+        }
+      ],
+      "hints": [
+        "You need both fast membership checking and ordered output.",
+        "When an item is not in seen, add it to both collections."
+      ],
+      "extension": "Make a case-insensitive version while preserving the first spelling.",
+      "week": 3,
+      "session": 3,
+      "phase": "Foundations",
+      "checkpoint": false,
+      "starter": "def unique_items(items):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 12,
+      "title": "Checkpoint: loot report",
+      "concept": "A frequency table is a dictionary whose values count occurrences. Each iteration updates one key. Think about the empty dictionary before the first item arrives.",
+      "example": "No new syntax. Combine a loop with dictionary get().",
+      "task": "Write loot_counts(items), returning a dictionary mapping each item string to its number of occurrences.",
+      "name": "loot_counts",
+      "args": "items",
+      "solution": "def loot_counts(items):\n    counts = {}\n    for item in items:\n        counts[item] = counts.get(item, 0) + 1\n    return counts\n",
+      "cases": [
+        {
+          "args": [
+            [
+              "gem",
+              "coin",
+              "gem"
+            ]
+          ],
+          "expected": {
+            "gem": 2,
+            "coin": 1
+          }
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": {}
+        },
+        {
+          "args": [
+            [
+              "key"
+            ]
+          ],
+          "expected": {
+            "key": 1
+          }
+        }
+      ],
+      "hints": [
+        "Each item selects the key to update.",
+        "Use counts[item] = counts.get(item, 0) + 1."
+      ],
+      "extension": "Use the counts to find the most common drop. Specify how ties should work.",
+      "week": 3,
+      "session": 4,
+      "phase": "Foundations",
+      "checkpoint": true,
+      "starter": "def loot_counts(items):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 13,
+      "title": "Model a turn",
+      "concept": "Game state is just data. Make a function for one state transition, then reuse it. max(a, b) is useful when a result must never fall below a boundary.",
+      "example": "next_energy = max(0, energy - cost)",
+      "task": "Write take_hit(hp, damage, armor). Effective damage is max(0, damage - armor). Return remaining hp, clamped at 0. Assume all inputs are nonnegative.",
+      "name": "take_hit",
+      "args": "hp, damage, armor",
+      "solution": "def take_hit(hp, damage, armor):\n    effective = max(0, damage - armor)\n    return max(0, hp - effective)\n",
+      "cases": [
+        {
+          "args": [
+            10,
+            7,
+            2
+          ],
+          "expected": 5
+        },
+        {
+          "args": [
+            10,
+            2,
+            5
+          ],
+          "expected": 10
+        },
+        {
+          "args": [
+            3,
+            20,
+            0
+          ],
+          "expected": 0
+        }
+      ],
+      "hints": [
+        "Clamp damage, then clamp health.",
+        "Compute effective damage before subtracting it from hp."
+      ],
+      "extension": "Separate the damage calculation into its own function and test both functions.",
+      "week": 4,
+      "session": 1,
+      "phase": "Games",
+      "checkpoint": false,
+      "starter": "def take_hit(hp, damage, armor):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 14,
+      "title": "A grid is a coordinate system",
+      "concept": "Represent a 2D position as x and y. A dictionary can translate commands into movement vectors. get() can define behavior for unknown commands.",
+      "example": "dx, dy = (1, 0)\nx, y = 3 + dx, 2 + dy",
+      "task": "Write move(x, y, command). N adds 1 to y; S subtracts 1; E adds 1 to x; W subtracts 1. Unknown commands leave position unchanged. Return a list [x, y].",
+      "name": "move",
+      "args": "x, y, command",
+      "solution": "def move(x, y, command):\n    dx, dy = {\"N\": (0,1), \"S\": (0,-1), \"E\": (1,0), \"W\": (-1,0)}.get(command, (0,0))\n    return [x + dx, y + dy]\n",
+      "cases": [
+        {
+          "args": [
+            0,
+            0,
+            "N"
+          ],
+          "expected": [
+            0,
+            1
+          ]
+        },
+        {
+          "args": [
+            2,
+            3,
+            "W"
+          ],
+          "expected": [
+            1,
+            3
+          ]
+        },
+        {
+          "args": [
+            1,
+            1,
+            "?"
+          ],
+          "expected": [
+            1,
+            1
+          ]
+        }
+      ],
+      "hints": [
+        "Only one coordinate changes for each valid command.",
+        "Use a mapping from command to (dx, dy), defaulting to (0, 0)."
+      ],
+      "extension": "Add bounds for a 5\u00d75 map. Decide whether invalid movement clamps or stays put.",
+      "week": 4,
+      "session": 2,
+      "phase": "Games",
+      "checkpoint": false,
+      "starter": "def move(x, y, command):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 15,
+      "title": "Simulate a battle",
+      "concept": "A while loop repeats while its condition is true. Ensure something changes toward termination. Define what happens for invalid input to prevent an infinite loop.",
+      "example": "while energy > 0:\n    energy -= 2",
+      "task": "Write turns_to_defeat(hp, damage). Return the number of attacks needed to reduce hp to 0. Return 0 for hp <= 0 and -1 when hp > 0 but damage <= 0.",
+      "name": "turns_to_defeat",
+      "args": "hp, damage",
+      "solution": "def turns_to_defeat(hp, damage):\n    if hp <= 0:\n        return 0\n    if damage <= 0:\n        return -1\n    turns = 0\n    while hp > 0:\n        hp -= damage\n        turns += 1\n    return turns\n",
+      "cases": [
+        {
+          "args": [
+            10,
+            3
+          ],
+          "expected": 4
+        },
+        {
+          "args": [
+            0,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            10,
+            0
+          ],
+          "expected": -1
+        },
+        {
+          "args": [
+            6,
+            3
+          ],
+          "expected": 2
+        }
+      ],
+      "hints": [
+        "Handle impossible fights before entering the loop.",
+        "Subtract damage each turn and count iterations until hp <= 0."
+      ],
+      "extension": "Find an arithmetic solution. Explain when it might outperform repeated subtraction.",
+      "week": 4,
+      "session": 3,
+      "phase": "Games",
+      "checkpoint": false,
+      "starter": "def turns_to_defeat(hp, damage):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 16,
+      "title": "Build: a tiny dungeon engine",
+      "concept": "A small project can have one reliable core before it has graphics or menus. State transitions are easier to test when they do not depend on keyboard input.",
+      "example": "Your engine consumes a list of commands.",
+      "task": "Write dungeon(commands). Start at [0, 0]. Apply N/S/E/W movement as before. Ignore unknown commands. Return the final [x, y].",
+      "name": "dungeon",
+      "args": "commands",
+      "solution": "def dungeon(commands):\n    x, y = 0, 0\n    steps = {\"N\":(0,1), \"S\":(0,-1), \"E\":(1,0), \"W\":(-1,0)}\n    for command in commands:\n        dx, dy = steps.get(command, (0,0))\n        x += dx\n        y += dy\n    return [x, y]\n",
+      "cases": [
+        {
+          "args": [
+            [
+              "N",
+              "E",
+              "E",
+              "S"
+            ]
+          ],
+          "expected": [
+            2,
+            0
+          ]
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": [
+            0,
+            0
+          ]
+        },
+        {
+          "args": [
+            [
+              "W",
+              "?",
+              "N"
+            ]
+          ],
+          "expected": [
+            -1,
+            1
+          ]
+        }
+      ],
+      "hints": [
+        "Reuse the idea from the movement exercise.",
+        "Keep x and y outside the loop; update for each command."
+      ],
+      "extension": "Download the code. In VS Code add a printed map, walls, a treasure square, and a replay loop. Keep the engine testable.",
+      "week": 4,
+      "session": 4,
+      "phase": "Games",
+      "checkpoint": true,
+      "starter": "def dungeon(commands):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 17,
+      "title": "Make invalid input ordinary",
+      "concept": "int() converts a numeric string but raises ValueError on invalid text. Catch the specific exception you expect. Do not hide unrelated programming errors with a broad except.",
+      "example": "try:\n    value = int(\"42\")\nexcept ValueError:\n    value = None",
+      "task": "Write parse_level(text). Return int(text) when it is an integer from 1 through 100; otherwise return None. Input is always a string.",
+      "name": "parse_level",
+      "args": "text",
+      "solution": "def parse_level(text):\n    try:\n        value = int(text)\n    except ValueError:\n        return None\n    return value if 1 <= value <= 100 else None\n",
+      "cases": [
+        {
+          "args": [
+            " 42 "
+          ],
+          "expected": 42
+        },
+        {
+          "args": [
+            "abc"
+          ],
+          "expected": null
+        },
+        {
+          "args": [
+            "0"
+          ],
+          "expected": null
+        },
+        {
+          "args": [
+            "101"
+          ],
+          "expected": null
+        },
+        {
+          "args": [
+            "1.5"
+          ],
+          "expected": null
+        }
+      ],
+      "hints": [
+        "Conversion can fail before you check the range.",
+        "Wrap only conversion in try/except ValueError, then check 1 <= value <= 100."
+      ],
+      "extension": "Write five invalid examples of your own and state why each should fail.",
+      "week": 5,
+      "session": 1,
+      "phase": "Automation",
+      "checkpoint": false,
+      "starter": "def parse_level(text):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 18,
+      "title": "Debug the smallest failing example",
+      "concept": "Debug with a reproducible input, an expected result, and the actual result. Off-by-one errors appear at boundaries. Read the loop condition rather than guessing.",
+      "example": "Buggy idea: for i in range(1, n)\nThis excludes n.",
+      "task": "Write sum_to(n), returning 1 + 2 + ... + n for a nonnegative integer n. The previous version forgot to include n.",
+      "name": "sum_to",
+      "args": "n",
+      "solution": "def sum_to(n):\n    return sum(range(1, n + 1))\n",
+      "cases": [
+        {
+          "args": [
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            1
+          ],
+          "expected": 1
+        },
+        {
+          "args": [
+            5
+          ],
+          "expected": 15
+        }
+      ],
+      "hints": [
+        "range stops before its second argument.",
+        "Use range(1, n + 1), or use n * (n + 1) // 2."
+      ],
+      "extension": "Put the buggy version in the editor first and observe which tests catch the bug. Record the root cause in your notes.",
+      "week": 5,
+      "session": 2,
+      "phase": "Automation",
+      "checkpoint": false,
+      "starter": "def sum_to(n):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 19,
+      "title": "Validate before you calculate",
+      "concept": "Validation should make assumptions explicit. any() tests whether at least one item satisfies a condition. Return early when the input violates a rule.",
+      "example": "if not values:\n    return None",
+      "task": "Write average_score(scores). Return None for an empty list or if any number is negative. Otherwise return the arithmetic mean. Inputs are numbers.",
+      "name": "average_score",
+      "args": "scores",
+      "solution": "def average_score(scores):\n    if not scores or any(score < 0 for score in scores):\n        return None\n    return sum(scores) / len(scores)\n",
+      "cases": [
+        {
+          "args": [
+            [
+              10,
+              20
+            ]
+          ],
+          "expected": 15.0
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": null
+        },
+        {
+          "args": [
+            [
+              5,
+              -1
+            ]
+          ],
+          "expected": null
+        },
+        {
+          "args": [
+            [
+              0
+            ]
+          ],
+          "expected": 0.0
+        }
+      ],
+      "hints": [
+        "Check empty input before dividing by len(scores).",
+        "Use two guards: no scores, or at least one negative score."
+      ],
+      "extension": "Change the contract to raise ValueError instead. Compare how callers must handle the two designs.",
+      "week": 5,
+      "session": 3,
+      "phase": "Automation",
+      "checkpoint": false,
+      "starter": "def average_score(scores):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 20,
+      "title": "Checkpoint: resilient settings",
+      "concept": "A robust parser translates a small vocabulary and rejects the rest. A dictionary can express a set of exact accepted values more clearly than many branches.",
+      "example": "Sketch accepted inputs and a fallback.",
+      "task": "Write parse_bool(text). After stripping whitespace and lowercasing, return True for \"yes\", \"true\", \"1\"; False for \"no\", \"false\", \"0\"; otherwise None.",
+      "name": "parse_bool",
+      "args": "text",
+      "solution": "def parse_bool(text):\n    values = {\"yes\": True, \"true\": True, \"1\": True, \"no\": False, \"false\": False, \"0\": False}\n    return values.get(text.strip().lower())\n",
+      "cases": [
+        {
+          "args": [
+            " YES "
+          ],
+          "expected": true
+        },
+        {
+          "args": [
+            "0"
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            "maybe"
+          ],
+          "expected": null
+        },
+        {
+          "args": [
+            "false"
+          ],
+          "expected": false
+        }
+      ],
+      "hints": [
+        "Normalize once, then look up the result.",
+        "A dictionary get() returns None for an unknown key by default."
+      ],
+      "extension": "Build a settings dictionary using this parser and your integer parser. Report which fields were invalid.",
+      "week": 5,
+      "session": 4,
+      "phase": "Automation",
+      "checkpoint": true,
+      "starter": "def parse_bool(text):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 21,
+      "title": "Read structured data",
+      "concept": "JSON represents lists, dictionaries, strings, numbers, booleans, and null. json.loads parses text; json.dumps serializes data. JSON strings require double quotes.",
+      "example": "import json\nprofile = json.loads('{\"name\": \"Sam\"}')",
+      "task": "Write load_scores(text). Parse a JSON list of numbers and return its sum. All supplied JSON is valid and contains a list of numbers.",
+      "name": "load_scores",
+      "args": "text",
+      "solution": "def load_scores(text):\n    import json\n    return sum(json.loads(text))\n",
+      "cases": [
+        {
+          "args": [
+            "[4, 6, 10]"
+          ],
+          "expected": 20
+        },
+        {
+          "args": [
+            "[]"
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            "[1.5, 2.5]"
+          ],
+          "expected": 4.0
+        }
+      ],
+      "hints": [
+        "Use the standard library rather than splitting the text.",
+        "json.loads(text) gives you a normal Python list."
+      ],
+      "extension": "Handle invalid JSON and valid JSON with the wrong shape. Avoid catching unrelated errors.",
+      "week": 6,
+      "session": 1,
+      "phase": "Automation",
+      "checkpoint": false,
+      "starter": "def load_scores(text):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 22,
+      "title": "CSV without the split trap",
+      "concept": "CSV fields can contain commas inside quotes. csv.DictReader handles this correctly and yields a dictionary for each row. io.StringIO treats text like a readable file.",
+      "example": "import csv, io\nrows = csv.DictReader(io.StringIO(text))",
+      "task": "Write csv_total(text). CSV has headers item,price. Return the sum of prices as a float. Prices are valid numbers; fields may contain quoted commas.",
+      "name": "csv_total",
+      "args": "text",
+      "solution": "def csv_total(text):\n    import csv, io\n    return sum(float(row[\"price\"]) for row in csv.DictReader(io.StringIO(text)))\n",
+      "cases": [
+        {
+          "args": [
+            "item,price\na,2.5\nb,3\n"
+          ],
+          "expected": 5.5
+        },
+        {
+          "args": [
+            "item,price\n"
+          ],
+          "expected": 0.0
+        },
+        {
+          "args": [
+            "item,price\n\"game, deluxe\",10\n"
+          ],
+          "expected": 10.0
+        }
+      ],
+      "hints": [
+        "The csv module handles quoted fields.",
+        "Pass io.StringIO(text) into csv.DictReader, then convert each price with float()."
+      ],
+      "extension": "Export a CSV report with csv.DictWriter. Try a title containing a comma and a quotation mark.",
+      "week": 6,
+      "session": 2,
+      "phase": "Automation",
+      "checkpoint": false,
+      "starter": "def csv_total(text):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 23,
+      "title": "Paths are data too",
+      "concept": "pathlib gives paths meaningful operations. PurePosixPath is useful for platform-independent exercises. suffix extracts an extension; name extracts the final component.",
+      "example": "from pathlib import PurePosixPath\nPurePosixPath(\"games/save.json\").suffix",
+      "task": "Write extension_counts(paths). Count lowercase file extensions including the dot; ignore paths without an extension. Treat these as POSIX-style file paths.",
+      "name": "extension_counts",
+      "args": "paths",
+      "solution": "def extension_counts(paths):\n    from pathlib import PurePosixPath\n    counts = {}\n    for path in paths:\n        ext = PurePosixPath(path).suffix.lower()\n        if ext:\n            counts[ext] = counts.get(ext, 0) + 1\n    return counts\n",
+      "cases": [
+        {
+          "args": [
+            [
+              "a.py",
+              "b.PY",
+              "folder/readme",
+              "x.json"
+            ]
+          ],
+          "expected": {
+            ".py": 2,
+            ".json": 1
+          }
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": {}
+        }
+      ],
+      "hints": [
+        "Normalize the extension before counting.",
+        "Use PurePosixPath(path).suffix.lower() as the dictionary key."
+      ],
+      "extension": "In VS Code use Path.iterdir() on a test folder you create. Print a report without changing any files.",
+      "week": 6,
+      "session": 3,
+      "phase": "Automation",
+      "checkpoint": false,
+      "starter": "def extension_counts(paths):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 24,
+      "title": "Build: a playtime report",
+      "concept": "A useful tool starts by separating transformation from file access. This lets you check calculations using small in-memory examples before touching real data.",
+      "example": "Input records \u2192 aggregate \u2192 sorted report",
+      "task": "Write playtime_report(records). Each record has game and minutes. Sum minutes per game. Return a dictionary of totals.",
+      "name": "playtime_report",
+      "args": "records",
+      "solution": "def playtime_report(records):\n    totals = {}\n    for record in records:\n        game = record[\"game\"]\n        totals[game] = totals.get(game, 0) + record[\"minutes\"]\n    return totals\n",
+      "cases": [
+        {
+          "args": [
+            [
+              {
+                "game": "Halo",
+                "minutes": 20
+              },
+              {
+                "game": "Mario",
+                "minutes": 10
+              },
+              {
+                "game": "Halo",
+                "minutes": 30
+              }
+            ]
+          ],
+          "expected": {
+            "Halo": 50,
+            "Mario": 10
+          }
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": {}
+        }
+      ],
+      "hints": [
+        "A game title is the key of your accumulator.",
+        "For each record, add its minutes to totals.get(game, 0)."
+      ],
+      "extension": "Download the function. Read records from a JSON file, sort the report, and write totals to CSV in VS Code.",
+      "week": 6,
+      "session": 4,
+      "phase": "Automation",
+      "checkpoint": true,
+      "starter": "def playtime_report(records):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 25,
+      "title": "A dry run before action",
+      "concept": "Automation is safer when planning and execution are separate. A planner returns intended changes as data, which you can inspect before files are renamed.",
+      "example": "A rename plan is a list of [old_name, new_name] pairs.",
+      "task": "Write rename_plan(names). Replace spaces with underscores and lowercase each name. Return [old, new] pairs only for names that would change.",
+      "name": "rename_plan",
+      "args": "names",
+      "solution": "def rename_plan(names):\n    plan = []\n    for name in names:\n        new = name.lower().replace(\" \", \"_\")\n        if new != name:\n            plan.append([name, new])\n    return plan\n",
+      "cases": [
+        {
+          "args": [
+            [
+              "My Save.JSON",
+              "ready.py"
+            ]
+          ],
+          "expected": [
+            [
+              "My Save.JSON",
+              "my_save.json"
+            ]
+          ]
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": []
+        }
+      ],
+      "hints": [
+        "Transform each name, then compare old and new.",
+        "Append a two-element list only when new != name."
+      ],
+      "extension": "Detect collisions before applying any rename. For example, \"A.txt\" and \"a.txt\" target the same name.",
+      "week": 7,
+      "session": 1,
+      "phase": "Automation",
+      "checkpoint": false,
+      "starter": "def rename_plan(names):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 26,
+      "title": "Notice a collision",
+      "concept": "A plan that maps multiple sources to the same destination is ambiguous. A set tracks destinations already observed; another set can record conflicts.",
+      "example": "seen, collisions = set(), set()",
+      "task": "Write duplicate_targets(plan). Each pair is [source, target]. Return sorted unique target names that appear more than once.",
+      "name": "duplicate_targets",
+      "args": "plan",
+      "solution": "def duplicate_targets(plan):\n    seen, duplicates = set(), set()\n    for source, target in plan:\n        if target in seen:\n            duplicates.add(target)\n        seen.add(target)\n    return sorted(duplicates)\n",
+      "cases": [
+        {
+          "args": [
+            [
+              [
+                "A",
+                "a"
+              ],
+              [
+                "B",
+                "a"
+              ],
+              [
+                "C",
+                "c"
+              ]
+            ]
+          ],
+          "expected": [
+            "a"
+          ]
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": []
+        },
+        {
+          "args": [
+            [
+              [
+                "x",
+                "t"
+              ],
+              [
+                "y",
+                "t"
+              ],
+              [
+                "z",
+                "t"
+              ]
+            ]
+          ],
+          "expected": [
+            "t"
+          ]
+        }
+      ],
+      "hints": [
+        "The same duplicate should appear only once in your answer.",
+        "Check seen first, add collisions to a set, then sort that set."
+      ],
+      "extension": "Also check targets against unchanged existing files before implementing a real rename tool.",
+      "week": 7,
+      "session": 2,
+      "phase": "Automation",
+      "checkpoint": false,
+      "starter": "def duplicate_targets(plan):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 27,
+      "title": "Make reruns predictable",
+      "concept": "An idempotent transformation gives the same result when repeated. Small pure functions make automation easier to retry, test, and inspect.",
+      "example": "normalize(normalize(value)) == normalize(value)",
+      "task": "Write clean_tags(tags). Strip and lowercase each tag, remove empty tags, deduplicate, and return alphabetical order.",
+      "name": "clean_tags",
+      "args": "tags",
+      "solution": "def clean_tags(tags):\n    return sorted({tag.strip().lower() for tag in tags if tag.strip()})\n",
+      "cases": [
+        {
+          "args": [
+            [
+              " RPG ",
+              "rpg",
+              "",
+              "Action"
+            ]
+          ],
+          "expected": [
+            "action",
+            "rpg"
+          ]
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": []
+        }
+      ],
+      "hints": [
+        "Normalize before deduplicating.",
+        "A set comprehension can normalize and filter; sorted() creates the output list."
+      ],
+      "extension": "Verify clean_tags(clean_tags(tags)) == clean_tags(tags) on five examples.",
+      "week": 7,
+      "session": 3,
+      "phase": "Automation",
+      "checkpoint": false,
+      "starter": "def clean_tags(tags):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 28,
+      "title": "Checkpoint: automation audit",
+      "concept": "An audit summarizes what will happen without changing anything. Keep calculations separate from the eventual execution layer. Every summary field should have a clear definition.",
+      "example": "Plan first. Inspect second. Execute later.",
+      "task": "Write audit(plan). Return {\"changes\": number of pairs, \"conflicts\": number of distinct repeated target names}. Each pair is [source, target].",
+      "name": "audit",
+      "args": "plan",
+      "solution": "def audit(plan):\n    counts = {}\n    for source, target in plan:\n        counts[target] = counts.get(target, 0) + 1\n    return {\"changes\": len(plan), \"conflicts\": sum(1 for count in counts.values() if count > 1)}\n",
+      "cases": [
+        {
+          "args": [
+            [
+              [
+                "a",
+                "x"
+              ],
+              [
+                "b",
+                "x"
+              ],
+              [
+                "c",
+                "y"
+              ]
+            ]
+          ],
+          "expected": {
+            "changes": 3,
+            "conflicts": 1
+          }
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": {
+            "changes": 0,
+            "conflicts": 0
+          }
+        }
+      ],
+      "hints": [
+        "Count target frequencies, then count how many frequencies exceed 1.",
+        "Use len(plan) for changes; duplicate groups count once each."
+      ],
+      "extension": "Combine rename_plan, duplicate_targets, and audit into a read-only command-line preview in VS Code.",
+      "week": 7,
+      "session": 4,
+      "phase": "Automation",
+      "checkpoint": true,
+      "starter": "def audit(plan):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 29,
+      "title": "Search with a clear contract",
+      "concept": "Linear search scans from left to right, taking O(n) time in the worst case. enumerate gives both an index and a value. Return immediately at the first match.",
+      "example": "for index, value in enumerate(values):\n    ...",
+      "task": "Write first_index(values, target). Return the first matching index, or -1 if absent. Implement the search with a loop.",
+      "name": "first_index",
+      "args": "values, target",
+      "solution": "def first_index(values, target):\n    for index, value in enumerate(values):\n        if value == target:\n            return index\n    return -1\n",
+      "cases": [
+        {
+          "args": [
+            [
+              4,
+              2,
+              4
+            ],
+            4
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            [
+              1,
+              2
+            ],
+            3
+          ],
+          "expected": -1
+        },
+        {
+          "args": [
+            [],
+            0
+          ],
+          "expected": -1
+        }
+      ],
+      "hints": [
+        "The absent result belongs after the entire loop.",
+        "Use enumerate, test equality, and return the index."
+      ],
+      "extension": "Explain best and worst case work. What input makes the function inspect every item?",
+      "week": 8,
+      "session": 1,
+      "phase": "Interviews",
+      "checkpoint": false,
+      "starter": "def first_index(values, target):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 30,
+      "title": "Trade space for speed",
+      "concept": "A set can replace repeated scans. Membership is average O(1), so checking duplicates this way is average O(n) time with O(n) extra space.",
+      "example": "if value in seen:\n    return True",
+      "task": "Write has_duplicate(values), returning True if any number repeats, otherwise False.",
+      "name": "has_duplicate",
+      "args": "values",
+      "solution": "def has_duplicate(values):\n    seen = set()\n    for value in values:\n        if value in seen:\n            return True\n        seen.add(value)\n    return False\n",
+      "cases": [
+        {
+          "args": [
+            [
+              1,
+              2,
+              1
+            ]
+          ],
+          "expected": true
+        },
+        {
+          "args": [
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": false
+        }
+      ],
+      "hints": [
+        "Remember what you have seen, rather than comparing every pair.",
+        "Check membership before adding each value to seen."
+      ],
+      "extension": "Write the nested-loop version and explain why doubling n can multiply its comparisons by roughly four.",
+      "week": 8,
+      "session": 2,
+      "phase": "Interviews",
+      "checkpoint": false,
+      "starter": "def has_duplicate(values):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 31,
+      "title": "Your first hash-map problem",
+      "concept": "For two-sum, remember the indices of earlier values. At each number x, ask whether target - x was already seen. Checking before storing prevents reusing the same index.",
+      "example": "needed = target - value",
+      "task": "Write two_sum(nums, target). Return indices [earlier, current] for the first pair found while scanning left to right. Return [] if absent. Preserve the first index stored for a value.",
+      "name": "two_sum",
+      "args": "nums, target",
+      "solution": "def two_sum(nums, target):\n    seen = {}\n    for index, value in enumerate(nums):\n        needed = target - value\n        if needed in seen:\n            return [seen[needed], index]\n        if value not in seen:\n            seen[value] = index\n    return []\n",
+      "cases": [
+        {
+          "args": [
+            [
+              2,
+              7,
+              11,
+              15
+            ],
+            9
+          ],
+          "expected": [
+            0,
+            1
+          ]
+        },
+        {
+          "args": [
+            [
+              3,
+              3
+            ],
+            6
+          ],
+          "expected": [
+            0,
+            1
+          ]
+        },
+        {
+          "args": [
+            [
+              1,
+              2
+            ],
+            8
+          ],
+          "expected": []
+        },
+        {
+          "args": [
+            [
+              1,
+              1,
+              3
+            ],
+            4
+          ],
+          "expected": [
+            0,
+            2
+          ]
+        }
+      ],
+      "hints": [
+        "Store number \u2192 index in a dictionary.",
+        "Look for target - value before storing value. Keep its first occurrence."
+      ],
+      "extension": "Explain the approach aloud in 60 seconds, including duplicate values and time/space complexity.",
+      "week": 8,
+      "session": 3,
+      "phase": "Interviews",
+      "checkpoint": false,
+      "starter": "def two_sum(nums, target):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 32,
+      "title": "Checkpoint: anagram checker",
+      "concept": "Anagrams have the same character counts, not just the same unique characters. A frequency table records multiplicity. Define normalization before comparing text.",
+      "example": "\"aab\" and \"abb\" contain the same set but are not anagrams.",
+      "task": "Write is_anagram(a, b). Ignore spaces and letter case, but preserve all other characters. Return whether character counts match.",
+      "name": "is_anagram",
+      "args": "a, b",
+      "solution": "def is_anagram(a, b):\n    def counts(text):\n        result = {}\n        for char in text.lower().replace(\" \", \"\"):\n            result[char] = result.get(char, 0) + 1\n        return result\n    return counts(a) == counts(b)\n",
+      "cases": [
+        {
+          "args": [
+            "Listen",
+            "Silent"
+          ],
+          "expected": true
+        },
+        {
+          "args": [
+            "aab",
+            "abb"
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            "a b",
+            "BA"
+          ],
+          "expected": true
+        },
+        {
+          "args": [
+            "",
+            ""
+          ],
+          "expected": true
+        }
+      ],
+      "hints": [
+        "A set loses the number of occurrences.",
+        "Build counts for each normalized string, then compare dictionaries."
+      ],
+      "extension": "Implement with collections.Counter, then compare it with your own frequency table.",
+      "week": 8,
+      "session": 4,
+      "phase": "Interviews",
+      "checkpoint": true,
+      "starter": "def is_anagram(a, b):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 33,
+      "title": "Two pointers, one invariant",
+      "concept": "Two pointers can compare opposite ends of a sequence. At each step the already-inspected outer pairs match. Stop when the pointers meet or cross.",
+      "example": "left, right = 0, len(text) - 1",
+      "task": "Write is_palindrome(text). Compare the string exactly as supplied, case-sensitive and including spaces. Return True for an empty string. Use two pointers.",
+      "name": "is_palindrome",
+      "args": "text",
+      "solution": "def is_palindrome(text):\n    left, right = 0, len(text) - 1\n    while left < right:\n        if text[left] != text[right]:\n            return False\n        left += 1\n        right -= 1\n    return True\n",
+      "cases": [
+        {
+          "args": [
+            "racecar"
+          ],
+          "expected": true
+        },
+        {
+          "args": [
+            "ab"
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            ""
+          ],
+          "expected": true
+        },
+        {
+          "args": [
+            "Aa"
+          ],
+          "expected": false
+        }
+      ],
+      "hints": [
+        "Compare text[left] with text[right].",
+        "On a match, move left forward and right backward; on a mismatch return False."
+      ],
+      "extension": "Create a normalized variant that ignores punctuation and case, without changing the original function contract.",
+      "week": 9,
+      "session": 1,
+      "phase": "Interviews",
+      "checkpoint": false,
+      "starter": "def is_palindrome(text):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 34,
+      "title": "A stack remembers unfinished work",
+      "concept": "A stack is last-in, first-out. append pushes; pop removes the last value. Parentheses are balanced when every closing symbol has an unmatched opening symbol and none remain at the end.",
+      "example": "stack.append(\"(\")\nstack.pop()",
+      "task": "Write balanced(text). Check only ( and ); ignore all other characters. Return whether parentheses are balanced.",
+      "name": "balanced",
+      "args": "text",
+      "solution": "def balanced(text):\n    stack = []\n    for char in text:\n        if char == \"(\":\n            stack.append(char)\n        elif char == \")\":\n            if not stack:\n                return False\n            stack.pop()\n    return not stack\n",
+      "cases": [
+        {
+          "args": [
+            "(a(b))"
+          ],
+          "expected": true
+        },
+        {
+          "args": [
+            ")("
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            "(()"
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            "abc"
+          ],
+          "expected": true
+        }
+      ],
+      "hints": [
+        "An unmatched closing parenthesis fails immediately.",
+        "Check the stack before popping. At the end it must be empty."
+      ],
+      "extension": "Extend to (), [], and {}. Use a dictionary from closing symbols to their required opening symbols.",
+      "week": 9,
+      "session": 2,
+      "phase": "Interviews",
+      "checkpoint": false,
+      "starter": "def balanced(text):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 35,
+      "title": "Slide a window",
+      "concept": "For fixed-size contiguous windows, keep a running sum. Advancing one position subtracts the outgoing value and adds the incoming value. This avoids resumming every window.",
+      "example": "current += nums[right] - nums[right - k]",
+      "task": "Write max_window_sum(nums, k). Return the largest sum of any contiguous k values. Return None if k <= 0 or k > len(nums).",
+      "name": "max_window_sum",
+      "args": "nums, k",
+      "solution": "def max_window_sum(nums, k):\n    if k <= 0 or k > len(nums):\n        return None\n    current = sum(nums[:k])\n    best = current\n    for right in range(k, len(nums)):\n        current += nums[right] - nums[right-k]\n        best = max(best, current)\n    return best\n",
+      "cases": [
+        {
+          "args": [
+            [
+              1,
+              3,
+              2,
+              5
+            ],
+            2
+          ],
+          "expected": 7
+        },
+        {
+          "args": [
+            [
+              -4,
+              -2,
+              -8
+            ],
+            2
+          ],
+          "expected": -6
+        },
+        {
+          "args": [
+            [
+              1
+            ],
+            2
+          ],
+          "expected": null
+        },
+        {
+          "args": [
+            [],
+            0
+          ],
+          "expected": null
+        }
+      ],
+      "hints": [
+        "Initialize best using the first window, not 0, because numbers may be negative.",
+        "Slide by removing nums[right-k] and adding nums[right]."
+      ],
+      "extension": "Compare the number of additions with the brute-force approach. Try a variable-length window problem next.",
+      "week": 9,
+      "session": 3,
+      "phase": "Interviews",
+      "checkpoint": false,
+      "starter": "def max_window_sum(nums, k):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 36,
+      "title": "Checkpoint: binary search",
+      "concept": "Binary search repeatedly halves a sorted search interval. Its worst-case work is O(log n). The interval boundaries must move past mid to ensure termination.",
+      "example": "mid = (left + right) // 2",
+      "task": "Write binary_search(nums, target). nums is sorted ascending with unique values. Return the matching index or -1. Use binary search.",
+      "name": "binary_search",
+      "args": "nums, target",
+      "solution": "def binary_search(nums, target):\n    left, right = 0, len(nums) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if nums[mid] == target:\n            return mid\n        if nums[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1\n",
+      "cases": [
+        {
+          "args": [
+            [
+              1,
+              3,
+              5,
+              7
+            ],
+            5
+          ],
+          "expected": 2
+        },
+        {
+          "args": [
+            [
+              1
+            ],
+            1
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            [],
+            3
+          ],
+          "expected": -1
+        },
+        {
+          "args": [
+            [
+              1,
+              3
+            ],
+            2
+          ],
+          "expected": -1
+        }
+      ],
+      "hints": [
+        "Draw the remaining inclusive interval after each comparison.",
+        "Use left <= right, then move a boundary to mid + 1 or mid - 1."
+      ],
+      "extension": "Trace a missing target by hand. Explain why sorting an unsorted list first changes total cost.",
+      "week": 9,
+      "session": 4,
+      "phase": "Interviews",
+      "checkpoint": true,
+      "starter": "def binary_search(nums, target):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 37,
+      "title": "Give state a home",
+      "concept": "A class groups state and behavior. __init__ initializes an instance; self refers to that instance. Instance methods should preserve the rules you set for valid state.",
+      "example": "class Counter:\n    def __init__(self):\n        self.value = 0",
+      "task": "Write counter_value(start, increments). Define a small Counter class inside the function with value and add(amount), then apply each increment and return the final value.",
+      "name": "counter_value",
+      "args": "start, increments",
+      "solution": "def counter_value(start, increments):\n    class Counter:\n        def __init__(self, value):\n            self.value = value\n        def add(self, amount):\n            self.value += amount\n    counter = Counter(start)\n    for amount in increments:\n        counter.add(amount)\n    return counter.value\n",
+      "cases": [
+        {
+          "args": [
+            5,
+            [
+              1,
+              2
+            ]
+          ],
+          "expected": 8
+        },
+        {
+          "args": [
+            0,
+            []
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            3,
+            [
+              -1
+            ]
+          ],
+          "expected": 2
+        }
+      ],
+      "hints": [
+        "The class stores a value; the method changes it.",
+        "Instantiate Counter(start), call add for each amount, then return counter.value."
+      ],
+      "extension": "Move the class to module scope in VS Code. Add tests with two independent instances. The numeric checks here verify behavior; inspect your class structure yourself.",
+      "week": 10,
+      "session": 1,
+      "phase": "Projects",
+      "checkpoint": false,
+      "starter": "def counter_value(start, increments):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 38,
+      "title": "Keep responsibilities small",
+      "concept": "Decomposition makes a pipeline readable. Each helper should do one transformation, with names that describe the result. Avoid hiding unrelated actions in one function.",
+      "example": "raw \u2192 normalized \u2192 filtered \u2192 sorted",
+      "task": "Write search_games(games, query). Each game is a string. Return matching titles in alphabetical order, using case-insensitive substring matching with outer query whitespace stripped.",
+      "name": "search_games",
+      "args": "games, query",
+      "solution": "def search_games(games, query):\n    needle = query.strip().lower()\n    return sorted(game for game in games if needle in game.lower())\n",
+      "cases": [
+        {
+          "args": [
+            [
+              "Halo 3",
+              "Mario",
+              "Halo 2"
+            ],
+            " HALO "
+          ],
+          "expected": [
+            "Halo 2",
+            "Halo 3"
+          ]
+        },
+        {
+          "args": [
+            [
+              "Z",
+              "A"
+            ],
+            ""
+          ],
+          "expected": [
+            "A",
+            "Z"
+          ]
+        },
+        {
+          "args": [
+            [],
+            "x"
+          ],
+          "expected": []
+        }
+      ],
+      "hints": [
+        "Normalize the query once, but preserve original game titles.",
+        "Use needle in game.lower(), then sort the original strings."
+      ],
+      "extension": "Separate matching into a helper and add a CLI that accepts a query from the user.",
+      "week": 10,
+      "session": 2,
+      "phase": "Projects",
+      "checkpoint": false,
+      "starter": "def search_games(games, query):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 39,
+      "title": "Protect an invariant",
+      "concept": "An invariant is a rule that should stay true through every operation. For a wallet, one useful rule is that balance never becomes negative. Invalid actions should leave it unchanged.",
+      "example": "Before and after every transaction: balance >= 0.",
+      "task": "Write wallet(balance, transactions). Nonnegative numbers deposit funds. Negative numbers withdraw only if sufficient funds exist. Ignore unaffordable withdrawals. Return the final balance. Initial balance is nonnegative.",
+      "name": "wallet",
+      "args": "balance, transactions",
+      "solution": "def wallet(balance, transactions):\n    for amount in transactions:\n        if balance + amount >= 0:\n            balance += amount\n    return balance\n",
+      "cases": [
+        {
+          "args": [
+            10,
+            [
+              -20,
+              5,
+              -8
+            ]
+          ],
+          "expected": 7
+        },
+        {
+          "args": [
+            0,
+            [
+              -1,
+              2
+            ]
+          ],
+          "expected": 2
+        },
+        {
+          "args": [
+            5,
+            []
+          ],
+          "expected": 5
+        }
+      ],
+      "hints": [
+        "Check the proposed new balance before accepting an action.",
+        "Apply a transaction only if balance + amount >= 0."
+      ],
+      "extension": "Return an audit trail with accepted/rejected flags and balance after each transaction.",
+      "week": 10,
+      "session": 3,
+      "phase": "Projects",
+      "checkpoint": false,
+      "starter": "def wallet(balance, transactions):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 40,
+      "title": "Build: a reliable score service",
+      "concept": "A service can be a set of pure functions before it becomes a web API. Choose a clear policy for repeated updates, missing players, and ranking ties.",
+      "example": "Records \u2192 best score per player \u2192 ranked names",
+      "task": "Write best_players(records). Each record has name and score. Keep each player\u2019s highest score, then return names ordered by descending best score with alphabetical ties.",
+      "name": "best_players",
+      "args": "records",
+      "solution": "def best_players(records):\n    best = {}\n    for record in records:\n        name, score = record[\"name\"], record[\"score\"]\n        if name not in best or score > best[name]:\n            best[name] = score\n    return sorted(best, key=lambda name: (-best[name], name))\n",
+      "cases": [
+        {
+          "args": [
+            [
+              {
+                "name": "B",
+                "score": 8
+              },
+              {
+                "name": "A",
+                "score": 8
+              },
+              {
+                "name": "A",
+                "score": 2
+              }
+            ]
+          ],
+          "expected": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": []
+        },
+        {
+          "args": [
+            [
+              {
+                "name": "X",
+                "score": -2
+              },
+              {
+                "name": "Y",
+                "score": -1
+              }
+            ]
+          ],
+          "expected": [
+            "Y",
+            "X"
+          ]
+        }
+      ],
+      "hints": [
+        "Do not default a missing player to 0: valid scores can be negative.",
+        "Build best first, then sort names with key (-best[name], name)."
+      ],
+      "extension": "In VS Code persist scores to JSON and write a README with input examples, tie policy, and how to run tests.",
+      "week": 10,
+      "session": 4,
+      "phase": "Projects",
+      "checkpoint": true,
+      "starter": "def best_players(records):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 41,
+      "title": "Write a specification you can test",
+      "concept": "A spec defines valid input and exact output before implementation. For messy data, normalize one record at a time. Preserve meaning while removing accidental differences.",
+      "example": "title.strip(), int(minutes), normalized tags",
+      "task": "Write normalize_game(record). Return {\"title\": stripped title, \"minutes\": int(minutes), \"tags\": sorted unique lowercase stripped nonempty tags}. All required keys and convertible minutes exist.",
+      "name": "normalize_game",
+      "args": "record",
+      "solution": "def normalize_game(record):\n    return {\"title\": record[\"title\"].strip(), \"minutes\": int(record[\"minutes\"]), \"tags\": sorted({tag.strip().lower() for tag in record[\"tags\"] if tag.strip()})}\n",
+      "cases": [
+        {
+          "args": [
+            {
+              "title": " Halo ",
+              "minutes": "30",
+              "tags": [
+                " FPS ",
+                "fps",
+                ""
+              ]
+            }
+          ],
+          "expected": {
+            "title": "Halo",
+            "minutes": 30,
+            "tags": [
+              "fps"
+            ]
+          }
+        }
+      ],
+      "hints": [
+        "Solve each output field separately before combining them.",
+        "Reuse your clean_tags approach for tags and int() for minutes."
+      ],
+      "extension": "Write a one-page spec for a game-library organizer: commands, file format, error cases, and examples.",
+      "week": 11,
+      "session": 1,
+      "phase": "Projects",
+      "checkpoint": false,
+      "starter": "def normalize_game(record):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 42,
+      "title": "Merge without losing information",
+      "concept": "When duplicate records arrive, define a merge policy for each field. Group by a normalized key but preserve a useful display value. Independent fields may need different operations.",
+      "example": "Same title ignoring case \u2192 combine minutes",
+      "task": "Write merge_library(records). Records have title and minutes. Strip and lowercase titles for keys, sum minutes, and return a dictionary of title \u2192 total minutes.",
+      "name": "merge_library",
+      "args": "records",
+      "solution": "def merge_library(records):\n    merged = {}\n    for record in records:\n        key = record[\"title\"].strip().lower()\n        merged[key] = merged.get(key, 0) + record[\"minutes\"]\n    return merged\n",
+      "cases": [
+        {
+          "args": [
+            [
+              {
+                "title": " Halo ",
+                "minutes": 20
+              },
+              {
+                "title": "HALO",
+                "minutes": 10
+              }
+            ]
+          ],
+          "expected": {
+            "halo": 30
+          }
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": {}
+        }
+      ],
+      "hints": [
+        "The normalized title is your grouping key.",
+        "Normalize each title before looking up its current total."
+      ],
+      "extension": "Merge tags too, preserving a human-readable title and documenting which spelling wins.",
+      "week": 11,
+      "session": 2,
+      "phase": "Projects",
+      "checkpoint": false,
+      "starter": "def merge_library(records):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 43,
+      "title": "Export something useful",
+      "concept": "Serialization formats need to round-trip reliably. csv.writer quotes special fields automatically. A consistent sort order makes exported files easy to inspect and compare.",
+      "example": "Use io.StringIO(newline=\"\") as a text output buffer.",
+      "task": "Write export_library(library). library is title \u2192 minutes. Return CSV text with title,minutes header, titles sorted alphabetically, and \n line endings. Use csv.writer.",
+      "name": "export_library",
+      "args": "library",
+      "solution": "def export_library(library):\n    import csv, io\n    output = io.StringIO(newline=\"\")\n    writer = csv.writer(output, lineterminator=\"\\n\")\n    writer.writerow([\"title\", \"minutes\"])\n    for title in sorted(library):\n        writer.writerow([title, library[title]])\n    return output.getvalue()\n",
+      "cases": [
+        {
+          "args": [
+            {
+              "halo": 30,
+              "mario": 10
+            }
+          ],
+          "expected": "title,minutes\nhalo,30\nmario,10\n"
+        },
+        {
+          "args": [
+            {}
+          ],
+          "expected": "title,minutes\n"
+        },
+        {
+          "args": [
+            {
+              "a,b": 2
+            }
+          ],
+          "expected": "title,minutes\n\"a,b\",2\n"
+        }
+      ],
+      "hints": [
+        "Do not assemble CSV fields with commas yourself.",
+        "Use writer.writerow for the header and each sorted item, then output.getvalue()."
+      ],
+      "extension": "Save the exported text to a file in VS Code. Open it in a spreadsheet and check the quoted-title case.",
+      "week": 11,
+      "session": 3,
+      "phase": "Projects",
+      "checkpoint": false,
+      "starter": "def export_library(library):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 44,
+      "title": "Ship: game-library organizer",
+      "concept": "Shipping includes explaining how another person can run the tool. Your core logic should remain usable without a CLI, so tests can call it directly.",
+      "example": "Parse \u2192 normalize \u2192 merge \u2192 export",
+      "task": "Write library_summary(records). Return {\"games\": number of distinct stripped lowercase titles, \"minutes\": sum of all minutes}. Each record has title and numeric minutes.",
+      "name": "library_summary",
+      "args": "records",
+      "solution": "def library_summary(records):\n    titles = {record[\"title\"].strip().lower() for record in records}\n    return {\"games\": len(titles), \"minutes\": sum(record[\"minutes\"] for record in records)}\n",
+      "cases": [
+        {
+          "args": [
+            [
+              {
+                "title": "Halo",
+                "minutes": 20
+              },
+              {
+                "title": " halo ",
+                "minutes": 30
+              }
+            ]
+          ],
+          "expected": {
+            "games": 1,
+            "minutes": 50
+          }
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": {
+            "games": 0,
+            "minutes": 0
+          }
+        }
+      ],
+      "hints": [
+        "Unique normalized titles determine games; all records contribute minutes.",
+        "Use a set for titles and sum for minutes."
+      ],
+      "extension": "Ship in VS Code: combine weeks 6\u201311 into a CLI with import, search, report, and export commands. Include sample data, tests, and a README. Browser checks validate only the core summary here.",
+      "week": 11,
+      "session": 4,
+      "phase": "Projects",
+      "checkpoint": true,
+      "starter": "def library_summary(records):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 45,
+      "title": "Independent build: tournament table",
+      "concept": "Start with a blank function body. Write a plan in ordinary language, then create your own examples. Hints remain available, but a completion using them counts as guided practice.",
+      "example": "Spend 5 minutes planning before writing Python.",
+      "task": "Write tournament(matches). Each match is [winner, loser]. A win awards 3 points; a loss awards 0. Include all players. Return [name, points] pairs sorted by points descending and name ascending.",
+      "name": "tournament",
+      "args": "matches",
+      "solution": "def tournament(matches):\n    points = {}\n    for winner, loser in matches:\n        points[winner] = points.get(winner, 0) + 3\n        points.setdefault(loser, 0)\n    return [[name, points[name]] for name in sorted(points, key=lambda name: (-points[name], name))]\n",
+      "cases": [
+        {
+          "args": [
+            [
+              [
+                "B",
+                "A"
+              ],
+              [
+                "A",
+                "C"
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "A",
+              3
+            ],
+            [
+              "B",
+              3
+            ],
+            [
+              "C",
+              0
+            ]
+          ]
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": []
+        }
+      ],
+      "hints": [
+        "Initialize losing players too, even if they never win.",
+        "Count points in a dictionary, sort names by (-points[name], name), then build pairs."
+      ],
+      "extension": "Add draws, invalid self-matches, and a CSV importer. Write the rules before changing the implementation.",
+      "week": 12,
+      "session": 1,
+      "phase": "Projects",
+      "checkpoint": false,
+      "starter": "def tournament(matches):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 46,
+      "title": "Independent build: log analyzer",
+      "concept": "Logs are data with a grammar. Decide how to handle malformed records explicitly. Keep parsing and counting separable so a bad line does not corrupt your summary.",
+      "example": "Each valid line is LEVEL|message.",
+      "task": "Write log_counts(lines). Split each line at its first |. Strip and uppercase the level. Count only INFO, WARN, ERROR; ignore lines without | or with unknown levels. Return a dictionary containing only levels seen.",
+      "name": "log_counts",
+      "args": "lines",
+      "solution": "def log_counts(lines):\n    counts = {}\n    for line in lines:\n        if \"|\" not in line:\n            continue\n        level = line.split(\"|\", 1)[0].strip().upper()\n        if level in {\"INFO\", \"WARN\", \"ERROR\"}:\n            counts[level] = counts.get(level, 0) + 1\n    return counts\n",
+      "cases": [
+        {
+          "args": [
+            [
+              "info|ok",
+              " ERROR |failed|detail",
+              "bad",
+              "debug|x"
+            ]
+          ],
+          "expected": {
+            "INFO": 1,
+            "ERROR": 1
+          }
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": {}
+        }
+      ],
+      "hints": [
+        "Validate the separator before extracting the level.",
+        "split(\"|\", 1)[0] selects the level; normalize it and check membership."
+      ],
+      "extension": "Apply this to a synthetic device log. Add error-rate and longest-run summaries without using real personal data.",
+      "week": 12,
+      "session": 2,
+      "phase": "Projects",
+      "checkpoint": false,
+      "starter": "def log_counts(lines):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 47,
+      "title": "Independent build: interview explanation",
+      "concept": "An interview solution includes a correct algorithm, examples, and a clear complexity explanation. Solve for correctness first, then improve unnecessary work.",
+      "example": "Explain why the chosen data structure fits the operation.",
+      "task": "Write first_unique(text). Return the first character that occurs exactly once, preserving case and including spaces. Return None if no such character exists. Aim for O(n) time.",
+      "name": "first_unique",
+      "args": "text",
+      "solution": "def first_unique(text):\n    counts = {}\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    for char in text:\n        if counts[char] == 1:\n            return char\n    return None\n",
+      "cases": [
+        {
+          "args": [
+            "aabbcdd"
+          ],
+          "expected": "c"
+        },
+        {
+          "args": [
+            "aabb"
+          ],
+          "expected": null
+        },
+        {
+          "args": [
+            ""
+          ],
+          "expected": null
+        },
+        {
+          "args": [
+            "AaA"
+          ],
+          "expected": "a"
+        }
+      ],
+      "hints": [
+        "You need full counts before knowing which early character is unique.",
+        "Use two passes: count all characters, then scan the original text for count == 1."
+      ],
+      "extension": "Record a two-minute explanation: approach, example, empty case, O(n) time, O(k) space for k distinct characters.",
+      "week": 12,
+      "session": 3,
+      "phase": "Projects",
+      "checkpoint": false,
+      "starter": "def first_unique(text):\n    # Write your solution here\n    pass\n"
+    },
+    {
+      "id": 48,
+      "title": "Final checkpoint: build from a spec",
+      "concept": "Confidence is evidence accumulated across different tasks. Passing these checks is a milestone; shipping an independent project and debugging new failures are the next proof.",
+      "example": "Write a plan. Implement. Test. Explain. Extend.",
+      "task": "Write recommend(games, budget). Each game has title, price, rating. Keep games priced <= budget. Return up to 3 titles ranked by rating descending, then price ascending, then title alphabetically. Do not change the input list.",
+      "name": "recommend",
+      "args": "games, budget",
+      "solution": "def recommend(games, budget):\n    eligible = [game for game in games if game[\"price\"] <= budget]\n    ordered = sorted(eligible, key=lambda game: (-game[\"rating\"], game[\"price\"], game[\"title\"]))\n    return [game[\"title\"] for game in ordered[:3]]\n",
+      "cases": [
+        {
+          "args": [
+            [
+              {
+                "title": "B",
+                "price": 10,
+                "rating": 9
+              },
+              {
+                "title": "A",
+                "price": 5,
+                "rating": 9
+              },
+              {
+                "title": "C",
+                "price": 50,
+                "rating": 10
+              }
+            ],
+            20
+          ],
+          "expected": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "args": [
+            [],
+            20
+          ],
+          "expected": []
+        },
+        {
+          "args": [
+            [
+              {
+                "title": "D",
+                "price": 1,
+                "rating": 1
+              },
+              {
+                "title": "C",
+                "price": 1,
+                "rating": 1
+              },
+              {
+                "title": "B",
+                "price": 1,
+                "rating": 1
+              },
+              {
+                "title": "A",
+                "price": 1,
+                "rating": 1
+              }
+            ],
+            1
+          ],
+          "expected": [
+            "A",
+            "B",
+            "C"
+          ]
+        }
+      ],
+      "hints": [
+        "Filter, sort with a three-part key, then take three.",
+        "The sorting key is (-rating, price, title). Use sorted() to avoid mutating the input."
+      ],
+      "extension": "Choose your own project and ship it with a README and tests. Rebuild one earlier checkpoint after a week, then practice a new problem in each pattern without hints.",
+      "week": 12,
+      "session": 4,
+      "phase": "Projects",
+      "checkpoint": true,
+      "starter": "def recommend(games, budget):\n    # Write your solution here\n    pass\n"
+    }
+  ]
+}
