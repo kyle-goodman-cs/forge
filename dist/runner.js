@@ -40,8 +40,8 @@ with contextlib.redirect_stdout(_forge_stdout), contextlib.redirect_stderr(_forg
             _forge_satisfied = True
             if _forge_requirement == 'loop':
                 _forge_satisfied = any(isinstance(node, (ast.For, ast.While)) for node in _forge_nodes)
-            elif _forge_requirement in ('while', 'class', 'yield', 'raise', 'try'):
-                _forge_kind = {'while': ast.While, 'class': ast.ClassDef, 'yield': ast.Yield, 'raise': ast.Raise, 'try': ast.Try}[_forge_requirement]
+            elif _forge_requirement in ('while', 'class', 'yield', 'raise', 'try', 'with'):
+                _forge_kind = {'while': ast.While, 'class': ast.ClassDef, 'yield': ast.Yield, 'raise': ast.Raise, 'try': ast.Try, 'with': ast.With}[_forge_requirement]
                 _forge_satisfied = any(isinstance(node, _forge_kind) for node in _forge_nodes)
             elif _forge_requirement == 'function':
                 _forge_satisfied = sum(isinstance(node, ast.FunctionDef) for node in _forge_nodes) >= 2

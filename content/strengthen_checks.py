@@ -17,6 +17,9 @@ E={
 # Boundary cases added after mutation testing (edition 3): each kills a realistic off-by-one or comparison bug.
 E2={93: [([{'A': 1, 'B': 2}, 1], ['B']), ([{'A': 1}, -1], [])], 96: [([[{'user': 'z', 'timestamp': 0}], 1], ['z']), ([[{'user': '  ', 'timestamp': 4}, {'user': 'q', 'timestamp': -1}, {'user': 'k', 'timestamp': 2}], 3], ['k']), ([[{'user': 'a', 'timestamp': 1}, {'user': 'b', 'timestamp': 2}], 1], ['b'])], 51: [([{'APP_PORT': '1'}], 1)], 81: [([5, 1], {'event': 'import_finished', 'level': 'WARNING', 'accepted': 5, 'rejected': 1})], 68: [([[429, 200]], [1]), ([[600, 200]], []), ([[599, 503]], [1])], 71: [([[1, 2], 1], [[1], [2]])]}
 for k,v in E2.items(): E.setdefault(k,[]).extend(v)
+# Added by the content audit: real gaps a mutation search found (the other survivors were equivalent programs).
+E3={15:[([10,1],10)],35:[([[-2,-3],2],-5)],50:[([[' M a.py','MM b.py','?? c.py','A  d.py']],{'staged':2,'unstaged':2,'untracked':1})],78:[([['B','A'],0,0],[]),([['B','A'],-1,1],['A'])]}
+for k,v in E3.items(): E.setdefault(k,[]).extend(v)
 for lesson in data['lessons']:
  for args,expected in E.get(lesson['id'],[]):
   case={'args':args,'expected':expected}

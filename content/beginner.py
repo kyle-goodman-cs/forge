@@ -8,10 +8,13 @@
   interview, hardware).
 Run after handbook.py (build_course.py does this).
 """
+import contextlib
+import io
 import json
 from pathlib import Path
 
 from build_io import write_text_atomic
+from teaching_more import PLAIN_ADD, PLAIN_NEW
 
 CS50P = "https://cs50.harvard.edu/python/weeks/"
 CS50X = "https://cs50.harvard.edu/x/"
@@ -87,10 +90,10 @@ PLAIN = {
              code='def dungeon(commands):\n    x, y = 0, 0                      # state\n    for cmd in commands:             # inputs, one at a time\n        if cmd == "N":\n            y += 1\n        elif cmd == "S":\n            y -= 1\n        elif cmd == "E":\n            x += 1\n        elif cmd == "W":\n            x -= 1\n        # unknown commands: state unchanged\n    return [x, y]'),
         dict(title="Clamping and invariants",
              text="An invariant is a rule that must always stay true, such as 'health is never negative'. Enforce it every time state changes. max(0, value) keeps a value from going below 0; min(limit, value) keeps it from going above a limit.",
-             code="hp = max(0, hp - damage)        # never below 0\nhp = min(max_hp, hp + heal)     # never above max_hp"),
+             code="hp, max_hp, damage, heal = 5, 30, 8, 50\nhp = max(0, hp - damage)        # never below 0\nhp = min(max_hp, hp + heal)     # never above max_hp"),
         dict(title="while loops need an exit",
              text="for loops over a collection always end. while loops keep going as long as a condition is True, so something inside must eventually make it False. If a run hits Forge's time limit, an infinite loop is the usual cause: check that every path changes the loop variable.",
-             code="turns = 0\nwhile hp > 0:\n    hp -= damage    # this line is what eventually ends the loop\n    turns += 1"),
+             code="hp, damage = 10, 3\nturns = 0\nwhile hp > 0:\n    hp -= damage    # this line is what eventually ends the loop\n    turns += 1"),
         dict(title="Splitting code into functions",
              text="When one function gets long, pull a piece out into its own named function: move(x, y, cmd) inside dungeon(commands). Small functions are easier to test, name, and explain in an interview. A good rule: if you can't describe what a function does in one sentence, it's doing too much."),
     ],
@@ -99,7 +102,7 @@ PLAIN = {
              text="A SyntaxError means Python can't even read your code (a missing colon or bracket). A runtime error (ValueError, KeyError, TypeError, ZeroDivisionError…) happens while the code runs. A logic error is the sneakiest: no crash, just a wrong answer. The checks catch logic errors; tracing finds them."),
         dict(title="Reading a traceback",
              text="When Python crashes it prints a traceback. Read it from the bottom up. The last line names the error and gives a message. The line above it shows where it happened in your file. That's usually enough to find the problem.",
-             code='Traceback (most recent call last):\n  File "solution.py", line 3, in average_score\n    return sum(scores) / len(scores)\nZeroDivisionError: division by zero\n\n# Bottom line: dividing by zero.\n# Line 3: len(scores) was 0, so the list was empty.\n# Fix: handle the empty list before dividing.'),
+             code='Traceback (most recent call last):\n  File "solution.py", line 3, in average_score\n    return sum(scores) / len(scores)\nZeroDivisionError: division by zero\n\n# Bottom line: dividing by zero.\n# Line 3: len(scores) was 0, so the list was empty.\n# Fix: handle the empty list before dividing.', shell=True),
         dict(title="try / except: expecting failure",
              text="Some failures are normal, such as a user typing 'abc' where a number belongs. try runs code that might fail; except catches a specific error and lets you respond. Always name the error you expect (except ValueError:). A bare except: hides real bugs too.",
              code="def parse_level(text):\n    try:\n        level = int(text)\n    except ValueError:\n        return None          # not a number at all\n    if 1 <= level <= 100:\n        return level\n    return None              # a number, but out of range"),
@@ -109,7 +112,7 @@ PLAIN = {
     6: [
         dict(title="Files, briefly",
              text="Programs read and write files with open(). Use it inside a with block, which closes the file for you even if something goes wrong. In Forge's browser exercises you'll usually get the file's text as a string, so you can focus on processing. The local labs use real files.",
-             code='with open("scores.json") as f:\n    text = f.read()\n# the file is closed here automatically'),
+             code='with open("scores.json") as f:\n    text = f.read()\n# the file is closed here automatically', shell=True),
         dict(title="JSON: data as text",
              text="JSON is the most common format for sending data between programs and APIs. It looks like Python dictionaries and lists, but it is text. json.loads(text) turns it into Python objects; json.dumps(obj) turns objects back into text.",
              code='import json\ndata = json.loads(\'{"hp": 5, "tags": ["rpg"]}\')\nprint(data["hp"] + 1)              # 6\nprint(json.dumps({"ok": True}))     # {"ok": true}'),
@@ -134,7 +137,7 @@ PLAIN = {
              text="Entry-level technical interviews mostly test whether you can: understand a problem and ask about edge cases, get to a correct solution, explain your thinking while you work, and reason about efficiency. Fancy tricks matter much less than clear thinking out loud.\n\nA reliable script: restate the problem, try a small example by hand, describe a simple approach, code it, test it on your example and an edge case, then discuss how fast it is and whether it can be improved."),
         dict(title="Big O in plain English",
              text="Big O describes how the work grows as the input grows. Looking at every item once is O(n): double the input, double the work. Comparing every item with every other item is O(n²): double the input, four times the work. Looking something up in a dictionary or set is about O(1): it stays fast no matter how big it gets.",
-             code="# O(n²): checks every pair\nfor i in range(len(nums)):\n    for j in range(i + 1, len(nums)):\n        ...\n\n# O(n): one pass with a set\nseen = set()\nfor n in nums:\n    if n in seen:      # O(1) lookup\n        ..."),
+             code="nums = [3, 1, 3]\n\n# O(n²): checks every pair\nfor i in range(len(nums)):\n    for j in range(i + 1, len(nums)):\n        ...\n\n# O(n): one pass with a set\nseen = set()\nfor n in nums:\n    if n in seen:      # O(1) lookup\n        ..."),
         dict(title="The hash-map trick",
              text="Many interview problems ask 'is there an earlier item that pairs with this one?' Instead of searching backward every time (slow), remember what you've seen in a dictionary (fast). That turns an O(n²) solution into O(n), and it's the single most useful interview idea.",
              code="def two_sum(nums, target):\n    seen = {}                        # value -> index\n    for i, n in enumerate(nums):\n        need = target - n\n        if need in seen:\n            return [seen[need], i]\n        seen[n] = i\n    return []"),
@@ -163,7 +166,7 @@ PLAIN = {
              text="Real tools are small functions connected together: read input, clean it, process it, and write output. Keep the pieces separate. The functions that do the work should take plain values and return plain values (easy to test), and a thin outer layer handles files and printing.\n\nWrite down what 'done' means before you start: a couple of example inputs with their exact expected outputs. Those examples become your tests."),
         dict(title="Tests you write yourself",
              text="A test calls your function with a known input and checks the result. Python's built-in unittest module runs a folder of these automatically. In the local labs you'll write them. Every bug you fix should leave behind a test that would have caught it.",
-             code="import unittest\nfrom core import merge_library\n\nclass TestMerge(unittest.TestCase):\n    def test_same_title_different_case(self):\n        records = [{\"title\": \"Hades\", \"minutes\": 30}, {\"title\": \"hades\", \"minutes\": 15}]\n        self.assertEqual(merge_library(records), {\"hades\": 45})"),
+             code="import unittest\nfrom core import merge_library\n\nclass TestMerge(unittest.TestCase):\n    def test_same_title_different_case(self):\n        records = [{\"title\": \"Hades\", \"minutes\": 30}, {\"title\": \"hades\", \"minutes\": 15}]\n        self.assertEqual(merge_library(records), {\"hades\": 45})", shell=True),
     ],
     12: [
         dict(title="Proving it to yourself",
@@ -188,20 +191,35 @@ QUESTLINES = {
 }
 
 
+def check_examples():
+    """Every example in teaching_more.py must run, apart from terminal commands."""
+    for group in (PLAIN_ADD, PLAIN_NEW):
+        for week, sections in group.items():
+            for section in sections:
+                if section.get("code") and not section.get("shell"):
+                    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                        try:
+                            exec(compile(section["code"], section["title"], "exec"), {"__name__": "__main__"})
+                        except Exception as err:
+                            raise SystemExit(f"Week {week} example '{section['title']}' fails: {err!r}")
+
+
 def main():
+    check_examples()
     path = Path(__file__).resolve().parent.parent / "dist" / "handbook.json"
     book = json.loads(path.read_text(encoding="utf-8"))
+    plain = {w: PLAIN.get(w, []) + PLAIN_NEW.get(w, []) + PLAIN_ADD.get(w, []) for w in sorted({*PLAIN, *PLAIN_NEW, *PLAIN_ADD})}
     for unit in book["units"]:
         w = unit["week"]
-        if w in PLAIN:
-            unit["plain"] = PLAIN[w]
+        if w in plain:
+            unit["plain"] = plain[w]
         if w in WATCH:
             label, url = WATCH[w]
             unit["watch"] = {"label": label, "url": url}
     book["questlines"] = QUESTLINES
     write_text_atomic(path, json.dumps(book, indent=2, ensure_ascii=False))
-    words = sum(len((s["text"] + " " + s.get("code", "")).split()) for v in PLAIN.values() for s in v)
-    print(f"Beginner teaching added to {len(PLAIN)} weeks (~{words} words) and {len(QUESTLINES)} questline guides.")
+    words = sum(len((s["text"] + " " + s.get("code", "")).split()) for v in plain.values() for s in v)
+    print(f"Beginner teaching added to {len(plain)} weeks (~{words} words) and {len(QUESTLINES)} questline guides.")
 
 
 if __name__ == "__main__":

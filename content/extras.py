@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 from build_io import write_text_atomic  # noqa: E402
 from extras_python import DRILLS, BUGS, INTERVIEW, HARDWARE  # noqa: E402
+from extras_more import ESSENTIALS, DRILLS2, BUGS2  # noqa: E402
 from extras_sql import PROBLEMS, DATA, fixture_sql, SCHEMA_NOTE  # noqa: E402
 
 TRACK = {
@@ -46,6 +47,8 @@ HARDEN = {
 
 
 def chapter_for(track, index, item):
+    if item.get("ch"):
+        return item["ch"]
     if track == "drill":
         return "grind-" + str((item["w"] + 1) // 2)
     if track == "bug":
@@ -117,12 +120,13 @@ def main():
             "week": item.get("w", 16), "session": sessions[chapter], "phase": meta["phase"], "checkpoint": False,
             "objectives": meta["objectives"], "resources": core_resources.get(item.get("w", 16), ["python"]),
             "prerequisites": [], "referenceOnly": False, "practicePlan": [], "requirements": item.get("requirements", []),
+            "packages": item.get("packages", []),
             "track": track, "chapter": chapter, "unlock": unlock_for(track, item), "badge": meta["badge"],
         }
         next_id += 1
         return lesson
 
-    for track, items in (("drill", DRILLS), ("bug", BUGS), ("interview", INTERVIEW), ("hardware", HARDWARE)):
+    def add_python(track, items):
         for index, item in enumerate(items):
             l = base(track, item, index)
             name = item["name"]
@@ -135,6 +139,9 @@ def main():
                 assert not passes_all(item["starter"], name, l["cases"], l["noMutation"]), f"{name}: buggy starter passes every case"
             assert json.loads(json.dumps(l["cases"])) == l["cases"], f"{name}: expected values change in JSON (e.g. number dict keys)"
             added.append(l)
+
+    for track, items in (("drill", DRILLS), ("bug", BUGS), ("interview", INTERVIEW), ("hardware", HARDWARE)):
+        add_python(track, items)
 
     fixtures = [fixture_sql(d) for d in DATA]
     for index, item in enumerate(PROBLEMS):
@@ -153,6 +160,19 @@ def main():
                  sqlPreview=f"Expected with the practice data ({len(rows)} row{'s' if len(rows) != 1 else ''}):\n{preview}",
                  concept=item["concept"] + " " + SCHEMA_NOTE)
         added.append(l)
+
+    # Appended after the SQL quests so that every older lesson keeps its id.
+    for track, items in (("drill", ESSENTIALS), ("drill", DRILLS2), ("bug", BUGS2)):
+        add_python(track, items)
+
+    names = [l["name"] for l in added if l["track"] != "sql"]
+    repeats = sorted({n for n in names if names.count(n) > 1 and n != "binary_search"})
+    assert not repeats, f"function names must be unique (HARDEN keys on them): {repeats}"
+    chapters = {}
+    for l in added:
+        chapters[l["chapter"]] = chapters.get(l["chapter"], 0) + 1
+    too_long = {k: v for k, v in chapters.items() if v > 10}
+    assert not too_long, f"chapter maps fit 10 quests at most: {too_long}"
 
     data["lessons"] = lessons + added
     write_text_atomic(path, json.dumps(data, indent=2))

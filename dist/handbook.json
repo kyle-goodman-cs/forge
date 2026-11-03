@@ -102,6 +102,16 @@
         {
           "title": "How to attack any challenge",
           "text": "1. Read the task twice and write down the inputs and the output.\n2. Work two examples by hand, including an edge case such as 0, an empty list, or the exact boundary value.\n3. Write the function. Keep it boring and obvious.\n4. Run the checks. If one fails, read its input, expected value, and received value, then trace your code line by line with that exact input.\n\nThe tracing in step 4 is the skill you're building. It's what lets you check AI-written code later instead of trusting it blindly."
+        },
+        {
+          "title": "Values have types",
+          "text": "Every value has a type, and the type decides what you can do with it. 7 is an int (a whole number). 7.5 is a float (a number with a decimal point). \"7\" is a str (text), even though it looks like a number. True and False are bools.\n\nMixing them is the first error most people hit. \"7\" + 1 fails because Python won't guess whether you meant text or maths. Convert on purpose with int(), float(), or str(). When you're unsure, type() tells you what you have.",
+          "code": "print(type(7), type(7.5), type(\"7\"), type(True))\nprint(int(\"7\") + 1)      # 8\nprint(\"7\" + str(1))      # 71: joining text, not adding\nprint(7 / 2, 7 // 2, 7 % 2)   # 3.5 3 1: divide, whole divide, remainder"
+        },
+        {
+          "title": "Text, and building it with f-strings",
+          "text": "Text goes in quotes. len() counts its characters, and methods like .lower() and .strip() return a cleaned-up copy without changing the original.\n\nTo put values inside text, use an f-string: put f before the quote and any expression inside { }. It's clearer than gluing pieces together with +, and it converts numbers for you.",
+          "code": "name = \"  Ada \"\nclean = name.strip()\nhp = 30\nprint(len(clean))\nprint(f\"{clean} has {hp} HP\")\nprint(f\"Half of that is {hp / 2}\")"
         }
       ],
       "watch": {
@@ -208,6 +218,16 @@
           "title": "Strings are sequences too",
           "text": "A string is a sequence of characters, so you can loop over it, index it, and slice it. Strings never change in place: methods like .strip(), .lower(), and .replace() return a new string, so you must keep the result.",
           "code": "name = \"  Dark Souls \"\nname.strip()               # returns \"Dark Souls\" but name is unchanged!\nname = name.strip()        # keep the result\nprint(name.lower().replace(\" \", \"_\"))   # dark_souls"
+        },
+        {
+          "title": "zip and enumerate",
+          "text": "Two tools replace most manual index counting. enumerate gives you each item with its position. zip walks two lists side by side and stops at the shorter one.\n\nIf you catch yourself writing for i in range(len(items)), one of these is usually cleaner.",
+          "code": "items = [\"sword\", \"shield\"]\nprices = [50, 30]\nfor i, item in enumerate(items, start=1):\n    print(i, item)\nfor item, price in zip(items, prices):\n    print(item, \"costs\", price)"
+        },
+        {
+          "title": "A loop inside a loop",
+          "text": "A nested loop runs the whole inner loop once for every pass of the outer loop. It's how you visit every pair of things, or every cell of a grid. Trace it slowly the first few times: the inner variable resets on each outer pass.",
+          "code": "for row in range(2):\n    for col in range(3):\n        print(row, col)"
         }
       ],
       "watch": {
@@ -315,6 +335,11 @@
           "title": "Sorting with a key",
           "text": "sorted(items, key=...) sorts by whatever the key function returns. A tuple key sorts by the first part, then the second to break ties. Negating a number flips it to descending without reversing the tie-breaker.",
           "code": "players = [{\"name\": \"bo\", \"score\": 5}, {\"name\": \"ana\", \"score\": 5}, {\"name\": \"cy\", \"score\": 9}]\nordered = sorted(players, key=lambda p: (-p[\"score\"], p[\"name\"]))\nprint([p[\"name\"] for p in ordered])   # ['cy', 'ana', 'bo']"
+        },
+        {
+          "title": "Data inside data",
+          "text": "Real data nests: lists of dictionaries, dictionaries of lists, dictionaries inside dictionaries. Nothing new is happening. Each [ ] reads one level, left to right, and every step gives you a value you can index again.\n\nWhen it feels confusing, print one level at a time and see what you've got.",
+          "code": "players = [\n    {\"name\": \"Ada\", \"scores\": [10, 40]},\n    {\"name\": \"Bo\", \"scores\": [25]},\n]\nprint(players[0][\"name\"])        # Ada\nprint(players[0][\"scores\"][1])   # 40\nfor p in players:\n    print(p[\"name\"], max(p[\"scores\"]))"
         }
       ],
       "watch": {
@@ -406,12 +431,12 @@
         {
           "title": "Clamping and invariants",
           "text": "An invariant is a rule that must always stay true, such as 'health is never negative'. Enforce it every time state changes. max(0, value) keeps a value from going below 0; min(limit, value) keeps it from going above a limit.",
-          "code": "hp = max(0, hp - damage)        # never below 0\nhp = min(max_hp, hp + heal)     # never above max_hp"
+          "code": "hp, max_hp, damage, heal = 5, 30, 8, 50\nhp = max(0, hp - damage)        # never below 0\nhp = min(max_hp, hp + heal)     # never above max_hp"
         },
         {
           "title": "while loops need an exit",
           "text": "for loops over a collection always end. while loops keep going as long as a condition is True, so something inside must eventually make it False. If a run hits Forge's time limit, an infinite loop is the usual cause: check that every path changes the loop variable.",
-          "code": "turns = 0\nwhile hp > 0:\n    hp -= damage    # this line is what eventually ends the loop\n    turns += 1"
+          "code": "hp, damage = 10, 3\nturns = 0\nwhile hp > 0:\n    hp -= damage    # this line is what eventually ends the loop\n    turns += 1"
         },
         {
           "title": "Splitting code into functions",
@@ -506,7 +531,8 @@
         {
           "title": "Reading a traceback",
           "text": "When Python crashes it prints a traceback. Read it from the bottom up. The last line names the error and gives a message. The line above it shows where it happened in your file. That's usually enough to find the problem.",
-          "code": "Traceback (most recent call last):\n  File \"solution.py\", line 3, in average_score\n    return sum(scores) / len(scores)\nZeroDivisionError: division by zero\n\n# Bottom line: dividing by zero.\n# Line 3: len(scores) was 0, so the list was empty.\n# Fix: handle the empty list before dividing."
+          "code": "Traceback (most recent call last):\n  File \"solution.py\", line 3, in average_score\n    return sum(scores) / len(scores)\nZeroDivisionError: division by zero\n\n# Bottom line: dividing by zero.\n# Line 3: len(scores) was 0, so the list was empty.\n# Fix: handle the empty list before dividing.",
+          "shell": true
         },
         {
           "title": "try / except: expecting failure",
@@ -516,6 +542,11 @@
         {
           "title": "Validate early",
           "text": "Check bad input at the top of the function and return early. Then the rest of the function can assume clean data. This guard-clause style is easier to read than deeply nested if/else blocks.\n\nWatch out for truthiness: 0, \"\", [], and None all count as False in an if. 'if not value' can reject a legitimate 0. When 0 is valid, check explicitly: 'if value is None'."
+        },
+        {
+          "title": "Raising your own errors",
+          "text": "So far you've caught errors that Python raises. You can raise them too. When a function gets something it can't work with, raise stops it immediately and hands the problem to the caller.\n\nThis beats returning a strange value like -1, which a caller can forget to check. Exceptions can't be ignored by accident: they keep travelling up until something catches them.",
+          "code": "def withdraw(balance, amount):\n    if amount > balance:\n        raise ValueError(\"not enough funds\")\n    return balance - amount\n\ntry:\n    print(withdraw(10, 3))\n    print(withdraw(10, 50))\nexcept ValueError as err:\n    print(\"Problem:\", err)"
         }
       ],
       "watch": {
@@ -602,7 +633,8 @@
         {
           "title": "Files, briefly",
           "text": "Programs read and write files with open(). Use it inside a with block, which closes the file for you even if something goes wrong. In Forge's browser exercises you'll usually get the file's text as a string, so you can focus on processing. The local labs use real files.",
-          "code": "with open(\"scores.json\") as f:\n    text = f.read()\n# the file is closed here automatically"
+          "code": "with open(\"scores.json\") as f:\n    text = f.read()\n# the file is closed here automatically",
+          "shell": true
         },
         {
           "title": "JSON: data as text",
@@ -618,6 +650,11 @@
           "title": "Paths are structured",
           "text": "pathlib.Path understands file paths, so you don't have to slice strings yourself. It knows the file name (.name), the extension (.suffix), and the name without it (.stem).",
           "code": "from pathlib import Path\np = Path(\"saves/slot1.json\")\nprint(p.name, p.suffix, p.stem)   # slot1.json .json slot1"
+        },
+        {
+          "title": "Reading and writing a real file",
+          "text": "The browser has a small private file system, so real file code works here too. Mode \"w\" creates or replaces a file, \"a\" adds to the end, and \"r\" (the default) reads. Looping over a file gives one line at a time, and each line keeps its newline, so strip it.\n\nThe with block closes the file for you, even if an error happens inside it. Always use with.",
+          "code": "import os, tempfile\npath = os.path.join(tempfile.mkdtemp(), \"scores.txt\")\nwith open(path, \"w\") as f:\n    f.write(\"Ada,10\\n\")\n    f.write(\"Bo,25\\n\")\nwith open(path) as f:\n    for line in f:\n        name, score = line.strip().split(\",\")\n        print(name, int(score))"
         }
       ],
       "watch": {
@@ -803,7 +840,7 @@
         {
           "title": "Big O in plain English",
           "text": "Big O describes how the work grows as the input grows. Looking at every item once is O(n): double the input, double the work. Comparing every item with every other item is O(n²): double the input, four times the work. Looking something up in a dictionary or set is about O(1): it stays fast no matter how big it gets.",
-          "code": "# O(n²): checks every pair\nfor i in range(len(nums)):\n    for j in range(i + 1, len(nums)):\n        ...\n\n# O(n): one pass with a set\nseen = set()\nfor n in nums:\n    if n in seen:      # O(1) lookup\n        ..."
+          "code": "nums = [3, 1, 3]\n\n# O(n²): checks every pair\nfor i in range(len(nums)):\n    for j in range(i + 1, len(nums)):\n        ...\n\n# O(n): one pass with a set\nseen = set()\nfor n in nums:\n    if n in seen:      # O(1) lookup\n        ..."
         },
         {
           "title": "The hash-map trick",
@@ -1000,6 +1037,21 @@
         {
           "title": "When to use a class",
           "text": "Use a plain function when you just transform input into output. Use a class when something has state that changes over time and rules that protect it, like a wallet that can never go negative. Don't make classes just because it feels more professional; simpler is better."
+        },
+        {
+          "title": "Reading self",
+          "text": "self trips up nearly everyone at first. It just means 'the object this method was called on'. When you write w.spend(4), Python really runs Wallet.spend(w, 4), so inside the method, self is w.\n\nThat's how two wallets can share the same code and still keep separate balances: each method call works on its own object.",
+          "code": "class Wallet:\n    def __init__(self, balance):\n        self.balance = balance\n\n    def add(self, amount):\n        self.balance += amount\n\na = Wallet(5)\nb = Wallet(100)\na.add(1)\nprint(a.balance, b.balance)   # 6 100: separate objects"
+        },
+        {
+          "title": "Inheritance: a kind of",
+          "text": "class Boss(Enemy) means a Boss is a kind of Enemy. It gets every method for free, and can override the ones that differ. super() calls the parent's version, so shared rules stay in one place.\n\nUse it only for a real 'is a kind of' relationship. If you only want to reuse some code, a helper function or an object held in an attribute is usually simpler. That's week 18's composition.",
+          "code": "class Enemy:\n    def __init__(self, hp):\n        self.hp = hp\n\n    def take_hit(self, damage):\n        self.hp = max(0, self.hp - damage)\n\nclass Boss(Enemy):\n    def take_hit(self, damage):\n        super().take_hit(damage // 2)\n\nb = Boss(100)\nb.take_hit(40)\nprint(b.hp)   # 80"
+        },
+        {
+          "title": "Special methods",
+          "text": "Methods with double underscores plug your class into Python's own syntax. __str__ controls what print shows. __eq__ controls ==. __len__ makes len() work.\n\nWithout __eq__, two objects with identical data are not equal, because == falls back to asking whether they're the same object.",
+          "code": "class Point:\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n\n    def __eq__(self, other):\n        return self.x == other.x and self.y == other.y\n\n    def __str__(self):\n        return f\"({self.x}, {self.y})\"\n\nprint(Point(1, 2) == Point(1, 2))  # True\nprint(Point(1, 2))                 # (1, 2)"
         }
       ],
       "watch": {
@@ -1091,7 +1143,18 @@
         {
           "title": "Tests you write yourself",
           "text": "A test calls your function with a known input and checks the result. Python's built-in unittest module runs a folder of these automatically. In the local labs you'll write them. Every bug you fix should leave behind a test that would have caught it.",
-          "code": "import unittest\nfrom core import merge_library\n\nclass TestMerge(unittest.TestCase):\n    def test_same_title_different_case(self):\n        records = [{\"title\": \"Hades\", \"minutes\": 30}, {\"title\": \"hades\", \"minutes\": 15}]\n        self.assertEqual(merge_library(records), {\"hades\": 45})"
+          "code": "import unittest\nfrom core import merge_library\n\nclass TestMerge(unittest.TestCase):\n    def test_same_title_different_case(self):\n        records = [{\"title\": \"Hades\", \"minutes\": 30}, {\"title\": \"hades\", \"minutes\": 15}]\n        self.assertEqual(merge_library(records), {\"hades\": 45})",
+          "shell": true
+        },
+        {
+          "title": "What makes a good test",
+          "text": "A test is only worth something if it could fail. Before you write one, ask: what bug would this catch? Then choose inputs that separate the right answer from likely wrong ones.\n\nFor most functions that means a normal case, an empty case, the exact boundaries, and something invalid. A suite that only tries one friendly input feels safe and proves almost nothing.\n\nThe new 'Write tests that catch bugs' quests give you broken code and ask you to write the tests that expose it.",
+          "code": "def clamp(x, low, high):\n    return max(low, min(x, high))\n\nassert clamp(5, 0, 10) == 5     # normal\nassert clamp(-1, 0, 10) == 0    # below\nassert clamp(11, 0, 10) == 10   # above\nassert clamp(0, 0, 10) == 0     # exact edge\nprint(\"all passed\")"
+        },
+        {
+          "title": "Modules and the main guard",
+          "text": "Any .py file can be imported by another. Keep logic in functions in one file (core.py) and put printing and input in another (main.py). That separation is what makes your code testable.\n\nThe line if __name__ == \"__main__\": runs its block only when the file is run directly, not when it's imported. Your tests can import the file without kicking off the program.",
+          "code": "def add(a, b):\n    return a + b\n\ndef main():\n    print(add(2, 3))\n\nif __name__ == \"__main__\":\n    main()"
         }
       ],
       "watch": {
@@ -1178,6 +1241,15 @@
         {
           "title": "Proving it to yourself",
           "text": "This week's challenges come with less guidance on purpose. That's the point: confidence comes from finishing something you weren't walked through. If you get stuck, go back to the method from week 1: write the inputs and outputs, work an example by hand, write the simplest correct code, and trace the failing case.\n\nUse the help ladder honestly. A redo bounty later is a better outcome than a fake clear now."
+        },
+        {
+          "title": "When you're stuck on a blank page",
+          "text": "A blank page is hard because you're trying to hold the whole program in your head. Don't. Work through these in order:\n\n1. Write one example input and its exact output as a comment.\n2. Solve that example by hand, and write down the steps in plain words.\n3. Turn each step into a comment.\n4. Fill in the code under one comment at a time, running as you go.\n5. Only then think about edge cases.\n\nAlmost every program is built from patterns you already know: an accumulator, a counter, a dictionary lookup, a filter, a best-so-far. Ask which one fits.",
+          "code": "# Example: [\"a\", \"b\", \"a\"] -> {\"a\": 2, \"b\": 1}\n# 1. start with an empty dictionary\n# 2. for each word, add 1 to its count\n# 3. return the dictionary\ndef count_words(words):\n    counts = {}\n    for word in words:\n        counts[word] = counts.get(word, 0) + 1\n    return counts\n\nprint(count_words([\"a\", \"b\", \"a\"]))"
+        },
+        {
+          "title": "Checking your own confidence",
+          "text": "Confidence doesn't come from finishing lessons. It comes from evidence. After this week, try this test: open a blank file, close Forge, and rebuild any weeks 1–9 exercise from memory.\n\nIf you can do that with a few quick lookups, the foundations are solid and you're ready for week 13. If not, spend a week in the practice grinds and the skill review first. Going back isn't failing; moving on with shaky foundations is what makes weeks 13–24 feel impossible."
         }
       ],
       "watch": {
@@ -1263,7 +1335,26 @@
       "week": 13,
       "title": "Work like a developer",
       "phase": "Developer tools",
-      "prerequisites": "Weeks 1–12, especially prove your foundations"
+      "prerequisites": "Weeks 1–12, especially prove your foundations",
+      "plain": [
+        {
+          "title": "The terminal, in plain English",
+          "text": "The terminal is a text way of telling your computer what to do. You'll use a few commands constantly: cd changes folder, ls (or dir) lists files, and python runs a script. Everything you do in a file manager can be done here, and it can be automated, which is why developers use it.\n\nAnything typed after your script's name reaches your program as a list of strings. A program that takes arguments can be used by other programs, not just by you.",
+          "code": "cd my_project\npython -m venv .venv\npython report.py --limit 5 --dry-run",
+          "shell": true
+        },
+        {
+          "title": "Git: save points with notes",
+          "text": "Git keeps a history of your project. Think of it as save points in a game, each with a note saying what changed. There are three places a change can be: your working folder (edited), the staging area (chosen for the next save), and the history (saved).\n\ngit status shows where everything is. git add chooses, git commit saves, and git diff shows exactly what changed. Run git status often; it's always safe.\n\nThe habit that matters: small commits with clear messages, so you can always get back to something that worked.",
+          "code": "git status\ngit add report.py\ngit commit -m \"Add --limit option\"\ngit log --oneline",
+          "shell": true
+        },
+        {
+          "title": "Configuration belongs outside your code",
+          "text": "Passwords, API keys, and settings that change between machines shouldn't be in your source code. Read them from the environment instead. Environment values are always text, so \"0\" and \"false\" are both truthy strings: compare them, don't just test them.\n\nNever commit a secret. Removing it later doesn't help, because Git remembers everything.",
+          "code": "import os\nport = int(os.environ.get(\"APP_PORT\", \"8000\"))\ndebug = os.environ.get(\"DEBUG\", \"\").lower() in (\"1\", \"true\")\nprint(port, debug)"
+        }
+      ]
     },
     {
       "goals": [
@@ -1342,7 +1433,25 @@
       "week": 14,
       "title": "Test and debug deliberately",
       "phase": "Engineering",
-      "prerequisites": "Weeks 1–13, especially work like a developer"
+      "prerequisites": "Weeks 1–13, especially work like a developer",
+      "plain": [
+        {
+          "title": "Debugging is a method, not a talent",
+          "text": "Good debuggers aren't smarter. They guess less. The loop is always the same:\n\n1. Reproduce it with the smallest input that fails.\n2. Say what you expected and what actually happened.\n3. Form one guess about why.\n4. Test that guess with a print or a debugger, not by changing code at random.\n5. Fix it, then keep a test so it can't come back.\n\nIf you've changed three things and don't know which one helped, go back. A breakpoint() line pauses your program so you can look at every variable.",
+          "code": "def average(nums):\n    total = 0\n    for n in nums:\n        total += n\n        print(\"n =\", n, \"total =\", total)   # temporary: watch it change\n    return total / len(nums)\n\nprint(average([2, 4]))"
+        },
+        {
+          "title": "pytest in five minutes",
+          "text": "pytest finds functions named test_something in files named test_*.py and runs them. A plain assert is all you need. When one fails, pytest shows you both values.\n\nWrite the failing test first when you fix a bug. Watching it fail proves the test really checks the bug; watching it pass proves the fix works. Forge's browser checks work like this, and your local labs use real pytest.",
+          "code": "# test_core.py\nfrom core import add\n\ndef test_add():\n    assert add(2, 3) == 5\n\ndef test_add_negative():\n    assert add(-1, 1) == 0",
+          "shell": true
+        },
+        {
+          "title": "Custom exceptions",
+          "text": "A custom exception is a one-line class that names a problem in your program's own language. Callers can then catch exactly that problem and let everything else through. Catching plain Exception hides real bugs, so catch the narrowest thing you have a plan for.",
+          "code": "class OutOfStock(Exception):\n    pass\n\ndef buy(stock, qty):\n    if qty > stock:\n        raise OutOfStock(f\"only {stock} left\")\n    return stock - qty\n\ntry:\n    buy(1, 5)\nexcept OutOfStock as err:\n    print(\"Sorry:\", err)"
+        }
+      ]
     },
     {
       "goals": [
@@ -1419,7 +1528,24 @@
       "week": 15,
       "title": "Handle real-world data",
       "phase": "Data",
-      "prerequisites": "Weeks 1–14, especially test and debug deliberately"
+      "prerequisites": "Weeks 1–14, especially test and debug deliberately",
+      "plain": [
+        {
+          "title": "Regular expressions without the fear",
+          "text": "A regular expression describes a pattern of text. \\d is a digit, \\w a letter, digit or underscore, + means one or more, and { } gives an exact count. Parentheses capture part of a match.\n\nThere are three functions to remember. re.fullmatch checks a whole string, which is what you want for validation. re.findall gets every match. re.sub replaces them.\n\nKeep patterns short. If one is hard to read, split the job into steps or use ordinary string methods.",
+          "code": "import re\nprint(bool(re.fullmatch(r\"\\d{3}\", \"123\")))     # True\nprint(bool(re.fullmatch(r\"\\d{3}\", \"1234\")))    # False\nprint(re.findall(r\"#(\\w+)\", \"#a and #b\"))       # ['a', 'b']\nprint(re.sub(r\"\\d\", \"*\", \"pin 1234\"))           # pin ****"
+        },
+        {
+          "title": "Dates and times",
+          "text": "Dates are not text. Text can't tell you the day after February 28th, or how many days are in a month. Convert to date objects as soon as data arrives, do your work, and convert back when you need to show it.\n\nThe ISO format YYYY-MM-DD is worth using everywhere: it's unambiguous and sorts correctly even as text.",
+          "code": "from datetime import date, timedelta\nstart = date.fromisoformat(\"2024-02-28\")\nprint(start + timedelta(days=2))        # 2024-03-01: a leap year\nprint((date(2024, 12, 25) - start).days)\nprint(start.strftime(\"%b %d, %Y\"))"
+        },
+        {
+          "title": "Why money isn't a float",
+          "text": "Floats are stored in binary, which can't represent 0.1 exactly, just as a decimal can't write 1/3 exactly. The errors are tiny, but they add up, and exact comparisons fail.\n\nFor money, use Decimal built from text, or store whole cents as integers.",
+          "code": "from decimal import Decimal\nprint(0.1 + 0.2)                        # 0.30000000000000004\nprint(Decimal(\"0.10\") + Decimal(\"0.20\"))  # 0.30"
+        }
+      ]
     },
     {
       "goals": [
@@ -1495,7 +1621,24 @@
       "week": 16,
       "title": "Store and query data",
       "phase": "Databases",
-      "prerequisites": "Weeks 1–15, especially handle real-world data"
+      "prerequisites": "Weeks 1–15, especially handle real-world data",
+      "plain": [
+        {
+          "title": "What a database gives you",
+          "text": "A file holds data. A database also keeps it consistent while many things read and change it, and answers questions quickly. Data lives in tables: rows are records and columns are fields. A primary key identifies a row, and a foreign key points to a row in another table.\n\nSQL says what you want, not how to get it. Read a query in this order: FROM picks the table, WHERE filters rows, GROUP BY forms groups, SELECT chooses columns, ORDER BY sorts.",
+          "code": "import sqlite3\ndb = sqlite3.connect(\":memory:\")\ndb.execute(\"CREATE TABLE scores (name TEXT, score INTEGER)\")\ndb.executemany(\"INSERT INTO scores VALUES (?, ?)\", [(\"Ada\", 9), (\"Bo\", 4)])\nfor row in db.execute(\"SELECT name FROM scores WHERE score > 5\"):\n    print(row)"
+        },
+        {
+          "title": "Joins",
+          "text": "Related data is split across tables so each fact lives in one place. A join puts it back together for a query. An inner JOIN keeps only rows that match on both sides. A LEFT JOIN keeps every row from the left table, with NULL where nothing matched.\n\nIf rows go missing from your report, you probably wanted LEFT JOIN. If your counts are too big, a join has probably duplicated rows.",
+          "code": "import sqlite3\ndb = sqlite3.connect(\":memory:\")\ndb.executescript(\"\"\"\nCREATE TABLE players (id INTEGER, name TEXT);\nCREATE TABLE wins (player_id INTEGER);\nINSERT INTO players VALUES (1, 'Ada'), (2, 'Bo');\nINSERT INTO wins VALUES (1), (1);\n\"\"\")\nquery = \"\"\"SELECT p.name, COUNT(w.player_id) FROM players p\n           LEFT JOIN wins w ON w.player_id = p.id GROUP BY p.id\"\"\"\nprint(db.execute(query).fetchall())   # Bo appears with 0"
+        },
+        {
+          "title": "Parameters and transactions",
+          "text": "Two rules keep database code safe. First, never build SQL with an f-string. Use ? placeholders, so values can't be mistaken for commands. That's the whole defense against SQL injection.\n\nSecond, group changes that belong together in a transaction. commit() makes them permanent. rollback() undoes them. A transfer that takes money out but crashes before putting it in must not half-happen.",
+          "code": "import sqlite3\ndb = sqlite3.connect(\":memory:\")\ndb.execute(\"CREATE TABLE p (name TEXT)\")\nname = \"O'Neil\"\ndb.execute(\"INSERT INTO p VALUES (?)\", (name,))\nprint(db.execute(\"SELECT COUNT(*) FROM p WHERE name = ?\", (name,)).fetchone())"
+        }
+      ]
     },
     {
       "goals": [
@@ -1572,7 +1715,19 @@
       "week": 17,
       "title": "Talk to services",
       "phase": "APIs",
-      "prerequisites": "Weeks 1–16, especially store and query data"
+      "prerequisites": "Weeks 1–16, especially store and query data",
+      "plain": [
+        {
+          "title": "HTTP is a conversation",
+          "text": "A client sends a request, and a server sends back a response. A request has a method (GET to read, POST to create, PUT or PATCH to change, DELETE to remove), a URL, headers, and sometimes a body. A response has a status code, headers, and a body, which is usually JSON.\n\nThe first digit of the status tells you who to blame. 2xx worked. 3xx look elsewhere. 4xx your request was wrong. 5xx the server failed.",
+          "code": "import json\nresponse_status = 200\nresponse_body = '{\"title\": \"Halo\", \"year\": 2001}'\nif 200 <= response_status <= 299:\n    game = json.loads(response_body)\n    print(game[\"title\"])"
+        },
+        {
+          "title": "Networks fail, so plan for it",
+          "text": "Local code usually works or doesn't. Network calls can be slow, fail halfway, or succeed while you never hear back. So always set a timeout, retry only what might work next time (429 and 5xx, not 404), wait longer between tries, and limit how many tries you make.\n\nForge can't reach real services from its exercises, so they use recorded responses. Your local labs make real calls.",
+          "code": "def delays(tries):\n    return [2 ** i for i in range(tries)]\n\nprint(delays(4))   # [1, 2, 4, 8]: wait longer each time"
+        }
+      ]
     },
     {
       "goals": [
@@ -1651,7 +1806,34 @@
       "week": 18,
       "title": "Design maintainable Python",
       "phase": "Engineering",
-      "prerequisites": "Weeks 1–17, especially talk to services"
+      "prerequisites": "Weeks 1–17, especially talk to services",
+      "plain": [
+        {
+          "title": "Mutable defaults",
+          "text": "Default argument values are created once, when the function is defined, not on each call. So a default list is shared by every call, and it keeps growing. The standard fix is a default of None, and a fresh list inside.",
+          "code": "def add(item, items=None):\n    if items is None:\n        items = []\n    items.append(item)\n    return items\n\nprint(add(\"a\"))\nprint(add(\"b\"))   # ['b'], not ['a', 'b']"
+        },
+        {
+          "title": "Generators",
+          "text": "A function with yield doesn't run straight through. Each next() runs it up to the next yield, then pauses it with its variables intact. Nothing happens until someone asks for a value, which means a generator can read a huge file line by line without loading it all.",
+          "code": "def countdown(n):\n    while n > 0:\n        yield n\n        n -= 1\n\nfor value in countdown(3):\n    print(value)\nprint(sum(x * x for x in range(4)))"
+        },
+        {
+          "title": "Decorators",
+          "text": "A decorator is a function that takes a function and returns a new one that adds behavior. Writing @timer above a def is shorthand for add = timer(add).\n\nFunctions are values, which is why this works. Decorators are everywhere in real Python: @app.route in web frameworks, @pytest.fixture in tests, @property in classes.",
+          "code": "def shout(fn):\n    def wrapper(*args, **kwargs):\n        return fn(*args, **kwargs).upper()\n    return wrapper\n\n@shout\ndef greet(name):\n    return f\"hello {name}\"\n\nprint(greet(\"ada\"))   # HELLO ADA"
+        },
+        {
+          "title": "Dataclasses and properties",
+          "text": "A dataclass is a class that mainly holds data. You list the fields and Python writes __init__, __eq__ and a useful printout for you. A @property is a method you read like an attribute, so a computed value can never go stale.",
+          "code": "from dataclasses import dataclass\n\n@dataclass\nclass Item:\n    name: str\n    price: float\n    qty: int = 1\n\n    @property\n    def total(self):\n        return self.price * self.qty\n\nitem = Item(\"potion\", 2.5, 2)\nprint(item, item.total)\nprint(item == Item(\"potion\", 2.5, 2))"
+        },
+        {
+          "title": "Context managers",
+          "text": "with isn't only for files. Any object with __enter__ and __exit__ works. Python guarantees __exit__ runs however the block ends, even on an error. That makes it the right tool for anything that must be cleaned up: files, database connections, locks.",
+          "code": "class Timer:\n    def __enter__(self):\n        print(\"start\")\n        return self\n\n    def __exit__(self, kind, error, trace):\n        print(\"finished\")\n        return False\n\nwith Timer():\n    print(\"working\")"
+        }
+      ]
     },
     {
       "goals": [
@@ -1728,7 +1910,29 @@
       "week": 19,
       "title": "Broaden your problem-solving toolkit",
       "phase": "Interviews",
-      "prerequisites": "Weeks 1–18, especially design maintainable python"
+      "prerequisites": "Weeks 1–18, especially design maintainable python",
+      "plain": [
+        {
+          "title": "How to think recursively",
+          "text": "Recursion is a function calling itself on a smaller problem. Every recursive function has two parts. The base case is the smallest input, answered directly. The recursive case shrinks the problem and uses the answer.\n\nDon't try to trace every call in your head. Trust the rule: assume the smaller call already works, then ask how to use it. Trace by hand only when debugging, and start with the smallest input.\n\nPython stops at about 1,000 nested calls. If you see RecursionError, your base case is probably wrong or never reached.",
+          "code": "def total(nums):\n    if not nums:              # base case: nothing left\n        return 0\n    return nums[0] + total(nums[1:])   # first item + the rest\n\nprint(total([1, 2, 3]))   # 1 + (2 + (3 + 0))"
+        },
+        {
+          "title": "Trees and graphs",
+          "text": "A tree is data where each item has children and there are no loops, like folders or a comment thread. Tree code is usually recursive: solve the children, then combine.\n\nA graph is items joined by connections, like cities and roads. It can have loops, so you must remember where you've been. Store it as a dictionary from each node to its neighbors.\n\nUse breadth-first search with a deque to find the shortest route in steps. Use depth-first search when you only need to explore everything.",
+          "code": "from collections import deque\ngraph = {\"a\": [\"b\", \"c\"], \"b\": [\"d\"], \"c\": [\"d\"], \"d\": []}\nseen = {\"a\"}\nqueue = deque([(\"a\", 0)])\nwhile queue:\n    node, steps = queue.popleft()\n    print(node, steps)\n    for next_node in graph[node]:\n        if next_node not in seen:\n            seen.add(next_node)\n            queue.append((next_node, steps + 1))"
+        },
+        {
+          "title": "Memoization: remember the answers",
+          "text": "Some recursive functions solve the same smaller problem again and again. fib(30) calls itself over a million times. Save each answer the first time and the work becomes linear. That's memoization, and it's the core idea of dynamic programming.\n\nfunctools.lru_cache does it with one line. Ask: are the same inputs coming up repeatedly? If so, cache them.",
+          "code": "from functools import lru_cache\n\n@lru_cache(maxsize=None)\ndef fib(n):\n    return n if n < 2 else fib(n - 1) + fib(n - 2)\n\nprint(fib(80))"
+        },
+        {
+          "title": "Heaps: always know the smallest",
+          "text": "A heap keeps its smallest item at the front without fully sorting. Adding and removing are O(log n), so it's perfect when items keep arriving and you always need the next most important one, like a task queue.",
+          "code": "import heapq\ntasks = []\nheapq.heappush(tasks, (2, \"write\"))\nheapq.heappush(tasks, (1, \"plan\"))\nheapq.heappush(tasks, (3, \"ship\"))\nwhile tasks:\n    print(heapq.heappop(tasks))"
+        }
+      ]
     },
     {
       "goals": [
@@ -1806,7 +2010,23 @@
       "week": 20,
       "title": "Build a small backend",
       "phase": "Backend",
-      "prerequisites": "Weeks 1–19, especially broaden your problem-solving toolkit"
+      "prerequisites": "Weeks 1–19, especially broaden your problem-solving toolkit",
+      "plain": [
+        {
+          "title": "What a backend actually does",
+          "text": "A backend is a program that waits for requests. For each one it does the same few things: match the URL to a handler, check who's asking, validate the input, do the work (usually with a database), and return a status and JSON.\n\nFrameworks like Flask and FastAPI handle the routing. The rest is ordinary Python, which is why it pays to keep your rules in plain functions you can test without a server.",
+          "code": "def create_game(payload):\n    title = payload.get(\"title\", \"\").strip()\n    if not title:\n        return 400, {\"error\": \"title is required\"}\n    return 201, {\"title\": title}\n\nprint(create_game({\"title\": \"Halo\"}))\nprint(create_game({}))"
+        },
+        {
+          "title": "Authentication and authorization",
+          "text": "They sound alike but they're different. Authentication asks who you are. Authorization asks what you're allowed to do. Checking only the first is a classic security bug: any logged-in user could edit anyone's data.\n\nCheck permission on the server, for every request. Never rely on the interface hiding a button. And don't invent your own password storage or tokens; real projects use tested libraries.",
+          "code": "def can_delete(user, post):\n    return user[\"role\"] == \"admin\" or user[\"id\"] == post[\"owner\"]\n\nprint(can_delete({\"id\": 1, \"role\": \"user\"}, {\"owner\": 2}))"
+        },
+        {
+          "title": "Status codes are part of the contract",
+          "text": "Clients decide what to do based on your status codes, so be exact. 200 for success, 201 when something was created, 204 for success with nothing to return. 400 for bad input, 401 for not logged in, 403 for not allowed, 404 for not found, 409 for a conflict. 500 means your code broke, so never use it on purpose.\n\nWrite down what each endpoint accepts and returns before you build it. That written contract is what other people build against."
+        }
+      ]
     },
     {
       "goals": [
@@ -1884,7 +2104,19 @@
       "week": 21,
       "title": "Make automation dependable",
       "phase": "Automation",
-      "prerequisites": "Weeks 1–20, especially build a small backend"
+      "prerequisites": "Weeks 1–20, especially build a small backend",
+      "plain": [
+        {
+          "title": "Scripts that run while you sleep",
+          "text": "A script you run once can be sloppy. One that runs every night can't, because nobody's watching. Three properties matter. It must be idempotent, meaning running it twice gives the same result as once. It must be observable, so logs say what happened and what was skipped. And it must fail loudly when it can't do its job.\n\nThe worst outcome isn't a crash. It's a job that quietly does the wrong thing for three weeks.",
+          "code": "import logging\nlogging.basicConfig(level=logging.INFO, format=\"%(levelname)s %(message)s\", force=True)\nlog = logging.getLogger(\"import\")\nrows = [\"1\", \"x\", \"3\"]\ngood = []\nfor i, row in enumerate(rows):\n    try:\n        good.append(int(row))\n    except ValueError:\n        log.warning(\"skipped row %d: %r\", i, row)\nlog.info(\"imported %d, skipped %d\", len(good), len(rows) - len(good))"
+        },
+        {
+          "title": "Never trust a filename",
+          "text": "Any value from outside your program is untrusted, and that includes filenames. A name like ../../secrets.txt escapes the folder you meant to write in. Check the name at the boundary, before using it.\n\nThe same habit applies everywhere: validate at the edge of your program, and let the inside assume clean data.",
+          "code": "from pathlib import PurePosixPath\n\ndef safe_name(name):\n    path = PurePosixPath(name)\n    return len(path.parts) == 1 and name not in (\"..\", \".\")\n\nprint(safe_name(\"report.csv\"), safe_name(\"../secrets.txt\"))"
+        }
+      ]
     },
     {
       "goals": [
@@ -1962,7 +2194,24 @@
       "week": 22,
       "title": "Maintain and collaborate",
       "phase": "Team practice",
-      "prerequisites": "Weeks 1–21, especially make automation dependable"
+      "prerequisites": "Weeks 1–21, especially make automation dependable",
+      "plain": [
+        {
+          "title": "Reading code you didn't write",
+          "text": "Most professional work is changing existing code, not writing new code. Don't read it top to bottom. Start from what you need to change, find where that behavior happens, and trace outward. Run it. Add a print. Read its tests, which show what it's supposed to do.\n\nBefore you change anything, get the tests passing, so you know what you broke. Make the smallest change that works. Don't tidy unrelated code in the same change, because it makes your work harder to review and easier to get wrong."
+        },
+        {
+          "title": "Changing things without breaking them",
+          "text": "Other code depends on yours, in ways you can't see. A rename that looks harmless can break callers and old saved data. So add before you remove: accept both the old and new shape for a while, move everyone over, and delete the old path later.\n\nType hints help here. They document what a function expects, and tools like mypy can find callers you'd have broken.",
+          "code": "def full_name(user: dict) -> str:\n    # New records use \"display\". Old records still use \"name\".\n    return user.get(\"display\") or user.get(\"name\", \"unknown\")\n\nprint(full_name({\"name\": \"Ada\"}), full_name({\"display\": \"Bo\"}))"
+        },
+        {
+          "title": "Pull requests and code review",
+          "text": "A pull request proposes a change and shows the difference. Good ones are small, say why the change is needed, and explain how it was tested.\n\nWhen reviewing, look for what would break, what's missing, and whether a test proves it works. Comment on the code, not the person. When you receive a review, a comment is information about the code. It's the fastest way to learn how a team thinks.",
+          "code": "git switch -c fix-empty-list\ngit add core.py test_core.py\ngit commit -m \"Return [] for an empty list\"\ngit push -u origin fix-empty-list",
+          "shell": true
+        }
+      ]
     },
     {
       "goals": [
@@ -2041,7 +2290,24 @@
       "week": 23,
       "title": "Ship and verify your work",
       "phase": "Portfolio",
-      "prerequisites": "Weeks 1–22, especially maintain and collaborate"
+      "prerequisites": "Weeks 1–22, especially maintain and collaborate",
+      "plain": [
+        {
+          "title": "Done means someone else can run it",
+          "text": "Software isn't finished when it works on your machine. It's finished when a stranger can install and run it. Test that literally: clone your repo into a new folder, create a fresh .venv, and follow your own README word for word. You'll find what you forgot.\n\nA good README answers four questions: what is this, how do I run it, how do I test it, and what are its limits? Honest limits build more trust than big claims.",
+          "code": "git clone https://example.com/you/project.git\ncd project\npython -m venv .venv\npip install -r requirements.txt\npytest",
+          "shell": true
+        },
+        {
+          "title": "Let a robot run the checks",
+          "text": "Continuous integration (CI) runs your tests on a clean machine every time you push. It catches 'works on my machine' problems, and it means nobody needs to remember to run the tests. GitHub Actions does this for free on public repos with one small YAML file.\n\nOnly automate checks you already run and trust by hand. A red build that everyone ignores is worse than none."
+        },
+        {
+          "title": "Version numbers mean something",
+          "text": "Semantic versioning uses MAJOR.MINOR.PATCH. Patch means a bug fix. Minor adds something without breaking anything. Major means something may break. Pin your dependencies, so what you tested is what gets installed.",
+          "code": "parts = \"1.10.2\".split(\".\")\nmajor, minor, patch = [int(p) for p in parts]\nprint(major, minor + 1, 0)"
+        }
+      ]
     },
     {
       "goals": [
@@ -2120,7 +2386,22 @@
       "week": 24,
       "title": "Practice the entry-level transition",
       "phase": "Readiness",
-      "prerequisites": "Weeks 1–23, especially ship and verify your work"
+      "prerequisites": "Weeks 1–23, especially ship and verify your work",
+      "plain": [
+        {
+          "title": "Solving a problem you've never seen",
+          "text": "In an interview or a take-home, the problem will be new. That's expected, and the process doesn't change.\n\n1. Restate it in your own words and ask about edge cases.\n2. Work an example by hand.\n3. Say a simple approach out loud, even a slow one.\n4. Ask which pattern fits: counting, two pointers, a stack, a window, sorting first, BFS, recursion.\n5. Code it, talking as you go.\n6. Test it with your example and one edge case, then state the complexity.\n\nInterviewers are watching how you think. A working simple answer you can explain beats a clever one you can't.",
+          "code": "# \"Find the first repeated item.\"\n# Pattern: have I seen this before? -> a set\ndef first_repeat(items):\n    seen = set()\n    for item in items:\n        if item in seen:\n            return item\n        seen.add(item)\n    return None\n\nprint(first_repeat([3, 1, 3, 2]))  # O(n) time, O(n) space"
+        },
+        {
+          "title": "Talking about your projects",
+          "text": "You will be asked to explain something you built. Prepare one project using this shape: what the problem was, what you decided and why, something that went wrong and how you found it, and what you'd change now.\n\nBe specific, and be honest about what you used. If you used AI tools, say how, and show that you can explain, change and debug the result yourself. That last part is what employers need, and it's exactly what this course has been training."
+        },
+        {
+          "title": "Are you ready?",
+          "text": "There's no certificate that says so. These are better signals. You can start a small program from a blank file. You can read an error and find the cause without guessing. You can write a test that catches a real bug. You can explain your code to someone else. You can take a task you've never seen and make progress.\n\nIf most of those are true, start applying. You'll never feel completely finished, and you don't need to. Everyone in this field is still looking things up."
+        }
+      ]
     }
   ],
   "sources": {
