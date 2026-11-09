@@ -327,3 +327,27 @@
 .plain-sections section.plain p{margin:0 0 10px}
 .plain-sections section.plain pre{background:#1f2427;color:#e4f0db;border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:12.5px;line-height:1.65;overflow-x:auto;margin:6px 0 4px;white-space:pre}
 .summary-heading{margin:26px 0 6px;padding-top:16px;border-top:2px dashed var(--line);font-size:13px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- whole programs and timed test ---------- */
+.pre-task{white-space:pre-line}
+.test-score{font-weight:800;margin-bottom:8px}
+.test-bar{display:flex;align-items:center;gap:16px;background:#1f2427;color:#e4f0db;border-radius:12px;padding:10px 14px;margin-bottom:18px;flex-wrap:wrap}
+.test-tabs{display:flex;gap:8px;flex:1;flex-wrap:wrap}
+.test-tab{display:block;padding:7px 14px;border-radius:9px;border:1px solid #3a4246;color:#cbd2c8;font-size:12px;font-weight:700}
+.test-tab small{display:block;font-weight:500;color:#9aa6a0;font-size:10px}
+.test-tab.active{border-color:#e879f9;color:#fff}
+.test-clock-wrap{text-align:right;line-height:1.1}
+.test-clock-wrap small{display:block;font-size:9px;letter-spacing:1.3px;color:#9aa6a0}
+#test-clock{font-size:22px;font-variant-numeric:tabular-nums}
+#test-clock.low{color:#ff7a70}
+.test-nohelp{font-size:11px;color:#657b55;margin-top:12px}
+.test-summary,.test-intro,.test-history{margin-bottom:18px;padding:22px 26px}
+.test-intro h3,.test-history h3{margin-bottom:10px}
+.test-intro p{margin-bottom:12px}
+.test-stats{display:flex;gap:36px;margin:14px 0;flex-wrap:wrap}
+.test-stats strong{display:block;font-size:30px;line-height:1.1}
+.test-stats small{color:#657b55}
+.test-problems a{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid #e3e8dc}
+.test-problems small{color:#657b55}
+.test-history table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.test-history th,.test-history td{text-align:left;padding:7px 8px;border-bottom:1px solid #e3e8dc}

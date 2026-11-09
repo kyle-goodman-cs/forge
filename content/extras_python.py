@@ -545,7 +545,7 @@ HARDWARE = [
          sol="def pressure_to_altitude(hpa, sea_level):\n    return round(44330 * (1 - (hpa / sea_level) ** (1 / 5.255)), 1)\n",
          cases=[[1013.25, 1013.25], [900.0, 1013.25], [1000.0, 1013.25], [850.0, 1020.0]],
          hints=["Translate the formula exactly; watch the parentheses.", "** is the power operator."],
-         concept="This is the same conversion barometric sensors such as the BMP280 use."),
+         concept="This is the same conversion barometric sensors such as the BMP280 use — like the one in your capstone."),
     dict(t="Debounce a button", w=5, name="count_presses", args="readings, stable",
          task="Write count_presses(readings, stable). readings are 0/1 samples from a button; the button starts released (0). A change only counts once the new value has been read `stable` times in a row. Return the number of confirmed presses (0 → 1 changes).",
          sol="def count_presses(readings, stable):\n    state = 0\n    candidate = 0\n    run = 0\n    presses = 0\n    for r in readings:\n        if r == state:\n            run = 0\n            continue\n        if r == candidate:\n            run += 1\n        else:\n            candidate = r\n            run = 1\n        if run >= stable:\n            state = r\n            run = 0\n            if state == 1:\n                presses += 1\n    return presses\n",

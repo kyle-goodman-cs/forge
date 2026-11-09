@@ -5,7 +5,9 @@ previous questline lessons first. Expected outputs come from executing the refer
 solutions, every bug-hunt starter is checked to fail at least one case, and every SQL
 problem is run against both datasets.
 """
+import contextlib
 import copy
+import io
 import json
 import sqlite3
 import sys
@@ -16,6 +18,7 @@ sys.path.insert(0, str(ROOT))
 from build_io import write_text_atomic  # noqa: E402
 from extras_python import DRILLS, BUGS, INTERVIEW, HARDWARE  # noqa: E402
 from extras_more import ESSENTIALS, DRILLS2, BUGS2  # noqa: E402
+from extras_test import PROGRAMS, OOP, SAMPLES, STARTER  # noqa: E402
 from extras_sql import PROBLEMS, DATA, fixture_sql, SCHEMA_NOTE  # noqa: E402
 
 TRACK = {
@@ -27,6 +30,10 @@ TRACK = {
                 extension="Change one requirement (a different filter or sort) and predict the new result before running it."),
     "interview": dict(phase="Interview gauntlet", badge="INTERVIEW", objectives=["Restate the problem and its edge cases before coding.", "Get a correct brute force first, then improve it.", "Say the time and space complexity out loud."],
                       extension="Re-solve it tomorrow from a blank file in under 20 minutes while talking through your reasoning."),
+    "program": dict(phase="Test practice", badge="TEST PRACTICE", objectives=["Read the input format twice before you write any code.", "Pass both samples, then think about what the hidden tests might try.", "Check the empty, smallest, and largest inputs."],
+                    extension="Rewrite it from a blank file with a 15-minute limit, as you would in a real test."),
+    "oop": dict(phase="Object-oriented practice", badge="OOP", objectives=["Say what each class is responsible for before you write it.", "Keep each rule in one place.", "Explain why this design fits better than plain functions."],
+                extension="Add one new class or error to your design and see how little of the other code has to change."),
     "hardware": dict(phase="Hardware lab", badge="HARDWARE", objectives=["Translate the spec or formula exactly.", "Check edge readings: zero, maximum, and empty input.", "Imagine it running in a loop on a microcontroller: what could go wrong?"],
                      extension="If you have a Raspberry Pi Pico, run this logic in MicroPython against a real sensor (see the Hardware lab briefing)."),
 }
@@ -68,6 +75,30 @@ def unlock_for(track, item):
     if track in ("interview", "hardware"):
         return item["w"] * 4
     return None
+
+
+def clean_output(text):
+    """Same rule as the browser runner: trailing whitespace never counts."""
+    return "\n".join(line.rstrip() for line in text.replace("\r\n", "\n").rstrip().split("\n"))
+
+
+def run_program(code, stdin):
+    out = io.StringIO()
+    saved = sys.stdin
+    sys.stdin = io.StringIO(stdin)
+    try:
+        with contextlib.redirect_stdout(out):
+            exec(compile(code, "solution.py", "exec"), {"__name__": "__main__"})
+    finally:
+        sys.stdin = saved
+    return clean_output(out.getvalue())
+
+
+def program_passes(code, cases):
+    try:
+        return all(run_program(code, c["stdin"]) == c["expected"] for c in cases)
+    except Exception:
+        return False
 
 
 def run_case(sol, name, args):
@@ -134,6 +165,11 @@ def main():
             l["cases"] = [{"args": a, "expected": run_case(item["sol"], name, a)} for a in item["cases"] + HARDEN.get(name, [])]
             l["noMutation"] = any(p in item["task"].lower() for p in ["do not mutate", "do not modify"])
             l["starter"] = item.get("starter") or f"def {name}({item['args']}):\n    # Write your solution here\n    pass\n"
+            if item.get("teach"):
+                l["teach"] = item["teach"]
+                for section in item["teach"]:
+                    with contextlib.redirect_stdout(io.StringIO()):
+                        exec(compile(section["code"], section["title"], "exec"), {"__name__": "__main__"})
             assert passes_all(item["sol"], name, l["cases"], l["noMutation"]), f"{name}: reference fails its own cases"
             if track == "bug":
                 assert not passes_all(item["starter"], name, l["cases"], l["noMutation"]), f"{name}: buggy starter passes every case"
@@ -165,7 +201,21 @@ def main():
     for track, items in (("drill", ESSENTIALS), ("drill", DRILLS2), ("bug", BUGS2)):
         add_python(track, items)
 
-    names = [l["name"] for l in added if l["track"] != "sql"]
+    for index, item in enumerate(PROGRAMS):
+        l = base("program", {**item, "ch": "test-1", "w": 12}, index)
+        cases = [{"args": [], "stdin": s, "expected": run_program(item["sol"], s), "sample": i < SAMPLES} for i, s in enumerate(item["cases"])]
+        hidden = cases[SAMPLES:]
+        assert len(hidden) >= 3, f"{item['t']}: needs at least 3 hidden tests"
+        assert len({c["expected"] for c in cases}) > 1, f"{item['t']}: every test gives the same answer"
+        assert not program_passes(STARTER, cases), f"{item['t']}: the starter passes"
+        assert not program_passes(item["broken"], cases), f"{item['t']}: the broken program passes"
+        preview = "\n\n".join(f"Sample {n + 1} input:\n{c['stdin'].rstrip() or '(an empty line)'}\n\nSample {n + 1} output:\n{c['expected']}" for n, c in enumerate(cases[:SAMPLES]))
+        l.update(name="solution", args="", solution=item["sol"], cases=cases, noMutation=False, starter=STARTER, program=True,
+                 broken=item["broken"], tier=item["tier"], noWeek=True, file="solution.py", samplePreview=preview)
+        added.append(l)
+    add_python("oop", OOP)
+
+    names = [l["name"] for l in added if l["track"] not in ("sql", "program")]
     repeats = sorted({n for n in names if names.count(n) > 1 and n != "binary_search"})
     assert not repeats, f"function names must be unique (HARDEN keys on them): {repeats}"
     chapters = {}

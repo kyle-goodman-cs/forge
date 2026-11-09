@@ -5,7 +5,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
   "$s = (New-Object -ComObject WScript.Shell).CreateShortcut([Environment]::GetFolderPath('Desktop') + '\Forge.lnk');" ^
   "$s.TargetPath = '%~dp0Start Forge.bat';" ^
   "$s.WorkingDirectory = '%~dp0';" ^
-  "$s.IconLocation = '%~dp0forge.ico';" ^
+  "$s.IconLocation = '%~dp0forge-ember.ico';" ^
   "$s.WindowStyle = 7;" ^
   "$s.Description = 'Start Forge';" ^
   "$s.Save()"

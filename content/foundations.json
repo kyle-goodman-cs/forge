@@ -352,9 +352,9 @@
       "cases": [
         {
           "args": [
-            "  Sam Rivera "
+            "  Kyle Goodman "
           ],
-          "expected": "sam_rivera"
+          "expected": "kyle_goodman"
         },
         {
           "args": [
@@ -1047,7 +1047,7 @@
       "id": 21,
       "title": "Read structured data",
       "concept": "JSON represents lists, dictionaries, strings, numbers, booleans, and null. json.loads parses text; json.dumps serializes data. JSON strings require double quotes.",
-      "example": "import json\nprofile = json.loads('{\"name\": \"Sam\"}')",
+      "example": "import json\nprofile = json.loads('{\"name\": \"Kyle\"}')",
       "task": "Write load_scores(text). Parse a JSON list of numbers and return its sum. All supplied JSON is valid and contains a list of numbers.",
       "name": "load_scores",
       "args": "text",

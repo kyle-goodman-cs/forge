@@ -1,7 +1,7 @@
 """Plain-English teaching added by the content audit.
 
 PLAIN_ADD extends weeks that already had teaching. PLAIN_NEW covers weeks that had none.
-beginner.py merges both. Every `code` block must run on its own in regular Python unless
+beginner.py merges both. SETUP is the one-time guide for the local labs, shown at #setup. Every `code` block must run on its own in regular Python unless
 `shell=True`, which marks terminal commands that are shown but never executed.
 """
 
@@ -93,7 +93,7 @@ PLAIN_NEW = {
              text="Good debuggers aren't smarter. They guess less. The loop is always the same:\n\n1. Reproduce it with the smallest input that fails.\n2. Say what you expected and what actually happened.\n3. Form one guess about why.\n4. Test that guess with a print or a debugger, not by changing code at random.\n5. Fix it, then keep a test so it can't come back.\n\nIf you've changed three things and don't know which one helped, go back. A breakpoint() line pauses your program so you can look at every variable.",
              code='def average(nums):\n    total = 0\n    for n in nums:\n        total += n\n        print("n =", n, "total =", total)   # temporary: watch it change\n    return total / len(nums)\n\nprint(average([2, 4]))'),
         dict(title="pytest in five minutes",
-             text="pytest finds functions named test_something in files named test_*.py and runs them. A plain assert is all you need. When one fails, pytest shows you both values.\n\nWrite the failing test first when you fix a bug. Watching it fail proves the test really checks the bug; watching it pass proves the fix works. Forge's browser checks work like this, and your local labs use real pytest.",
+             text="pytest finds functions named test_something in files named test_*.py and runs them. A plain assert is all you need. When one fails, pytest shows you both values.\n\nWrite the failing test first when you fix a bug. Watching it fail proves the test really checks the bug; watching it pass proves the fix works. The starter lab kits use Python's built-in unittest. In this week you also practice pytest in your local environment.",
              code='# test_core.py\nfrom core import add\n\ndef test_add():\n    assert add(2, 3) == 5\n\ndef test_add_negative():\n    assert add(-1, 1) == 0', shell=True),
         dict(title="Custom exceptions",
              text="A custom exception is a one-line class that names a problem in your program's own language. Callers can then catch exactly that problem and let everything else through. Catching plain Exception hides real bugs, so catch the narrowest thing you have a plan for.",

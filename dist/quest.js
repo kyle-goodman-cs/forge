@@ -7,7 +7,7 @@ const Q = {
   lessonXP: 100, checkpointXP: 150, hintRate: [1, 0.6, 0.35],
   reviewXP: 30, briefXP: 10, labXP: 250, traceXP: [15, 8, 3],
   predXP: 3, predPerfect: 5, predCap: 30,
-  trackXP: { drill: 40, bug: 80, sql: 80, interview: 100, hardware: 80 },
+  trackXP: { drill: 40, bug: 80, sql: 80, interview: 100, hardware: 80, program: 120, oop: 80 },
   hint1Fails: 2, solutionMinutes: 20, bountyHours: 48, diagMin: 20, labNoteMin: 80
 };
 const RANKS = [[25, 'Forgemaster'], [20, 'Architect'], [15, 'Engineer'], [10, 'Artificer'], [5, 'Tinkerer'], [1, 'Apprentice']];
@@ -21,6 +21,8 @@ const QICON = {
   check: 'm5 12 4 4 10-10',
   redo: 'M4 12a8 8 0 1 0 2.3-5.7M4 4v5h5',
   drill: 'M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12',
+  program: 'M3 5h18v14H3ZM7 9l3 3-3 3M12 15h5',
+  oop: 'M12 3 3 8v8l9 5 9-5V8ZM3 8l9 5 9-5M12 13v8',
   bug: 'M8 9h8v6a4 4 0 0 1-8 0ZM12 9v10M9.5 5.5 11 9M14.5 5.5 13 9M4 11h4M16 11h4M4.5 17l3.5-1.5M19.5 17 16 15.5',
   sql: 'M4 6c0-2.7 16-2.7 16 0v12c0 2.7-16 2.7-16 0ZM4 6c0 2.7 16 2.7 16 0M4 12c0 2.7 16 2.7 16 0',
   interview: 'M4 5h16v11H9l-5 4ZM8 9h8M8 12h5',
@@ -50,7 +52,9 @@ const QL = {
   'sql-2': { line: 'sql', kind: 'sql', title: 'SQL II', sub: 'JOINs, LEFT JOIN, subqueries, CTEs, window functions', chain: true },
   'int-1': { line: 'interview', kind: 'interview', title: 'Interview gauntlet I', sub: 'Classic screening problems', chain: true },
   'int-2': { line: 'interview', kind: 'interview', title: 'Interview gauntlet II', sub: 'Patterns, graphs, heaps, and dynamic programming', chain: true },
-  'hw-1': { line: 'hardware', kind: 'hardware', title: 'Hardware lab', sub: 'Sensors, signals, and GPS: the software side of embedded' }
+  'hw-1': { line: 'hardware', kind: 'hardware', title: 'Hardware lab', sub: 'Sensors, signals, and GPS: the software side of embedded' },
+  'test-1': { line: 'test', kind: 'program', title: 'HackerRank practice', sub: 'Whole programs: read input, print the answer, pass hidden tests', open: true },
+  'test-oop': { line: 'test', kind: 'oop', title: 'Object-oriented practice', sub: 'Inheritance, custom exceptions, and dataclasses', open: true }
 };
 const PHASE_ICON = {
   Foundations: 'M12 3 3 8v8l9 5 9-5V8ZM3 8l9 5 9-5M12 13v8',
@@ -76,12 +80,15 @@ let questGoPending = false, questPred = [], questTimerId = null, questFromMap = 
 /* ---------- state ---------- */
 function qNow() { return Date.now(); }
 function qHash(s) { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return h; }
-function defaultGame() { return { awards: {}, bounties: {}, attempts: {}, revealed: {}, briefs: {}, qbriefs: {}, traces: {}, migrated: false }; }
+function defaultGame() { return { awards: {}, bounties: {}, attempts: {}, revealed: {}, briefs: {}, qbriefs: {}, traces: {}, tests: { history: [], active: null }, migrated: false }; }
 function qGame() {
   if (!state.game || typeof state.game !== 'object' || Array.isArray(state.game)) state.game = defaultGame();
   const g = state.game;
   for (const k of ['awards', 'bounties', 'attempts', 'revealed', 'briefs', 'qbriefs', 'traces']) if (!g[k] || typeof g[k] !== 'object' || Array.isArray(g[k])) g[k] = {};
   if (typeof g.migrated !== 'boolean') g.migrated = false;
+  if (!g.tests || typeof g.tests !== 'object' || Array.isArray(g.tests)) g.tests = { history: [], active: null };
+  if (!Array.isArray(g.tests.history)) g.tests.history = [];
+  g.tests.active ??= null;
   return g;
 }
 function sanitizeGame(raw) {
@@ -99,10 +106,24 @@ function sanitizeGame(raw) {
   };
   for (const [k, v] of Object.entries(raw.revealed || {})) if (lessonId(k) && v === true) g.revealed[k] = true;
   for (const [k, v] of Object.entries(raw.briefs || {})) if (/^([1-9]|1\d|2[0-4])$/.test(k) && v === true) g.briefs[k] = true;
-  for (const [k, v] of Object.entries(raw.qbriefs || {})) if (['grind', 'bugs', 'sql', 'interview', 'hardware'].includes(k) && v === true) g.qbriefs[k] = true;
+  for (const [k, v] of Object.entries(raw.qbriefs || {})) if (['grind', 'bugs', 'sql', 'interview', 'hardware', 'test'].includes(k) && v === true) g.qbriefs[k] = true;
   const traceIds = new Set((typeof QUEST_TRACES !== 'undefined' ? QUEST_TRACES : []).map(t => t.id));
   for (const [k, v] of Object.entries(raw.traces || {})) if (traceIds.has(k) && v && typeof v === 'object') g.traces[k] = { tries: Number.isInteger(v.tries) ? Math.min(v.tries, 999) : 0, done: v.done === true, xp: fin(v.xp) ? v.xp : 0, revealed: v.revealed === true };
   g.migrated = raw.migrated === true;
+  const programId = id => Number.isInteger(id) && !!lessons[id - 1]?.program;
+  const count = n => Number.isInteger(n) && n >= 0 && n <= 999;
+  const rawTests = raw.tests && typeof raw.tests === 'object' ? raw.tests : {};
+  if (Array.isArray(rawTests.history)) g.tests.history = rawTests.history.filter(h => h && fin(h.at) && fin(h.used) && h.used >= 0 && h.used <= TEST.ms && Array.isArray(h.problems) && h.problems.length === 3 && h.problems.every(p => p && programId(p.id) && count(p.passed) && count(p.total) && p.passed <= p.total)).slice(-TEST.historyMax).map(h => ({ at: h.at, used: h.used, problems: h.problems.map(p => ({ id: p.id, passed: p.passed, total: p.total })) }));
+  const a = rawTests.active;
+  if (a && typeof a === 'object' && fin(a.startedAt) && Array.isArray(a.problems) && a.problems.length === 3 && a.problems.every(programId)) {
+    const active = { startedAt: a.startedAt, problems: a.problems.slice(), code: {}, results: {} };
+    for (const id of a.problems) {
+      if (typeof a.code?.[id] === 'string') active.code[id] = a.code[id].slice(0, 50000);
+      const r = a.results?.[id];
+      if (r && count(r.passed) && count(r.total) && r.passed <= r.total) active.results[id] = { passed: r.passed, total: r.total };
+    }
+    g.tests.active = active;
+  }
   return g;
 }
 
@@ -198,7 +219,7 @@ function chapterNodes(w) {
 }
 function nodeDone(w, n) {
   const g = qGame();
-  if (n.kind === 'brief') return !!g.briefs[w];
+  if (n.kind === 'brief') return !!g.briefs[w] || chapterLessons(w).some(l => state.completed[l.id]);
   if (n.lesson) return !!state.completed[n.lesson.id];
   if (n.kind === 'lab') return labDone(w);
   if (n.kind === 'trace') return !!g.traces[n.trace.id]?.done;
@@ -227,7 +248,7 @@ function questlineNodes(key) {
     if (node.done) node.state = 'done';
     else if (!unlocked) { node.state = 'locked'; node.lockReason = 'finishing ' + QL[prevKey].title; }
     else if (core && !state.completed[core.id]) { node.state = 'locked'; node.lockReason = `core week ${core.week}, session ${core.session}: ${core.title}`; }
-    else if (!depsDone) { node.state = 'locked'; node.lockReason = nodes.find(x => x.id === node.deps[0]).title; }
+    else if (!depsDone && !ch.open) { node.state = 'locked'; node.lockReason = nodes.find(x => x.id === node.deps[0]).title; }
     else node.state = 'open';
   }
   return nodes;
@@ -250,15 +271,139 @@ function gearPath(cx, cy, r, teeth = 8) {
 function htmlIcon(d, size, cls) { return `<svg class="${cls}" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true"><path d="${d}"/></svg>`; }
 function svgIcon(d, x, y, size, cls = 'qn-icon') { return `<g class="${cls}" transform="translate(${x - size / 2} ${y - size / 2}) scale(${size / 24})"><path d="${d}"/></g>`; }
 
+/* ---------- whole-program results and timed test ---------- */
+const TEST = { ms: 60 * 60000, historyMax: 50, tierNames: ['', 'Easy', 'Medium', 'Harder'] };
+let testTimerId = null;
+function programResults(result) {
+  const rows = result.results || [];
+  if (!rows.length) return '';
+  const passed = rows.filter(r => r.ok).length;
+  let samples = 0, hidden = 0;
+  return `<div class="test-score">${passed} of ${rows.length} test cases passed</div>` + rows.map(r => {
+    const label = r.sample ? `Sample ${++samples}` : `Hidden test ${++hidden}`;
+    if (r.ok) return `<div class="test-row pass">✓︎ ${label} passed</div>`;
+    const detail = !r.sample ? '' : r.error ? `<br>${esc(r.error.trim())}` : r.status === 'wrong answer' ? `<br>Expected: ${esc(r.expected.trim())}<br>Your output: ${esc(r.actual)}` : '';
+    return `<div class="test-row fail">× ${label}: ${esc(r.status)}${detail}</div>`;
+  }).join('');
+}
+function testRunning() { const a = qGame().tests.active; return !!a && qNow() < a.startedAt + TEST.ms; }
+function testPick(history) {
+  const lastUsed = {};
+  history.forEach((h, i) => h.problems.forEach(p => { lastUsed[p.id] = i + 1; }));
+  return [1, 2, 3].map(tier => {
+    const pool = lessons.filter(l => l.program && l.tier === tier);
+    const oldest = Math.min(...pool.map(l => lastUsed[l.id] || 0));
+    const fresh = pool.filter(l => (lastUsed[l.id] || 0) === oldest);
+    return fresh[Math.floor(Math.random() * fresh.length)].id;
+  });
+}
+function testStart() {
+  const g = qGame();
+  if (g.tests.active) return;
+  g.tests.active = { startedAt: qNow(), problems: testPick(g.tests.history), code: {}, results: {} };
+  save();
+  if (location.hash === '#test/1') route(); else location.hash = '#test/1';
+}
+function testSaveDraft(id, code) { const a = qGame().tests.active; if (a) { a.code[id] = code; save(); } }
+function testRecord(result, code) {
+  const a = qGame().tests.active;
+  if (!a || !current) return;
+  const rows = result?.results || [], passed = rows.filter(r => r.ok).length, total = current.cases.length, old = a.results[current.id];
+  a.code[current.id] = code;
+  if (!old || passed >= old.passed) a.results[current.id] = { passed, total };
+  save();
+  const i = a.problems.indexOf(current.id), tab = document.querySelector('#test-tab-' + i), r = a.results[current.id];
+  if (tab) tab.textContent = `${r.passed}/${r.total} tests`;
+  const output = document.querySelector('#output');
+  if (output && !result?.error) output.textContent = (result.stdout ? 'Your output on sample 1:\n' + result.stdout : 'No output on sample 1. Did you print your answer?');
+}
+function testFinish() {
+  const g = qGame(), a = g.tests.active;
+  if (!a) return;
+  clearInterval(testTimerId); testTimerId = null;
+  stopRun();
+  g.tests.history.push({
+    at: qNow(), used: Math.min(qNow() - a.startedAt, TEST.ms),
+    problems: a.problems.map(id => ({ id, passed: a.results[id]?.passed || 0, total: lessons[id - 1].cases.length }))
+  });
+  g.tests.history = g.tests.history.slice(-TEST.historyMax);
+  g.tests.active = null;
+  current = null;
+  save();
+  dismissNotice('timed-test');
+  if (location.hash === '#test') route(); else location.hash = '#test';
+}
+function testCheck() { const a = qGame().tests.active; if (a && qNow() >= a.startedAt + TEST.ms) testFinish(); }
+function testTick() {
+  const a = qGame().tests.active;
+  if (!a) { clearInterval(testTimerId); testTimerId = null; return; }
+  const left = a.startedAt + TEST.ms - qNow(), clock = document.querySelector('#test-clock');
+  if (clock) { clock.textContent = mmss(Math.max(0, left)); clock.classList.toggle('low', left < 5 * 60000); }
+  if (left <= 0) testFinish();
+}
+function testScore(h) {
+  return {
+    solved: h.problems.filter(p => p.passed === p.total).length,
+    passed: h.problems.reduce((n, p) => n + p.passed, 0),
+    total: h.problems.reduce((n, p) => n + p.total, 0)
+  };
+}
+function testSummary(h, previous) {
+  const s = testScore(h);
+  let trend = '';
+  if (previous) {
+    const p = testScore(previous), diff = s.solved - p.solved;
+    trend = diff > 0 ? `Up ${diff} from your last test.` : diff < 0 ? `Down ${-diff} from your last test.` : `Same number solved as your last test.`;
+  }
+  return `<section class="card test-summary"><span class="badge orange">LATEST RESULT</span>
+    <div class="test-stats"><div><strong>${s.solved}/${h.problems.length}</strong><small>problems solved</small></div><div><strong>${s.passed}/${s.total}</strong><small>test cases passed</small></div><div><strong>${mmss(h.used)}</strong><small>time used</small></div></div>
+    ${trend ? `<p>${trend}</p>` : ''}
+    <div class="test-problems">${h.problems.map(p => `<a href="#lesson/${p.id}"><span>${esc(lessons[p.id - 1].title)}</span><small>${p.passed}/${p.total} tests · Practice it →</small></a>`).join('')}</div></section>`;
+}
+function testHome() {
+  const history = qGame().tests.history, last = history.at(-1);
+  const rows = history.slice().reverse().map(h => {
+    const s = testScore(h);
+    return `<tr><td>${esc(new Date(h.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }))}</td><td>${s.solved}/${h.problems.length}</td><td>${s.passed}/${s.total}</td><td>${mmss(h.used)}</td></tr>`;
+  }).join('');
+  return `${header('Timed test', 'Three problems. Sixty minutes. No help.')}
+    ${last ? testSummary(last, history.at(-2)) : ''}
+    <section class="card test-intro"><h3>How it works</h3><p>You get one easy, one medium and one harder problem in the HackerRank format: read from input(), print the answer, and pass hidden test cases. The clock keeps running if you leave or reload this page. Hints and the help ladder stay off until you finish.</p><p>Your score for each problem is your best run. Timed tests don't change your quest progress or XP.</p><button class="btn" data-qt="start">Start a 60-minute test</button></section>
+    ${rows ? `<section class="card test-history"><h3>Your test history</h3><table><thead><tr><th>Date</th><th>Solved</th><th>Test cases</th><th>Time used</th></tr></thead><tbody>${rows}</tbody></table></section>` : ''}`;
+}
+function testRunView(a, i) {
+  const id = a.problems[i - 1], l = lessons[id - 1], code = a.code[id] ?? l.starter;
+  current = { ...l, isReview: false, assisted: false, hints: 0, code, testRun: true };
+  passedCode = null; lastRun = null; rating = null; questPred = [];
+  const tabs = a.problems.map((p, n) => { const r = a.results[p]; return `<a href="#test/${n + 1}" class="test-tab ${n + 1 === i ? 'active' : ''}" ${n + 1 === i ? 'aria-current="page"' : ''}>Problem ${n + 1}<small id="test-tab-${n}">${r ? `${r.passed}/${r.total} tests` : 'Not run yet'}</small></a>`; }).join('');
+  return `<div class="test-bar"><div class="test-tabs">${tabs}</div><div class="test-clock-wrap"><small>TIME LEFT</small><strong id="test-clock">${mmss(Math.max(0, a.startedAt + TEST.ms - qNow()))}</strong></div><button class="btn small" data-qt="finish">Finish test</button></div>
+  <div class="learning-layout"><section class="card lesson-copy"><span class="badge orange">${TEST.tierNames[l.tier].toUpperCase()}</span><h2>${esc(l.title)}</h2><p class="pre-task">${esc(l.task)}</p><div class="task"><h3>Samples</h3><div class="io-example">${esc(l.samplePreview).replaceAll('\n', '<br>')}</div></div><p class="test-nohelp">Hints are off during a timed test.</p></section>
+  <div class="editor-column"><section class="editor-panel"><div class="editor-toolbar"><span class="file-name">◉ &nbsp; ${esc(l.file)}</span></div><div class="editor-wrap"><div class="line-numbers" id="line-numbers" aria-hidden="true"></div><textarea id="editor" aria-label="Python code editor" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off">${esc(code)}</textarea></div><div class="editor-actions"><small id="editor-saved">Saved for this test only</small><div><button class="btn small" data-action="stop" id="stop-btn" hidden>Stop</button><button class="btn" data-action="run" id="run-btn">▶︎ &nbsp; Run checks</button></div></div></section><section class="card console"><div class="console-heading"><strong>OUTPUT & CHECKS</strong><span class="badge" id="run-status">READY WHEN YOU ARE</span></div><div id="test-results"></div><pre id="output">Run your program against the sample and hidden test cases.\nTip: Ctrl/⌘ + Enter runs your code.</pre><p id="completion-message" hidden></p></section></div></div>`;
+}
+function renderTest(id) {
+  testCheck();
+  const a = qGame().tests.active;
+  return a ? testRunView(a, Math.min(3, Math.max(1, Number(id) || 1))) : testHome();
+}
+function testMounted(page, id) {
+  const a = qGame().tests.active;
+  if (!a) return;
+  if (typeof setInterval === 'function' && !testTimerId) testTimerId = setInterval(testTick, 1000);
+  if (page === 'lesson' && a.problems.includes(Number(id))) { location.hash = '#test/' + (a.problems.indexOf(Number(id)) + 1); return; }
+  if (page === 'test') { dismissNotice('timed-test'); syncLines(); }
+  else showNotice('timed-test', 'info', 'A timed test is running, so hints are off.', '<a class="btn small" href="#test">Back to the test</a>');
+}
+
 /* ---------- quest book page ---------- */
 function renderQuestline(key) {
   const ch = QL[key], nodes = questlineNodes(key), done = nodes.filter(n => n.done).length, unlocked = questlineUnlocked(key);
   const kinds = [...new Set(nodes.map(n => n.kind))];
   return `<div class="qb">${questSidebar(key)}<section class="qb-main">
     <header class="qb-head"><div class="qb-head-icon" style="color:${KIND_COLOR[ch.kind]}">${htmlIcon(QICON[ch.kind], 24, 'qh-icon')}</div><div><span class="qb-kicker">SIDE QUESTLINE · ${esc(KIND_KICKER[ch.kind])}</span><h1>${esc(ch.title)}</h1><p>${esc(ch.sub)}</p></div><div class="qb-head-progress"><strong>${done}<span>/${nodes.length}</span></strong><small>quests complete</small><div class="qbar"><i style="width:${Math.round(done / nodes.length * 100)}%"></i></div></div></header>
+    ${ch.line === 'test' ? `<div class="qb-sidequests"><span>Timed mode</span><a href="#test" style="--k:${KIND_COLOR.program}">${htmlIcon(QICON.program, 15, 'qs-icon')}${qGame().tests.active ? 'Back to your running test' : 'Timed test · 3 problems · 60 minutes'}</a></div>` : ''}
     ${unlocked ? '' : `<div class="qb-locked-note">${htmlIcon(QICON.lock, 18, 'ql-icon')} Locked. Finish the previous ${esc(KIND_KICKER[ch.kind].toLowerCase())} chapter first.</div>`}
     <div class="qb-canvas"><svg viewBox="0 0 1000 600" role="group" aria-label="Quest map for ${esc(ch.title)}">${qbDefs()}${qbLines(nodes)}${nodes.map(n => qbNode(key, n)).join('')}</svg></div>
-    <footer class="qb-legend">${kinds.map(k => `<span><i class="lg" style="--k:${KIND_COLOR[k]}"></i>${k === 'brief' ? 'Briefing' : esc(QL[key].title.replace(/ [IV]+$/, ''))}</span>`).join('')}<span><i class="lg lg-bounty"></i>Redo bounty</span><span class="qb-legend-tip">Each quest also needs its matching core session. Locked quests say which.</span></footer>
+    <footer class="qb-legend">${kinds.map(k => `<span><i class="lg" style="--k:${KIND_COLOR[k]}"></i>${k === 'brief' ? 'Briefing' : esc(QL[key].title.replace(/ [IV]+$/, ''))}</span>`).join('')}<span><i class="lg lg-bounty"></i>Redo bounty</span><span class="qb-legend-tip">${ch.open ? 'Every quest here is open from the start.' : 'Each quest also needs its matching core session. Locked quests say which.'}</span></footer>
   </section></div>`;
 }
 function sideQuestLinks(w) {
@@ -281,8 +426,8 @@ function renderQuests(w) {
     <footer class="qb-legend">${['brief', 'lesson', 'checkpoint', 'trace', 'lab'].map(k => `<span><i class="lg" style="--k:${KIND_COLOR[k]}"></i>${{ brief: 'Briefing', lesson: 'Session', checkpoint: 'Checkpoint', trace: 'Side quest', lab: 'Chapter lab' }[k]}</span>`).join('')}<span><i class="lg lg-bounty"></i>Redo bounty</span><span class="qb-legend-tip">Glowing quests are ready. Select one to see its rewards.</span></footer>
   </section></div>`;
 }
-const KIND_COLOR = { brief: '#ffc94d', lesson: '#3fd5f5', checkpoint: '#b48cff', lab: '#ff7a36', trace: '#ff6eb4', drill: '#a3e635', bug: '#ff5470', sql: '#5b8cff', interview: '#ffb020', hardware: '#2ee6a6' };
-const KIND_KICKER = { brief: 'BRIEFING', lesson: 'SESSION', checkpoint: 'CHECKPOINT', lab: 'CHAPTER LAB', trace: 'SIDE QUEST', drill: 'DRILL', bug: 'BUG HUNT', sql: 'SQL', interview: 'INTERVIEW', hardware: 'HARDWARE' };
+const KIND_COLOR = { brief: '#ffc94d', lesson: '#3fd5f5', checkpoint: '#b48cff', lab: '#ff7a36', trace: '#ff6eb4', drill: '#a3e635', bug: '#ff5470', sql: '#5b8cff', interview: '#ffb020', hardware: '#2ee6a6', program: '#e879f9', oop: '#22d3ee' };
+const KIND_KICKER = { brief: 'BRIEFING', lesson: 'SESSION', checkpoint: 'CHECKPOINT', lab: 'CHAPTER LAB', trace: 'SIDE QUEST', drill: 'DRILL', bug: 'BUG HUNT', sql: 'SQL', interview: 'INTERVIEW', hardware: 'HARDWARE', program: 'TEST PRACTICE', oop: 'OBJECT-ORIENTED' };
 const LABEL_ABOVE = new Set(['s2', 's4']);
 function qbDefs() {
   return `<defs><radialGradient id="qshine" cx="35%" cy="28%" r="70%"><stop offset="0" stop-color="#fff" stop-opacity=".38"/><stop offset=".45" stop-color="#fff" stop-opacity=".06"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><radialGradient id="qember" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffb347" stop-opacity=".55"/><stop offset=".6" stop-color="#ff5a1f" stop-opacity=".12"/><stop offset="1" stop-color="#ff5a1f" stop-opacity="0"/></radialGradient></defs>`;
@@ -318,7 +463,8 @@ function qbLines(nodes) {
 function qbLabel(n, x, y, r) {
   const max = n.kind === 'lab' ? 20 : n.kind === 'trace' ? 16 : 18;
   const title = n.briefTitle ? n.briefTitle : n.kind === 'brief' ? handbook.units[n.week - 1].title : n.kind === 'lab' ? handbook.units[n.week - 1].lab.title : n.kind === 'trace' ? n.trace.title : n.lesson.title.replace(/^(Checkpoint|Build|Ship|Independent build|Foundations checkpoint|Final assessment):\s*/i, '').replace(/^./, ch => ch.toUpperCase());
-  const kicker = KIND_KICKER[n.kind] + (n.lesson ? ' ' + n.lesson.session : '');
+  const labelKind = !n.lesson?.track && n.kind === 'brief' ? 'READ LESSON' : !n.lesson?.track && n.kind === 'lesson' ? 'PRACTICE' : n.kind === 'trace' ? 'OPTIONAL TRACE' : n.kind === 'lab' ? 'INDEPENDENT LAB' : KIND_KICKER[n.kind];
+  const kicker = labelKind + (n.lesson ? ' ' + n.lesson.session : '');
   const lines = wrapWords(title, max), lh = 15.5, h = 22 + lines.length * lh + 8;
   const wEst = Math.max(kicker.length * 6.6, ...lines.map(l => l.length * 7.3)) + 22;
   const top = n.above ? y - r - 14 - h : y + r + 12;
@@ -398,11 +544,11 @@ function questModalBody(w, n, nodes) {
   }
   if (n.kind === 'brief') {
     const u = handbook.units[w - 1];
-    return `${head('CHAPTER ' + w + ' · BRIEFING', n.title)}<p>Read this week’s handbook before the sessions. It explains the ideas, shows a worked example to predict, and lists common mistakes.</p><ul class="qm-list">${u.goals.map(x => `<li>${esc(x)}</li>`).join('')}</ul>${rewardRows([['+' + Q.briefXP, 'XP for opening the briefing'], ['🔓', 'Unlocks session 1']])}${needs}<div class="qm-actions">${n.state !== 'locked' ? `<a class="qbtn" href="#unit/${w}" data-qm="go">Open briefing →</a>` : ''}</div>`;
+    return `${head('CHAPTER ' + w + ' · BRIEFING', n.title)}<p>Read this week’s handbook before the sessions. It explains the ideas, shows a worked example to predict, and lists common mistakes.</p><ul class="qm-list">${u.goals.map(x => `<li>${esc(x)}</li>`).join('')}</ul>${rewardRows([['+' + Q.briefXP, 'XP for finishing the chapter reading'], ['🔓', 'Unlocks session 1']])}${needs}<div class="qm-actions">${n.state !== 'locked' ? `<a class="qbtn" href="#unit/${w}" data-qm="go">Open briefing →</a>` : ''}</div>`;
   }
   if (n.kind === 'lab') {
     const u = handbook.units[w - 1], checked = u.lab.acceptance.filter((_, j) => state.labChecks[`${w}-${j}`]).length, note = (state.labNotes[w] || '').trim().length;
-    return `${head('CHAPTER ' + w + ' · PINNACLE', n.title)}<p>Build the full lab in VS Code. This is where the week’s pieces become a real program, so it pays the most.</p><div class="qm-tasks"><span class="qb-kicker">TASKS</span><div class="${checked === u.lab.acceptance.length ? 'ok' : ''}">${checked === u.lab.acceptance.length ? '✓' : '○'} Check all ${u.lab.acceptance.length} acceptance criteria (${checked}/${u.lab.acceptance.length})</div><div class="${note >= Q.labNoteMin ? 'ok' : ''}">${note >= Q.labNoteMin ? '✓' : '○'} Write an evidence note of at least ${Q.labNoteMin} characters: what you ran, what broke, what you fixed (${Math.min(note, Q.labNoteMin)}/${Q.labNoteMin})</div></div>${rewardRows([['+' + Q.labXP, 'XP · the biggest reward in the chapter'], ['🔓', 'Unlocks the next chapter’s finale path']])}${needs}<div class="qm-actions">${n.state !== 'locked' ? `<a class="qbtn" href="#unit/${w}" data-qm="go">Open lab brief →</a><a class="qbtn ghost" href="labs/week-${String(w).padStart(2, '0')}.zip" download>Download kit ↓</a>` : ''}</div>`;
+    return `${head('CHAPTER ' + w + ' · PINNACLE', n.title)}<p>Build the full lab in VS Code. This is where the week’s pieces become a real program, so it pays the most.</p><p class="qm-small"><a href="#setup/${w}" data-qm="go">First lab? Set up your Forge Work folder →</a></p><div class="qm-tasks"><span class="qb-kicker">TASKS</span><div class="${checked === u.lab.acceptance.length ? 'ok' : ''}">${checked === u.lab.acceptance.length ? '✓' : '○'} Check all ${u.lab.acceptance.length} acceptance criteria (${checked}/${u.lab.acceptance.length})</div><div class="${note >= Q.labNoteMin ? 'ok' : ''}">${note >= Q.labNoteMin ? '✓' : '○'} Write an evidence note of at least ${Q.labNoteMin} characters: what you ran, what broke, what you fixed (${Math.min(note, Q.labNoteMin)}/${Q.labNoteMin})</div></div>${rewardRows([['+' + Q.labXP, 'XP · the biggest reward in the chapter'], ['🔓', 'Record the independent lab to finish the main chapter']])}${needs}<div class="qm-actions">${n.state !== 'locked' ? `<a class="qbtn" href="#lab/${w}" data-qm="go">Open lab brief →</a><a class="qbtn ghost" href="labs/week-${String(w).padStart(2, '0')}.zip" download>Download kit ↓</a>` : ''}</div>`;
   }
   if (n.kind === 'trace') {
     const t = n.trace, rec = g.traces[t.id];
@@ -457,7 +603,7 @@ function sqlWrap(l, sql) {
   return `import sqlite3\n_FIX = ${JSON.stringify(l.sql.fixtures)}\n_SQL = ${JSON.stringify(q)}\n\ndef run_query(variant):\n    db = sqlite3.connect(':memory:')\n    db.executescript(_FIX[variant])\n    return [list(row) for row in db.execute(_SQL).fetchall()]\n`;
 }
 function predictionPanel(l) {
-  if (l.sql) { questPred = []; return ''; }
+  if (l.sql || l.program) { questPred = []; return ''; }
   questPred = l.cases.map(() => null);
   return `<div class="predict" id="predict"><div class="predict-head"><strong>CALL IT BEFORE YOU RUN</strong><span>+${Q.predXP} XP per correct call · +${Q.predPerfect} for a perfect read</span></div>${l.cases.map((c, i) => {
     const call = `${l.name}(${c.args.map(pyrepr).join(', ')}) → ${pyrepr(c.expected)}`;
@@ -476,6 +622,7 @@ function qKey() { return (current.isReview ? 'r' : '') + current.id; }
 function qAttempt() { const g = qGame(); return g.attempts[qKey()] ??= { fails: 0, started: 0, lastFail: 0, lastPred: 0, diag: [] }; }
 function questAfterRun(result, ok, code, prediction) {
   if (!current) return;
+  if (current.testRun) { testRecord(result, code); return; }
   const a = qAttempt(), changed = code.trim() !== (current.starter || '').trim(), h = qHash(code);
   if (!a.started && changed) a.started = qNow();
   if (!ok && changed && h !== a.lastFail) { a.fails++; a.lastFail = h; }
@@ -526,6 +673,12 @@ function rewardPreview() {
 }
 function questRenderHelp() {
   if (!current || !lessons.length) return;
+  if (testRunning()) {
+    const hintBox = document.querySelector('#hint-box'), helpLadder = document.querySelector('#help-ladder');
+    if (hintBox) hintBox.innerHTML = '';
+    if (helpLadder) helpLadder.innerHTML = '<p class="test-nohelp">Hints are off during a timed test.</p>';
+    return;
+  }
   const l = lessons[current.id - 1], a = qAttempt();
   if (!a.started && current.hints > 0) a.started = qNow();
   if (current.hints >= 1 && a.hint1Fails == null) a.hint1Fails = a.fails;
@@ -551,7 +704,7 @@ function ladderMarkup(l, a) {
   ${rung(1, 'Hint 1', h1, hintOpen(1, a), `Make ${Q.hint1Fails} real attempts first (${Math.min(a.fails, Q.hint1Fails)}/${Q.hint1Fails})`)}
   ${rung(2, 'Hint 2', h2, h1 && hintOpen(2, a), h1 ? 'Make 1 more real attempt after hint 1' : 'Needs hint 1 first')}
   ${rung(3, 'Reference solution', false, solutionOpen(a) && !solutionRevealed(), solutionRevealed() ? 'Revealed' : !h2 ? `Needs both hints and ${Q.solutionMinutes} min of trying` : `<span id="q-sol-wait">${mmss(wait)}</span> of trying left`)}
-  </div>${diag}<p class="ladder-note">A real attempt is a run that fails with new code. Help is earned by trying, so the struggle comes first.</p>`;
+  </div>${diag}<p class="ladder-note">A real attempt is a run that fails with new code. Try one change at a time, then inspect the result.</p>`;
 }
 function questTick() {
   if (!current || !document.querySelector('#help-ladder')) { clearInterval(questTimerId); questTimerId = null; return; }
@@ -568,6 +721,7 @@ function qMarkHelp() {
   if (s) s.textContent = 'This attempt uses in-app help. Rebuild it from scratch later to lock it in.';
 }
 function questHelpAction(action, el) {
+  if (testRunning()) return;
   if (!current) return;
   const a = qAttempt();
   if (action === 'hint') {
@@ -628,7 +782,12 @@ function questOnComplete(helped) {
   if (due && due <= qNow() && clean) { grantXP('review-' + l.id + '-' + due, Q.reviewXP, 'Recall review'); return `Recall review · +${Q.reviewXP} XP.`; }
   return '';
 }
-function questReturnHash() { return questFromMap && current ? '#quests/' + (current.track ? current.chapter : current.week) : ''; }
+function questReturnHash() {
+  if (!current) return '';
+  if (current.isReview) return '#review';
+  return '#quests/' + (current.track ? current.chapter : current.week);
+}
+
 function questCheckLab(w) { if (w >= 1 && w <= 24 && labDone(w)) grantXP('lab-' + w, Q.labXP, 'Chapter lab complete'); }
 
 /* ---------- HUD, home, review ---------- */
@@ -639,12 +798,6 @@ function refreshHUD() {
   el.innerHTML = `<span class="hud-lv">${info.level}</span><span class="hud-body"><span class="hud-rank">${esc(info.rank)}</span><span class="hud-bar"><i style="width:${Math.round(info.into / info.need * 100)}%"></i></span></span><span class="hud-xp">${info.into}/${info.need}</span>${ready ? `<span class="hud-bounty" title="Redo bounties ready">↻ ${ready}</span>` : ''}`;
   el.setAttribute?.('aria-label', `Level ${info.level} ${info.rank}, ${info.into} of ${info.need} XP to next level${ready ? ', ' + ready + ' bounties ready' : ''}. Open quest book.`);
 }
-function questHomeCard() {
-  const info = levelInfo(), w = defaultChapter(), next = chapterNodes(w).find(n => n.state === 'open' && !n.done), ready = bountyList().filter(b => b.ready);
-  return `<a class="quest-home" href="#quests/${w}"><div class="qp-level"><span>LV</span><strong>${info.level}</strong></div><div class="qh-mid"><span class="qb-kicker">${esc(info.rank.toUpperCase())} · ${info.xp.toLocaleString()} XP</span><div class="qbar"><i style="width:${Math.round(info.into / info.need * 100)}%"></i></div><p>${next ? `Next quest: <strong>${esc(next.title)}</strong> · Chapter ${w}` : 'Chapter ' + w + ' is waiting in the quest book.'}${ready.length ? ` · <span class="qh-bounty">↻ ${ready.length} redo ${ready.length === 1 ? 'bounty' : 'bounties'} ready</span>` : ''}</p></div><span class="qh-go">Open quest book →</span></a>`;
-}
-const questBaseHome = renderHome;
-renderHome = function () { questMigrate(); const html = questBaseHome(); return lessons.length && handbook ? html.replace('<div class="course-welcome">', questHomeCard() + '<div class="course-welcome">') : html; };
 const questBaseReview = renderReview;
 renderReview = function () {
   const html = questBaseReview(), list = lessons.length ? bountyList() : [];
@@ -682,11 +835,9 @@ function questMounted(page, id, mode) {
   closeQuestModal(true);
   if (!lessons.length || !handbook) return;
   qGame(); questMigrate(); refreshHUD();
+  testCheck();
+  testMounted(page, id);
   if (page !== 'quests') { questFromMap = questGoPending && (page === 'lesson' || page === 'unit'); questGoPending = false; }
-  if (page === 'unit') {
-    const w = Number(id) || 1, g = qGame();
-    if (w >= 1 && w <= 24 && !g.briefs[w]) { g.briefs[w] = true; save(); grantXP('brief-' + w, Q.briefXP, 'Briefing read'); }
-  }
   if (page === 'lesson' && current) {
     if (current.isReview) { qGame().attempts[qKey()] = { fails: 0, started: 0, lastFail: 0, lastPred: 0, diag: [] }; save(); questRenderHelp(); }
     if (typeof setInterval === 'function') questTimerId = setInterval(questTick, 1000);
@@ -694,6 +845,7 @@ function questMounted(page, id, mode) {
   if (page === 'quests') {
     qbFitLabels();
     restoreQuestScroll(wasOnQuests);
+    if (mode && /^\d+$/.test(String(id)) && chapterNodes(Number(id)).some(n => n.id === mode)) openQuestModal(id, mode);
     if (questMigrationNote) { const m = questMigrationNote; questMigrationNote = null; setTimeout(() => questToast(`+${m.xp} XP imported`, m.bounties ? `${m.bounties} guided sessions became redo bounties` : 'from your earlier independent clears', 'level'), 300); }
     if (questJustDone) setTimeout(() => { questJustDone = null; }, 1500);
   }
@@ -708,6 +860,12 @@ document.addEventListener('click', e => {
   if (pred) { setPrediction(Number(pred.dataset.pred), pred.dataset.v === '1'); return; }
   const q = t.closest('[data-q]');
   if (q) { questHelpAction(q.dataset.q, q); return; }
+  const qt = t.closest('[data-qt]');
+  if (qt) {
+    if (qt.dataset.qt === 'start') testStart();
+    if (qt.dataset.qt === 'finish' && confirm('Finish this test now? You can\'t come back to it.')) testFinish();
+    return;
+  }
   const qm = t.closest('[data-qm]');
   if (qm) {
     const a = qm.dataset.qm;

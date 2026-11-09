@@ -48,14 +48,14 @@ unit(['Explain a variable, a value, and a type.','Call a function and distinguis
 ('Syntax you need before the first challenge','def starts a function definition. Parameters in parentheses name the inputs. A colon starts the indented body, conventionally four spaces. return gives a result back to the caller and exits the function. print displays text for a person; a function that only prints returns None. A # starts a comment and pass is a placeholder that does nothing. Python is case-sensitive, so Total and total are different names.'),
 ('Arithmetic and decisions','Use +, -, *, and / for arithmetic; / produces a float. // is floor division and % is the remainder. Parentheses control grouping. Compare with <, <=, >, >=, ==, and !=. and requires both conditions, or requires at least one, and not reverses a boolean. An if/elif/else chain chooses a branch. Test exactly at each cutoff as well as on either side. Strings and numeric values do not combine automatically; convert deliberately with int(), float(), or str().')],
 'def remaining(coins, price):\n    if coins < price:\n        return None\n    return coins - price\n\nprint(remaining(12, 5))\nprint(remaining(5, 5))\nprint(remaining(4, 5))','7\n0\nNone',['The first call binds coins to 12 and price to 5. The comparison is False, so the final return gives 7.','At equal amounts the purchase is allowed, returning 0. An insufficient amount takes the early return.','print displays each returned value. Removing print would still compute values but a script would not display them.'],['Using = instead of == in a condition.','Printing the answer instead of returning it.','Indenting return under the wrong branch or misspelling a parameter.'],['Why is "12" + "5" different from 12 + 5?','What does a function return when it reaches its end with no return?','Which three inputs test the cutoff at price 5?'],
-'Build a small reward calculator',['Before coding, write two input/output examples for a game reward rule.','Create core.py with one function that calculates XP from a score and win flag.','In main.py, call it with three examples and print the returned values.','Add a second function that labels the XP using clear cutoff rules.','Write one ordinary case, one exact-cutoff case, and one zero case in test_core.py.','Run the files locally using the Start Here guide. Explain each line aloud.'],['An ordinary input produces your documented result.','Zero and exact-cutoff cases work.','Core functions return values; presentation prints them.','You can rewrite the smallest function without copying it.'],['w3vars','w3func','values','flow'])
+'Build a small reward calculator',['Finish the reward(score, won) checkpoint function in core.py using its contract in README.md. Keep that function unchanged for the supplied tests.','Design a separate session_reward function that receives score, won, and streak. Reuse the checkpoint calculation and add a 10 XP bonus when streak is at least 3. Assume nonnegative integer score/streak and a boolean won.','Before coding, write expected results by hand for a loss with score 0, a win, streak 2, and streak 3.','Add a label function: XP below 50 is warm-up, 50 through 99 is steady, and 100 or more is milestone. Choose its name and parameters yourself.','In main.py, call your functions for at least three different sessions and print both XP and its label. Use fixed example values; interactive input is not needed yet.','Add your own tests for the streak cutoff and label cutoffs, alongside the supplied checkpoint tests. Run both the tests and main.py.','In README.md, record the run commands and sample output. Close the example teaching and explain each function aloud.'],['An ordinary input produces your documented result.','Zero and exact-cutoff cases work.','Core functions return values; presentation prints them.','You can rewrite the smallest function without copying it.'],['w3vars','w3func','values','flow'])
 unit(['Trace each iteration of a loop.','Build a new list without mutating the input.','Normalize strings and explain indexing and slicing.'],[
 ('Lists and positions','A list is an ordered collection: [3, 7, 2]. Its first index is 0, so values[0] is 3. A negative index counts from the end; values[-1] is 2. values[1:3] slices from index 1 up to, but excluding, index 3. len(values) gives its length. Indexing an empty list raises IndexError. Lists can change: append adds an element and pop removes one. Strings support indexing and slicing too, but cannot be changed in place.'),
 ('Loops and accumulators','for item in values binds item to each value in sequence. range(3) produces 0, 1, 2; range(1, 4) produces 1, 2, 3. Use enumerate(values) when you need both index and item. An accumulator starts before the loop, updates inside it, and is returned after it. A misplaced return inside the loop stops after the first item. A while loop repeats while a condition holds; update the state so it can eventually stop.'),
 ('Filter and transform','Filtering keeps selected items; mapping changes each item. Start with explicit loops so you can trace their behavior. Later, [x * 2 for x in values if x > 0] combines filtering and mapping in a comprehension. It builds a new list. A generator expression uses parentheses instead: (x * 2 for x in values) produces results one at a time when consumed. sum totals numbers, any returns whether at least one value is truthy, and all returns whether every value is truthy. For empty input, sum returns 0 by default, any returns False, and all returns True. Trace the equivalent loop before using the compact form. Do not remove items from the collection you are iterating unless you fully understand the consequences. A fresh result list makes the contract easier to reason about.'),
 ('Strings and boundaries','strip removes whitespace from both ends, lower changes case, replace substitutes occurrences, split divides text, and join combines strings using a separator. These methods return new values. An f-string such as f"Score: {score}" formats a value into text. Decide whether repeated internal spaces should remain or collapse. A normalization function must reflect the spec, not your guess about what a clean name should look like.')],
 'def positive_total(values):\n    total = 0\n    for value in values:\n        if value > 0:\n            total += value\n    return total\n\nprint(positive_total([4, -2, 3]))\nprint(positive_total([]))','7\n0',['Start total at 0. Read 4 and add it, so total becomes 4.','Read -2; the condition fails and the accumulator stays 4. Read 3 and add it to get 7.','The return happens after the loop. An empty list never enters the loop, so its result is the initial 0.'],['Resetting the accumulator inside the loop.','Returning after the first iteration.','Using a list index before checking that the list contains an item.'],['What does range(2, 5) produce?','Where must return go to process every element?','Which version changes its input: values.append(3) or values + [3]?'],
-'Create a score-filter report',['Write a function that keeps scores meeting a threshold.','Write another function that counts them using a loop.','Add a formatter that creates a human-readable report using an f-string.','Test an empty list, equal-to-threshold scores, and a list with no matches.','Trace one failing case in a table with item, condition, and accumulator columns.','Refactor one loop to a comprehension only after both versions pass the same tests.'],['Input order is preserved where the contract requires it.','The original scores list remains unchanged.','Count and list agree on the number of matches.','You can explain an entire loop trace.'],['values','flow','collections'])
+'Create a score-filter report',['Keep the supplied checkpoint contract intact. Add your own functions beside it for a complete score report.','The report receives a list of nonnegative integer scores and a threshold. Keep scores at or above the threshold in their original order; leave the input list unchanged.','Compute the matching count and the total of matching scores. For no matches, both are zero. Decide how to divide the work into functions.','Format a report containing the threshold, matching scores, count, and total. In main.py, print reports for a normal list, an empty list, and a list with no matches.','Before implementing, write one example report by hand. Add tests for a score exactly equal to the threshold, repeated scores, empty input, and input preservation.','Trace one loop with item, condition, and accumulator columns. Record the trace and run commands in README.md. A comprehension is an optional extension after the loop works.'],['Input order is preserved where the contract requires it.','The original scores list remains unchanged.','Count and list agree on the number of matches.','You can explain an entire loop trace.'],['values','flow','collections'])
 unit(['Choose a list, tuple, dictionary, or set for a reason.','Count and group using dictionaries.','Explain aliasing, copying, sorting, and tie rules.'],[
 ('Choose by operation','A list preserves order and duplicates. A tuple is an immutable sequence, useful for a fixed pair such as (x, y). A dictionary maps unique keys to values and preserves insertion order. A set stores unique hashable values for membership tests; do not depend on its iteration order for a report. Strings, numbers, and tuples of hashable values can be keys; mutable lists cannot. Choose based on what you need to do, not which syntax looks shortest. For sets, a | b is union, a & b is intersection, and a - b is difference. These operations also work with dictionary key views. A membership test uses in; use not in for its opposite.'),
 ('Count and look up','counts[item] raises KeyError if the key is missing. counts.get(item, 0) supplies a starting value without inserting it. Updating counts[item] = counts.get(item, 0) + 1 accumulates a frequency. Use key in mapping to distinguish a missing key from a stored value of None or 0. mapping.items() yields key/value pairs that can be unpacked in a loop.'),
@@ -213,7 +213,7 @@ unit(['Attempt an unseen problem and explain its cost.','Complete an existing-co
 assert len(units)==24
 for i,u in enumerate(units):
  u.update(week=i+1,title=data['weeks'][i]['title'],phase=data['weeks'][i]['phase'])
- u['lab']['deliverables']=['core.py with your implementation','test_core.py with normal, empty, boundary, and invalid cases where applicable','README.md with run commands, sample input/output, decisions, and limitations','Evidence note: what you ran, what failed, what you changed, and help used']
+ u['lab']['deliverables']=['core.py with your implementation','main.py demonstrating the complete program','test_core.py with normal, empty, boundary, and invalid cases where applicable','README.md with run commands, sample input/output, decisions, and limitations','Evidence note: what you ran, what failed, what you changed, and help used']
  u['prerequisites']='Start Here and basic computer file operations' if i==0 else f'Weeks 1–{i}, especially '+data['weeks'][i-1]['title'].lower()
 for l in data['lessons']:
  l['objectives']=[f'Implement the specified {l["name"]} behavior.', 'Trace a normal case and one boundary or invalid case.', 'Explain the approach, mutation policy, and test evidence.']
@@ -233,7 +233,71 @@ write_text_atomic(ROOT/'dist/handbook.json',json.dumps(book,indent=2));write_tex
 labdir=ROOT/'dist/labs';labdir.mkdir(exist_ok=True)
 for u in units:
  w=u['week'];lesson=data['lessons'][w*4-1]
- readme='# Week '+str(w)+': '+u['lab']['title']+'\n\nThis kit starts the checkpoint core. The complete local lab below goes beyond browser checks. Fill in core.py, add your own cases, then build the workflow.\n\n## Setup\n\nWindows PowerShell:\n```text\npy -m venv .venv\n.venv\\Scripts\\python -m unittest -v\n```\nmacOS/Linux:\n```text\npython3 -m venv .venv\n.venv/bin/python -m unittest -v\n```\nThe included tests start red because the implementation is yours to write. They use only the standard library. Install optional packages such as pytest, Requests, or FastAPI in this environment when the lab calls for them.\n\n## Core challenge\n'+lesson['task']+'\n\n## Build the full lab\n'+'\n'.join(str(j+1)+'. '+s for j,s in enumerate(u['lab']['steps']))+'\n\n## Acceptance criteria\n'+'\n'.join('- [ ] '+s for s in u['lab']['acceptance'])+'\n\n## Deliverables\n'+'\n'.join('- '+s for s in u['lab']['deliverables'])+'\n\n## References\n'+'\n'.join('- '+S[k][0]+': '+S[k][1] for k in u['sources'])+'\n'
+ readme=f"""# Week {w}: {u['lab']['title']}
+
+## Start here
+
+This ZIP is an unfinished checkpoint plus tests. The complete program in the build steps below is yours to create. Passing the supplied tests is only part of the lab.
+
+1. Extract the ZIP into its own folder, for example Documents/Forge Work/week-{w:02}.
+2. In VS Code, use File > Open Folder to open the folder containing core.py.
+3. Choose Terminal > New Terminal. Type the commands below there, not in a .py file.
+4. Need help installing Python or using the editor? Open Forge at http://127.0.0.1:8000/#setup/{w} for the full guide, expected results, and troubleshooting.
+
+## Create the environment (once per lab folder)
+
+Windows PowerShell:
+```text
+py -m venv .venv
+.\\.venv\\Scripts\\python.exe --version
+```
+macOS/Linux:
+```text
+python3 -m venv .venv
+./.venv/bin/python --version
+```
+A Python 3 version number confirms the environment works. If Windows has python rather than py, use python -m venv .venv. Select this folder's .venv with VS Code's Python: Select Interpreter command. You do not need to activate it.
+
+## Know the files
+
+- core.py: implement the requested checkpoint function here.
+- main.py: build the complete program here, calling functions from core.py as needed. The untouched file only prints a reminder.
+- test_core.py: supplied checkpoint tests; add your own tests too.
+- cases.json: inputs and expected results used by the supplied tests. Keep these intact.
+- README.md: this brief; add your plan, run commands, and sample output here.
+
+## Run tests after saving your files
+
+Windows PowerShell:
+```text
+.\\.venv\\Scripts\\python.exe -m unittest -v
+```
+macOS/Linux:
+```text
+./.venv/bin/python -m unittest -v
+```
+Expect assertion failures before you implement core.py. They compare the unfinished result with the expected result. An import ERROR or Ran 0 tests needs investigation: make sure the terminal is in the folder containing core.py, test_core.py, and cases.json. OK means the tests that ran passed; you must still check the full lab below. The kit uses built-in unittest, so no extra packages are needed for its tests.
+
+## Run your program
+
+Windows PowerShell:
+```text
+.\\.venv\\Scripts\\python.exe main.py
+```
+macOS/Linux:
+```text
+./.venv/bin/python main.py
+```
+The untouched main.py is only a starting place. Replace its reminder with your own program. Install extra libraries in .venv only when a later lab needs them.
+
+## Checkpoint contract
+
+{lesson['task']}
+
+## Build the full lab
+
+"""+'\n'.join(str(j+1)+'. '+step for j,step in enumerate(u['lab']['steps']))+'\n\n## Acceptance criteria\n\n'+'\n'.join('- [ ] '+criterion for criterion in u['lab']['acceptance'])+'\n\n## Deliverables\n\n'+'\n'.join('- '+item for item in u['lab']['deliverables'])+'\n\n## Evidence to record\n\nWrite your example input and expected output before coding. Then record the commands you ran, actual output, a bug you fixed, help used, and anything unfinished. Add at least one test of your own. Check the criteria in Forge after verifying them, and keep a backup of this folder separately from your Forge progress export.\n\n## References\n\n'+'\n'.join('- '+S[k][0]+': '+S[k][1] for k in u['sources'])+'\n'
+
  test='import json\nimport unittest\nfrom pathlib import Path\nfrom core import '+lesson['name']+'\n\nclass CoreTests(unittest.TestCase):\n    def test_supplied_cases(self):\n        cases = json.loads(Path(__file__).with_name("cases.json").read_text(encoding="utf-8"))\n        for case in cases:\n            with self.subTest(args=case["args"]):\n                self.assertEqual('+lesson['name']+'(*case["args"]), case["expected"])\n\n    # Add your own boundary and invalid cases based on the contract.\n\nif __name__ == "__main__":\n    unittest.main()\n'
- write_zip_atomic(labdir/f'week-{w:02}.zip',{'README.md':readme,'core.py':lesson['starter'],'test_core.py':test,'cases.json':json.dumps(lesson['cases'],indent=2),'.gitignore':'.venv/\n__pycache__/\n.pytest_cache/\n.env\n*.db\n'})
+ write_zip_atomic(labdir/f'week-{w:02}.zip',{'README.md':readme,'main.py':'# Build the full lab here. Keep reusable rules in core.py.\n# Replace this reminder with your own program.\nprint("Starter ready. Read README.md and build your lab in this file.")\n','core.py':lesson['starter'],'test_core.py':test,'cases.json':json.dumps(lesson['cases'],indent=2),'.gitignore':'.venv/\n__pycache__/\n.pytest_cache/\n.env\n*.db\n'})
 print('Created',len(units),'handbook units and lab kits;',len(S),'curated references')

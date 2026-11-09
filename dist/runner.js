@@ -1,4 +1,81 @@
 /* Execute Python in a disposable worker; the UI can terminate a stuck program. */
+/* Run a whole program once per test case. Hidden inputs and outputs never leave this worker's result. */
+const PROGRAM_PY = String.raw`
+import contextlib, io, json, sys, time, traceback
+
+_FORGE_LIMIT = 3.0
+_FORGE_MAX_SLOW = 2
+
+
+class _ForgeTooSlow(BaseException):
+    pass
+
+
+def _forge_clean(text):
+    return '\n'.join(line.rstrip() for line in text.replace('\r\n', '\n').rstrip().split('\n'))
+
+
+def _forge_run(code, stdin):
+    out, err = io.StringIO(), io.StringIO()
+    deadline = time.monotonic() + _FORGE_LIMIT
+    count = [0]
+
+    def tracer(frame, event, arg):
+        if frame.f_code.co_filename != 'solution.py':
+            return None
+        count[0] += 1
+        if count[0] % 256 == 0 and time.monotonic() > deadline:
+            raise _ForgeTooSlow()
+        return tracer
+
+    saved = sys.stdin
+    sys.stdin = io.StringIO(stdin)
+    status, detail = 'ok', ''
+    try:
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            sys.settrace(tracer)
+            try:
+                exec(code, {'__name__': '__main__'})
+            finally:
+                sys.settrace(None)
+    except SystemExit:
+        pass
+    except _ForgeTooSlow:
+        status = 'slow'
+    except BaseException:
+        status, detail = 'error', traceback.format_exc(limit=-2)
+    finally:
+        sys.stdin = saved
+    if status == 'ok' and time.monotonic() > deadline:
+        status = 'slow'
+    return status, out.getvalue(), detail
+
+
+_forge_results = []
+_forge_first = ''
+_forge_error = None
+_forge_slow = 0
+try:
+    _forge_code = compile(_forge_source, 'solution.py', 'exec')
+except SyntaxError:
+    _forge_error = traceback.format_exc(limit=0)
+else:
+    for _forge_i, _forge_case in enumerate(json.loads(_forge_cases)):
+        _forge_sample = bool(_forge_case.get('sample'))
+        if _forge_slow >= _FORGE_MAX_SLOW:
+            _forge_results.append({'ok': False, 'sample': _forge_sample, 'status': 'skipped'})
+            continue
+        _forge_status, _forge_out, _forge_detail = _forge_run(_forge_code, _forge_case['stdin'])
+        _forge_ok = _forge_status == 'ok' and _forge_clean(_forge_out) == _forge_clean(_forge_case['expected'])
+        _forge_slow += _forge_status == 'slow'
+        _forge_row = {'ok': _forge_ok, 'sample': _forge_sample, 'status': 'passed' if _forge_ok else {'ok': 'wrong answer', 'slow': 'too slow', 'error': 'runtime error'}[_forge_status]}
+        if _forge_sample:
+            _forge_row.update(expected=_forge_case['expected'], actual=_forge_clean(_forge_out)[:2000], error=_forge_detail[-1500:])
+        _forge_results.append(_forge_row)
+        if _forge_i == 0:
+            _forge_first = _forge_out
+json.dumps({'results': _forge_results, 'stdout': _forge_first[:12000], 'error': _forge_error})
+`;
 let runtime;
 self.onmessage = async ({data}) => {
   try {
@@ -8,6 +85,12 @@ self.onmessage = async ({data}) => {
     }
     if(data.packages?.length) await runtime.loadPackage(data.packages);
     self.postMessage({type:'ready'});
+    if (data.program) {
+      runtime.globals.set('_forge_source', data.code);
+      runtime.globals.set('_forge_cases', JSON.stringify(data.cases));
+      self.postMessage({type:'result',data:JSON.parse(runtime.runPython(PROGRAM_PY))});
+      return;
+    }
     runtime.globals.set('_forge_source', data.code);
     runtime.globals.set('_forge_cases', JSON.stringify(data.cases));
     runtime.globals.set('_forge_name', data.name);
