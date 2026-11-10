@@ -80,7 +80,23 @@ let questGoPending = false, questPred = [], questTimerId = null, questFromMap = 
 /* ---------- state ---------- */
 function qNow() { return Date.now(); }
 function qHash(s) { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return h; }
-function defaultGame() { return { awards: {}, bounties: {}, attempts: {}, revealed: {}, briefs: {}, qbriefs: {}, traces: {}, tests: { history: [], active: null }, migrated: false }; }
+const WORKSPACE_CHECKS = ['tools','folder','initialized','firstCommit','created','linked','pushed','verified'];
+function defaultWorkspace() { return { repoUrl: '', checks: {} }; }
+function workspaceRepoUrl(raw) {
+  if(typeof raw!=='string'||raw.length>240)return '';
+  try {
+    const url=new URL(raw.trim());
+    if(url.protocol!=='https:'||url.hostname!=='github.com'||url.port||url.username||url.password||url.search||url.hash)return '';
+    const parts=url.pathname.replace(/\/$/,'').split('/').filter(Boolean);
+    if(parts.length!==2||!(/^[a-zA-Z0-9][a-zA-Z0-9-]{0,38}$/).test(parts[0]))return '';
+    const repo=parts[1].replace(/\.git$/,'');
+    if(!(/^[a-zA-Z0-9_.-]{1,100}$/).test(repo)||['.','..'].includes(repo))return '';
+    if(parts[0].toLowerCase()==='kyle-goodman-cs'&&['forge','forge-private'].includes(repo.toLowerCase()))return '';
+    return 'https://github.com/'+parts[0]+'/'+repo;
+  } catch { return ''; }
+}
+function validLabCommit(value) { return typeof value==='string'&&/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/i.test(value.trim()); }
+function defaultGame() { return { awards: {}, bounties: {}, attempts: {}, revealed: {}, briefs: {}, qbriefs: {}, traces: {}, tests: { history: [], active: null }, migrated: false, workspace: defaultWorkspace(), labCommits: {}, legacyLabs: {}, githubWorkflow: 0 }; }
 function qGame() {
   if (!state.game || typeof state.game !== 'object' || Array.isArray(state.game)) state.game = defaultGame();
   const g = state.game;
@@ -89,11 +105,28 @@ function qGame() {
   if (!g.tests || typeof g.tests !== 'object' || Array.isArray(g.tests)) g.tests = { history: [], active: null };
   if (!Array.isArray(g.tests.history)) g.tests.history = [];
   g.tests.active ??= null;
+  if(!g.workspace||typeof g.workspace!=='object'||Array.isArray(g.workspace))g.workspace=defaultWorkspace();
+  if(typeof g.workspace.repoUrl!=='string')g.workspace.repoUrl='';
+  if(!g.workspace.checks||typeof g.workspace.checks!=='object'||Array.isArray(g.workspace.checks))g.workspace.checks={};
+  if(!g.labCommits||typeof g.labCommits!=='object'||Array.isArray(g.labCommits))g.labCommits={};
+  if(!g.legacyLabs||typeof g.legacyLabs!=='object'||Array.isArray(g.legacyLabs))g.legacyLabs={};
+  if(g.githubWorkflow!==1&&handbook?.units){
+    for(const u of handbook.units)if(u.lab.acceptance.every((_,j)=>state.labChecks[`${u.week}-${j}`])&&(state.labNotes[u.week]||'').trim().length>=Q.labNoteMin)g.legacyLabs[u.week]=true;
+    g.githubWorkflow=1;
+    save();
+  }
   return g;
 }
 function sanitizeGame(raw) {
   const g = defaultGame();
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return g;
+  const workspace=raw.workspace;
+  if(workspace&&typeof workspace==='object'){
+    g.workspace.repoUrl=workspaceRepoUrl(workspace.repoUrl);
+    for(const key of WORKSPACE_CHECKS)if(workspace.checks?.[key]===true)g.workspace.checks[key]=true;
+  }
+  if(raw.labCommits&&typeof raw.labCommits==='object')for(const [key,item] of Object.entries(raw.labCommits))if(/^([1-9]|1\d|2[0-4])$/.test(key)&&item&&validLabCommit(item.sha)&&typeof item.pushed==='boolean')g.labCommits[key]={sha:item.sha.trim().toLowerCase(),pushed:item.pushed};
+  if(raw.githubWorkflow===1){g.githubWorkflow=1;for(const [key,value] of Object.entries(raw.legacyLabs||{}))if(/^([1-9]|1\d|2[0-4])$/.test(key)&&value===true)g.legacyLabs[key]=true;}
   const fin = v => Number.isFinite(v);
   const lessonId = k => /^\d+$/.test(k) && Number(k) >= 1 && Number(k) <= lessons.length;
   for (const [k, v] of Object.entries(raw.awards || {})) if (/^[a-z]+-[\w-]{1,40}$/.test(k) && v && fin(v.xp) && v.xp >= 0 && v.xp <= 2000) g.awards[k] = { xp: Math.round(v.xp), at: fin(v.at) ? v.at : 0 };
@@ -197,7 +230,8 @@ function chapterTraces(w) { return (typeof QUEST_TRACES !== 'undefined' ? QUEST_
 function labDone(w) {
   const u = handbook?.units?.[w - 1];
   if (!u) return false;
-  return u.lab.acceptance.every((_, j) => state.labChecks[`${w}-${j}`]) && (state.labNotes[w] || '').trim().length >= Q.labNoteMin;
+  const evidence=u.lab.acceptance.every((_, j) => state.labChecks[`${w}-${j}`]) && (state.labNotes[w] || '').trim().length >= Q.labNoteMin;
+  return evidence&&(typeof workspaceLabReady!=='function'||workspaceLabReady(w));
 }
 function chapterUnlocked(w) {
   if (w <= 1) return true;
@@ -548,7 +582,7 @@ function questModalBody(w, n, nodes) {
   }
   if (n.kind === 'lab') {
     const u = handbook.units[w - 1], checked = u.lab.acceptance.filter((_, j) => state.labChecks[`${w}-${j}`]).length, note = (state.labNotes[w] || '').trim().length;
-    return `${head('CHAPTER ' + w + ' · PINNACLE', n.title)}<p>Build the full lab in VS Code. This is where the week’s pieces become a real program, so it pays the most.</p><p class="qm-small"><a href="#setup/${w}" data-qm="go">First lab? Set up your Forge Work folder →</a></p><div class="qm-tasks"><span class="qb-kicker">TASKS</span><div class="${checked === u.lab.acceptance.length ? 'ok' : ''}">${checked === u.lab.acceptance.length ? '✓' : '○'} Check all ${u.lab.acceptance.length} acceptance criteria (${checked}/${u.lab.acceptance.length})</div><div class="${note >= Q.labNoteMin ? 'ok' : ''}">${note >= Q.labNoteMin ? '✓' : '○'} Write an evidence note of at least ${Q.labNoteMin} characters: what you ran, what broke, what you fixed (${Math.min(note, Q.labNoteMin)}/${Q.labNoteMin})</div></div>${rewardRows([['+' + Q.labXP, 'XP · the biggest reward in the chapter'], ['🔓', 'Record the independent lab to finish the main chapter']])}${needs}<div class="qm-actions">${n.state !== 'locked' ? `<a class="qbtn" href="#lab/${w}" data-qm="go">Open lab brief →</a><a class="qbtn ghost" href="labs/week-${String(w).padStart(2, '0')}.zip" download>Download kit ↓</a>` : ''}</div>`;
+    return `${head('CHAPTER ' + w + ' · PINNACLE', n.title)}<p>Build the full lab in VS Code. This is where the week’s pieces become a real program, so it pays the most.</p><p class="qm-small"><a href="#workspace/${w}/1" data-qm="go">Required GitHub workspace and lab setup →</a></p><div class="qm-tasks"><span class="qb-kicker">TASKS</span><div class="${checked === u.lab.acceptance.length ? 'ok' : ''}">${checked === u.lab.acceptance.length ? '✓' : '○'} Check all ${u.lab.acceptance.length} acceptance criteria (${checked}/${u.lab.acceptance.length})</div><div class="${note >= Q.labNoteMin ? 'ok' : ''}">${note >= Q.labNoteMin ? '✓' : '○'} Write an evidence note of at least ${Q.labNoteMin} characters: what you ran, what broke, what you fixed (${Math.min(note, Q.labNoteMin)}/${Q.labNoteMin})</div></div>${rewardRows([['+' + Q.labXP, 'XP · the biggest reward in the chapter'], ['🔓', 'Record the independent lab to finish the main chapter']])}${needs}<div class="qm-actions">${n.state !== 'locked' ? `<a class="qbtn" href="#lab/${w}" data-qm="go">Open lab brief →</a><a class="qbtn ghost" href="labs/week-${String(w).padStart(2, '0')}.zip" download>Download kit ↓</a>` : ''}</div>`;
   }
   if (n.kind === 'trace') {
     const t = n.trace, rec = g.traces[t.id];

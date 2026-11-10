@@ -1,6 +1,7 @@
 import json, textwrap
 from pathlib import Path
 from build_io import write_text_atomic, write_zip_atomic
+from workspace_setup import lab_git_readme
 ROOT=Path(__file__).resolve().parents[1];data=json.loads((ROOT/'dist/curriculum.json').read_text(encoding='utf-8'))
 S={
 'w3':('W3Schools Python syllabus','https://www.w3schools.com/python/python_syllabus.asp','Beginner-friendly topic map and optional extra exercises.'),
@@ -213,7 +214,7 @@ unit(['Attempt an unseen problem and explain its cost.','Complete an existing-co
 assert len(units)==24
 for i,u in enumerate(units):
  u.update(week=i+1,title=data['weeks'][i]['title'],phase=data['weeks'][i]['phase'])
- u['lab']['deliverables']=['core.py with your implementation','main.py demonstrating the complete program','test_core.py with normal, empty, boundary, and invalid cases where applicable','README.md with run commands, sample input/output, decisions, and limitations','Evidence note: what you ran, what failed, what you changed, and help used']
+ u['lab']['deliverables']=['core.py with your implementation','main.py demonstrating the complete program','Learning repository URL and a pushed commit ID for this chapter','test_core.py with normal, empty, boundary, and invalid cases where applicable','README.md with run commands, sample input/output, decisions, and limitations','Evidence note: what you ran, what failed, what you changed, and help used']
  u['prerequisites']='Start Here and basic computer file operations' if i==0 else f'Weeks 1–{i}, especially '+data['weeks'][i-1]['title'].lower()
 for l in data['lessons']:
  l['objectives']=[f'Implement the specified {l["name"]} behavior.', 'Trace a normal case and one boundary or invalid case.', 'Explain the approach, mutation policy, and test evidence.']
@@ -296,7 +297,7 @@ The untouched main.py is only a starting place. Replace its reminder with your o
 
 ## Build the full lab
 
-"""+'\n'.join(str(j+1)+'. '+step for j,step in enumerate(u['lab']['steps']))+'\n\n## Acceptance criteria\n\n'+'\n'.join('- [ ] '+criterion for criterion in u['lab']['acceptance'])+'\n\n## Deliverables\n\n'+'\n'.join('- '+item for item in u['lab']['deliverables'])+'\n\n## Evidence to record\n\nWrite your example input and expected output before coding. Then record the commands you ran, actual output, a bug you fixed, help used, and anything unfinished. Add at least one test of your own. Check the criteria in Forge after verifying them, and keep a backup of this folder separately from your Forge progress export.\n\n## References\n\n'+'\n'.join('- '+S[k][0]+': '+S[k][1] for k in u['sources'])+'\n'
+"""+'\n'.join(str(j+1)+'. '+step for j,step in enumerate(u['lab']['steps']))+lab_git_readme(w)+'\n\n## Acceptance criteria\n\n'+'\n'.join('- [ ] '+criterion for criterion in u['lab']['acceptance'])+'\n\n## Deliverables\n\n'+'\n'.join('- '+item for item in u['lab']['deliverables'])+'\n\n## Evidence to record\n\nWrite your example input and expected output before coding. Then record the commands you ran, actual output, a bug you fixed, help used, and anything unfinished. Add at least one test of your own. Check the criteria in Forge after verifying them, and keep a backup of this folder separately from your Forge progress export.\n\n## References\n\n'+'\n'.join('- '+S[k][0]+': '+S[k][1] for k in u['sources'])+'\n'
 
  test='import json\nimport unittest\nfrom pathlib import Path\nfrom core import '+lesson['name']+'\n\nclass CoreTests(unittest.TestCase):\n    def test_supplied_cases(self):\n        cases = json.loads(Path(__file__).with_name("cases.json").read_text(encoding="utf-8"))\n        for case in cases:\n            with self.subTest(args=case["args"]):\n                self.assertEqual('+lesson['name']+'(*case["args"]), case["expected"])\n\n    # Add your own boundary and invalid cases based on the contract.\n\nif __name__ == "__main__":\n    unittest.main()\n'
  write_zip_atomic(labdir/f'week-{w:02}.zip',{'README.md':readme,'main.py':'# Build the full lab here. Keep reusable rules in core.py.\n# Replace this reminder with your own program.\nprint("Starter ready. Read README.md and build your lab in this file.")\n','core.py':lesson['starter'],'test_core.py':test,'cases.json':json.dumps(lesson['cases'],indent=2),'.gitignore':'.venv/\n__pycache__/\n.pytest_cache/\n.env\n*.db\n'})

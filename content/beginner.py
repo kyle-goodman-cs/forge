@@ -16,6 +16,7 @@ from pathlib import Path
 from build_io import write_text_atomic
 from teaching_more import PLAIN_ADD, PLAIN_NEW
 from lab_setup import SETUP
+from workspace_setup import WORKSPACE
 
 CS50P = "https://cs50.harvard.edu/python/weeks/"
 CS50X = "https://cs50.harvard.edu/x/"
@@ -225,6 +226,7 @@ def main():
             unit["watch"] = {"label": label, "url": url}
     book["questlines"] = QUESTLINES
     book["setup"] = SETUP
+    book["workspace"] = WORKSPACE
     write_text_atomic(path, json.dumps(book, indent=2, ensure_ascii=False))
     words = sum(len((s["text"] + " " + s.get("code", "")).split()) for v in plain.values() for s in v)
     print(f"Beginner teaching added to {len(plain)} weeks (~{words} words) and {len(QUESTLINES)} questline guides.")

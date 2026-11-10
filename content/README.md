@@ -14,3 +14,5 @@ py content/build_course.py
 The website uses the original `forge-progress-v1` storage key. Optional lab and readiness fields have additive defaults; old backups remain importable. Browser checks assess test cases and a few explicit structural requirements, while local lab criteria and readiness notes are self-reported.
 
 The browser runtime is Python 3.12 (Pyodide 0.27.7), with SQLite bundled separately. Local labs use a regular Python 3 environment. Course references may show newer Python documentation; the taught examples use compatible behavior.
+
+`workspace_setup.py` authors the required first-time GitHub workflow and each kit's commit/push routine. `lab_setup.py` authors the chapter Python setup. Edit these sources and rebuild; keep confirmations distinct from independent verification.

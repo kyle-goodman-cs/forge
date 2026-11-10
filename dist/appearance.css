@@ -383,3 +383,27 @@ nav.setup-step-navigation a:last-child{margin-left:auto}
  .optional-group>summary{padding:18px;font-size:16px}.optional-track-link{padding:18px}
  .lesson-tabs{gap:7px}.lesson-tabs button{font-size:12px;padding:9px 11px;gap:6px}
 }
+
+/* Required GitHub workspace and per-lab push records. */
+.workspace-part{padding:14px 18px;margin:0 0 24px;border:1px solid var(--accent-border);border-radius:10px;background:var(--accent-soft);color:var(--ink);font-size:13px;line-height:1.8;font-weight:650}
+.workspace-part a,.workspace-validation a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.workspace-wizard label[for],.lab-github-routine label[for]{display:block;font-size:14px;font-weight:750;color:var(--ink);margin:20px 0 9px}
+.workspace-confirm{display:flex;align-items:flex-start;gap:12px;margin-top:24px;padding:16px 18px;background:var(--accent-soft);border:1px solid var(--accent-border);border-radius:10px;color:var(--ink);font-size:15px;line-height:1.8;cursor:pointer}
+.workspace-confirm input{width:19px;height:19px;flex:none;margin:4px 0 0;accent-color:var(--accent)}
+.workspace-validation{font-size:13px!important;line-height:1.8;color:var(--muted)!important;margin:9px 0 18px!important}
+.workspace-self-report{font-size:13px!important;color:var(--muted)!important;line-height:1.8}
+.workspace-legacy{background:var(--surface);padding:14px;border-radius:9px;font-size:14px!important}
+.lab-github-routine{border-top:1px solid var(--line);margin-top:32px;padding-top:6px}
+.lab-github-routine>p{font-size:15px;color:var(--body);line-height:1.85}
+.lab-github-routine .course-notice{margin:18px 0}
+.lab-github-routine .course-notice p{font-size:14px;margin:8px 0 14px}
+.lab-github-routine a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.lab-github-routine a.btn{color:var(--on-accent);text-decoration:none}
+.lab-github-routine input.form-input{font-family:var(--mono);font-size:13px}
+.workspace-wizard .setup-step-navigation button{margin-left:auto;font-size:14px;white-space:normal;max-width:100%}
+.workspace-wizard .setup-all-steps a{display:inline-block;padding:3px 0}
+@media(max-width:760px){
+ .workspace-confirm{padding:14px;font-size:14px}.workspace-part{font-size:12px}
+ .workspace-wizard .setup-step-navigation button{width:100%}
+ .workspace-wizard .setup-wizard-progress{align-items:flex-start;flex-wrap:wrap;gap:7px}
+}

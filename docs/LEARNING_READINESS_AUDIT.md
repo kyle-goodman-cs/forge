@@ -46,3 +46,11 @@ Successful grading states used isolated test fixtures for UI checks. The real in
 5. Export a progress backup after the session. Local setup can wait until the independent lab; it can take a separate session.
 
 Do not rush through the four practice quests or expect to finish a chapter in one sitting. Evidence that you can reason, debug, and change a program is the goal.
+
+## Required GitHub workflow addendum ? version 20
+
+Added November 9, 2026. GitHub is required before completing new local labs. The first-time guide covers Git installation, a separate workspace, commit identity, ignored files, a private learning repository, connecting it, authentication/pushing, and checking the remote copy. Python setup follows. Each chapter includes a commit/push routine and requires a full commit ID plus confirmation that GitHub shows its chapter files. Forge records these confirmations; it cannot independently inspect a private repository.
+
+Earlier completed labs and old backups remain compatible. Repository changes invalidate push confirmations. No learner credentials are requested or saved.
+
+Validation: 1,345 challenge cases, 24 worked examples, 72 executable teaching examples, 48 trace keys, and 434 simulated routes passed. Isolated real Edge checks covered all eight steps, invalid URLs, commit/push gates, reload persistence, changing repository/commit records, and responsive layouts in both themes. The documented Git commands were exercised with an extracted kit in a path containing spaces and a temporary local bare remote; no learner repository was created.
