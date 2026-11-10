@@ -440,8 +440,14 @@
         },
         {
           "title": "while loops need an exit",
-          "text": "for loops over a collection always end. while loops keep going as long as a condition is True, so something inside must eventually make it False. If a run hits Forge's time limit, an infinite loop is the usual cause: check that every path changes the loop variable.",
+          "text": "A for loop over a finite list ends after visiting its items, provided you do not keep adding items while looping. A while loop keeps going as long as its condition is True, so something inside must eventually make it False. If a run hits Forge's time limit, check whether the condition can become False.",
           "code": "hp, damage = 10, 3\nturns = 0\nwhile hp > 0:\n    hp -= damage    # this line is what eventually ends the loop\n    turns += 1"
+        },
+        {
+          "title": "Terminal input for your local game",
+          "text": "The local lab uses input() to read a line you type in the terminal. Python waits until you press Enter, then returns the text as a string. Even typing 5 produces the text \"5\", not the number 5; convert with int() when a numeric value is required. print() displays a value and does not ask for input.\n\nTry this separate greeting example in a local .py file, using the run command from your setup guide. The browser function quests receive arguments from their checks, so do not add interactive input() there.\n\nFor your game, decide which command should end the session. Use the while-loop exit rule you just learned so the player can quit. Keep input and printing in main.py, with the game rules in core.py.",
+          "code": "name = input(\"What name should I use? \")\nprint(f\"Hello, {name}!\")",
+          "shell": true
         },
         {
           "title": "Splitting code into functions",
@@ -2694,7 +2700,7 @@
       },
       {
         "title": "Build a small piece yourself",
-        "text": "Return to the lab brief. First write an example input and the output you want. Explain the steps in ordinary words. Then implement one small part, save the file, and rerun the tests.\n\ncore.py holds calculations and rules. main.py is the starting place for the complete program: call your functions, display results, and later read input. test_core.py is where you add tests of your own. cases.json supplies the existing test inputs; changing it to make a failure disappear does not fix your code. README.md describes the task and is where you record how to run your work.\n\nWhen you have added program behavior to main.py, run it with the command below. The untouched starter only prints a reminder; that is not a finished lab.",
+        "text": "Return to the lab brief. First write an example input and the output you want. Explain the steps in ordinary words. Then implement one small part, save the file, and rerun the tests.\n\ncore.py holds calculations and rules. main.py is the starting place for the complete program: call your functions, display results, and later read input. test_core.py is where you add tests of your own. cases.json supplies the existing test inputs; changing it to make a failure disappear does not fix your code. README.md describes the task and is where you record how to run your work.\n\nTo use one of your core.py functions from main.py, put an import at the top of main.py. For example, if you named a function describe_weather in core.py, the import is from core import describe_weather. Use your actual function name, not this example name. You can then call that function in main.py and print its returned value. The import names the file without .py. Keep both files in the same folder.\n\nAn import makes a definition available; it does not call the function. Read the existing from core import line in test_core.py to see the same idea in the supplied tests.\n\nWhen you have added program behavior to main.py, run it with the command below. The untouched starter only prints a reminder; that is not a finished lab.",
         "windows": ".\\.venv\\Scripts\\python.exe main.py",
         "mac": "./.venv/bin/python main.py",
         "linux": "./.venv/bin/python main.py"

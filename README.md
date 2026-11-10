@@ -62,6 +62,10 @@ This repo is a public snapshot of a private development repo, so its history sta
 - **Verification:** a Node.js script that runs every check and route
 - **Hosting:** GitHub Pages, deployed from `dist/` by GitHub Actions
 
+## Learning-readiness audit
+
+The [learning-readiness audit](docs/LEARNING_READINESS_AUDIT.md) records the checked beginner path, lab verification, fixes, and the limits of automated grading.
+
 ## Run it locally
 
 ```bash

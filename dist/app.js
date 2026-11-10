@@ -10,7 +10,52 @@ const emptyState=()=>({version:1,completed:{},drafts:{},notes:{},assisted:{},hin
 let state=emptyState(), curriculum, handbook, lessons=[], weeks=[], current=null, worker=null, runTimeout, passedCode=null, rating=null, lastRun=null, elapsed=0, clock=null, timerRunning=false, saveFailed=false, saveBlocked=false, progressUnreadable=false, lastSnapshotAt=0;
 function recoveryKeys(){const keys=[];try{for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(key.startsWith(RECOVERY_PREFIX))keys.push(key);}}catch{}return keys.sort();}
 /* A record that cannot be read is copied aside first, so the next save can never destroy it. If the copy fails, saving stops and the record stays where it is. */
-function readSavedProgress(){let raw=null;try{raw=localStorage.getItem(KEY);}catch{return;}if(raw===null)return;let old=null;try{old=JSON.parse(raw);}catch{}if(old&&typeof old==='object'&&old.version===1){state={...emptyState(),...old};return;}progressUnreadable=true;try{if(!recoveryKeys().some(key=>localStorage.getItem(key)===raw))localStorage.setItem(RECOVERY_PREFIX+Date.now(),raw);}catch{saveBlocked=true;}}
+function savedProgressShapeOK(value){
+  const record=v=>v!==null&&typeof v==='object'&&!Array.isArray(v),finite=v=>typeof v==='number'&&Number.isFinite(v);
+  if(!record(value)||value.version!==1)return false;
+  const strings=['drafts','notes','explanations','labNotes','evidence'],booleans=['assisted','projectChecks','labChecks'];
+  for(const key of [...strings,...booleans,'completed','reviews','hints','ratings']){
+    if(!(key in value))continue; // Old saves may omit fields added in later editions.
+    if(!record(value[key]))return false;
+    for(const item of Object.values(value[key])){
+      if(strings.includes(key)&&typeof item!=='string')return false;
+      if(booleans.includes(key)&&typeof item!=='boolean')return false;
+      if(['completed','reviews'].includes(key)){
+        if(!record(item))return false;
+        for(const field of ['at','due'])if(field in item&&!finite(item[field]))return false;
+        if(key==='completed'&&'assisted' in item&&typeof item.assisted!=='boolean')return false;
+        if(key==='reviews'&&'stage' in item&&(!Number.isInteger(item.stage)||item.stage<0||item.stage>3))return false;
+      }
+      if(key==='hints'&&(!Number.isInteger(item)||item<0||item>2))return false;
+      if(key==='ratings'&&![1,2,3].includes(item))return false;
+    }
+  }
+  if('scratch' in value&&typeof value.scratch!=='string')return false;
+  if('timerMinutes' in value&&(!finite(value.timerMinutes)||value.timerMinutes<=0))return false;
+  if('events' in value&&(!Array.isArray(value.events)||value.events.some(e=>!record(e)||!Number.isInteger(e.id)||e.id<1||!finite(e.at))))return false;
+  if('game' in value){
+    const g=value.game;if(!record(g))return false;
+    for(const key of ['awards','bounties','attempts','traces','revealed','briefs','qbriefs']){
+      if(!(key in g))continue;
+      if(!record(g[key]))return false;
+      for(const item of Object.values(g[key])){
+        if(['revealed','briefs','qbriefs'].includes(key)){if(typeof item!=='boolean')return false;continue;}
+        if(!record(item))return false;
+        if(key==='awards'&&(!finite(item.xp)||item.xp<0))return false;
+        if(key==='bounties'&&(!finite(item.due)||!finite(item.created)))return false;
+        if(key==='attempts'&&(('fails' in item&&!finite(item.fails))||('diag' in item&&!Array.isArray(item.diag))))return false;
+      }
+    }
+    if('tests' in g){
+      if(!record(g.tests)||('history' in g.tests&&!Array.isArray(g.tests.history)))return false;
+      if(g.tests.history?.some(h=>!record(h)||!Array.isArray(h.problems)||h.problems.some(p=>!record(p))))return false;
+      const active=g.tests.active;
+      if(active!=null&&(!record(active)||!finite(active.startedAt)||!Array.isArray(active.problems)||active.problems.length!==3||!active.problems.every(id=>Number.isInteger(id)&&id>0)||!record(active.code)||!record(active.results)))return false;
+    }
+  }
+  return true;
+}
+function readSavedProgress(){let raw=null;try{raw=localStorage.getItem(KEY);}catch{return;}if(raw===null)return;let old=null;try{old=JSON.parse(raw);}catch{}if(savedProgressShapeOK(old)){state={...emptyState(),...old};return;}progressUnreadable=true;try{if(!recoveryKeys().some(key=>localStorage.getItem(key)===raw))localStorage.setItem(RECOVERY_PREFIX+Date.now(),raw);}catch{saveBlocked=true;}}
 readSavedProgress();
 /* The main record always wins storage space: snapshots are dropped, oldest first, to make room for it. */
 function writeProgress(){const raw=JSON.stringify(state);try{localStorage.setItem(KEY,raw);}catch(error){const original=readSnapshots(),list=[...original];while(list.length){list.shift();writeSnapshots([...list]);try{localStorage.setItem(KEY,raw);return;}catch{}}writeSnapshots(original);throw error;}}

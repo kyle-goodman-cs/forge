@@ -242,7 +242,7 @@ This ZIP is an unfinished checkpoint plus tests. The complete program in the bui
 1. Extract the ZIP into its own folder, for example Documents/Forge Work/week-{w:02}.
 2. In VS Code, use File > Open Folder to open the folder containing core.py.
 3. Choose Terminal > New Terminal. Type the commands below there, not in a .py file.
-4. Need help installing Python or using the editor? Open Forge at http://127.0.0.1:8000/#setup/{w} for the full guide, expected results, and troubleshooting.
+4. Need help installing Python or using the editor? Return to the Forge browser tab, open chapter {w} in the Quest book, open its independent lab brief, and select First lab? Start guided setup. This works in the local app and the public demo.
 
 ## Create the environment (once per lab folder)
 
