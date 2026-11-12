@@ -1,4 +1,22 @@
 /* Forge's reading palette. Loaded after the course and optional quest styles. */
+.teaching-reading-note{max-width:70ch}
+.teaching-contents{margin:20px 0 32px;padding:16px 20px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.teaching-contents summary{font-weight:750;color:var(--ink);cursor:pointer}
+.teaching-contents ol{padding-left:24px;margin-bottom:0}
+.teaching-contents li{padding:5px 0}
+.teaching-contents button{font:inherit;text-align:left;background:none;border:0;padding:3px 0;color:var(--green);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.teaching-topic{scroll-margin-top:100px;padding-top:14px;padding-bottom:20px;border-bottom:1px solid var(--line);outline-offset:8px}
+.teaching-topic>.learn-kicker{margin-bottom:6px;display:block}
+.plain.teaching-topic h3{margin-top:0}
+.teaching-topic .teaching-code-label{font-size:13px;font-weight:750;color:var(--muted);margin:18px 0 8px}
+.teaching-topic .teaching-output pre{background:var(--surface);color:var(--ink);border-left:3px solid var(--accent);margin-top:0}
+.teaching-walk{margin:22px 0}
+.teaching-walk h4{font-size:16px;color:var(--ink);margin:0 0 10px}
+.teaching-walk ol{padding-left:25px}
+.teaching-walk li{padding-left:5px;margin:10px 0;overflow-wrap:anywhere}
+.teaching-check{margin:22px 0 8px;padding:18px 20px;background:var(--accent-soft);border:1px solid var(--accent-border);border-radius:12px}
+.teaching-check strong{color:var(--ink)}
+.teaching-check p{margin:8px 0 0}
 :root {
   color-scheme: light;
   --bg: #f5f4ee;

@@ -1,11 +1,8 @@
-"""Add beginner-level teaching to dist/handbook.json.
+"""Integrate sequenced teaching for all 24 main chapters.
 
-- units[w]["plain"]: plain-English sections with worked code, shown BEFORE the compact
-  reference summary, for weeks 1–12.
-- units[w]["watch"]: the matching free CS50P lecture (Harvard's Introduction to Programming
-  with Python) to watch first.
-- handbook["questlines"]: briefing guides for the questlines (practice, bug hunts, SQL,
-  interview, hardware).
+The three teaching_XX_YY modules are authoritative. The old PLAIN below is
+retained for historical comparison, not shipped. Videos remain optional;
+questline briefings and setup guides are separate from the main teaching.
 Run after handbook.py (build_course.py does this).
 """
 import contextlib
@@ -14,9 +11,11 @@ import json
 from pathlib import Path
 
 from build_io import write_text_atomic
-from teaching_more import PLAIN_ADD, PLAIN_NEW
 from lab_setup import SETUP
 from workspace_setup import WORKSPACE
+from teaching_01_08 import CHAPTERS as EARLY_CHAPTERS
+from teaching_09_16 import CHAPTERS as MIDDLE_CHAPTERS
+from teaching_17_24 import CHAPTERS as LATE_CHAPTERS
 
 CS50P = "https://cs50.harvard.edu/python/weeks/"
 CS50X = "https://cs50.harvard.edu/x/"
@@ -199,24 +198,28 @@ QUESTLINES = {
 }
 
 
-def check_examples():
-    """Every example in teaching_more.py must run, apart from terminal commands."""
-    for group in (PLAIN_ADD, PLAIN_NEW):
-        for week, sections in group.items():
-            for section in sections:
-                if section.get("code") and not section.get("shell"):
-                    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-                        try:
-                            exec(compile(section["code"], section["title"], "exec"), {"__name__": "__main__"})
-                        except Exception as err:
-                            raise SystemExit(f"Week {week} example '{section['title']}' fails: {err!r}")
+def check_examples(plain):
+    """Verify the teaching actually shipped, including its printed answers."""
+    for week, sections in plain.items():
+        for section in sections:
+            if section.get("code") and not section.get("shell"):
+                stdout, stderr = io.StringIO(), io.StringIO()
+                with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                    try:
+                        exec(compile(section["code"], section["title"], "exec"), {"__name__": "__main__"})
+                    except Exception as err:
+                        raise SystemExit(f"Week {week} example '{section['title']}' fails: {err!r}")
+                if "output" in section and stdout.getvalue().strip() != section["output"].strip():
+                    raise SystemExit(f"Week {week} example '{section['title']}' has incorrect expected output: {stdout.getvalue()!r}")
 
 
 def main():
-    check_examples()
+    plain = {**EARLY_CHAPTERS, **MIDDLE_CHAPTERS, **LATE_CHAPTERS}
+    if set(plain) != set(range(1, 25)):
+        raise SystemExit("Expanded teaching must cover all 24 chapters.")
+    check_examples(plain)
     path = Path(__file__).resolve().parent.parent / "dist" / "handbook.json"
     book = json.loads(path.read_text(encoding="utf-8"))
-    plain = {w: PLAIN.get(w, []) + PLAIN_NEW.get(w, []) + PLAIN_ADD.get(w, []) for w in sorted({*PLAIN, *PLAIN_NEW, *PLAIN_ADD})}
     for unit in book["units"]:
         w = unit["week"]
         if w in plain:

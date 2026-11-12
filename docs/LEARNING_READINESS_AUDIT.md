@@ -2,6 +2,8 @@
 
 Reviewed November 9, 2026. App cache version: 19.
 
+> Follow-up: the [November 12 teaching audit](TEACHING_AUDIT.md) found prerequisite gaps this earlier functional audit missed. The version-21 teaching revision addresses those gaps across all 24 chapters.
+
 ## Verdict
 
 **Ready to begin learning with chapter 1.** No remaining blocker was found in the tested beginner path. Start practicing rather than waiting for another design pass. This is a judgment about being able to start and make progress, not a certification that completing Forge proves interview readiness.
